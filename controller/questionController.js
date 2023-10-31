@@ -1,5 +1,44 @@
 import Question from "../models/questionModel.js";
 
+// // Create a new question
+// export const createQuestion = async (req, res) => {
+//   try {
+//     const {
+//       questionType,
+//       questionTitle,
+//       options,
+//       correctAnswer,
+//       mark,
+//       examId,
+//     } = req.body;
+
+//     let questionData = {
+//       questionType,
+//       questionTitle,
+//       mark,
+//       exam: examId,
+//     };
+
+//     if (questionType === "multiple_choice") {
+//       // For multiple-choice questions
+//       questionData.options = options.map((option) => ({
+//         option: option.option,
+//         isCorrect: option.isCorrect,
+//       }));
+//     } else if (questionType === "true_false") {
+//       // For True/False questions
+//       questionData.correctAnswer = correctAnswer;
+//     }
+
+//     const question = new Question(questionData);
+
+//     await question.save();
+//     res.json({ message: "Question saved successfully" });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
 // Create a new question
 export const createQuestion = async (req, res) => {
   try {
@@ -7,7 +46,7 @@ export const createQuestion = async (req, res) => {
       questionType,
       questionTitle,
       options,
-      correctAnswer,
+      correctAnswer, // Include correctAnswer in the request
       mark,
       examId,
     } = req.body;
@@ -21,7 +60,10 @@ export const createQuestion = async (req, res) => {
 
     if (questionType === "multiple_choice") {
       // For multiple-choice questions
-      questionData.options = options;
+      questionData.options = options.map((option) => ({
+        option: option.option,
+        isCorrect: option.option === correctAnswer, // Set isCorrect based on correctAnswer
+      }));
     } else if (questionType === "true_false") {
       // For True/False questions
       questionData.correctAnswer = correctAnswer;
@@ -45,6 +87,58 @@ export const getQuestions = async (req, res) => {
     const questions = await Question.find({ exam: examId });
 
     res.json(questions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Delete a question by ID
+export const deleteQuestion = async (req, res) => {
+  try {
+    const questionId = req.params.questionId;
+
+    // Use Mongoose to find and remove the question by ID
+    const deletedQuestion = await Question.findByIdAndRemove(questionId);
+
+    if (!deletedQuestion) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    res.json({ message: "Question deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// questionController.js
+
+// Update a question by ID
+export const updateQuestion = async (req, res) => {
+  try {
+    const questionId = req.params.questionId;
+    const { questionType, questionTitle, options, correctAnswer, mark } =
+      req.body;
+
+    // Find the question by ID
+    const question = await Question.findById(questionId);
+
+    if (!question) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    // Update the question's fields
+    question.questionType = questionType;
+    question.questionTitle = questionTitle;
+    question.options = options; // For multiple-choice questions
+    question.correctAnswer = correctAnswer; // For True/False questions
+    question.mark = mark;
+
+    // Save the updated question
+    await question.save();
+
+    res.json({ message: "Question updated successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

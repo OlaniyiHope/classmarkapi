@@ -6,12 +6,14 @@ import {
   getExamById,
   updateExam,
   deleteExam,
+  getExamsByClass,
 } from "../controller/examlistController.js";
 import authenticateUser from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // Create a new exam (accessible only to admins)
 router.post("/create-exam", authenticateUser, createExam);
+router.get("/get-exams-by-class/:classId", authenticateUser, getExamsByClass);
 
 // Get a list of all exams
 router.get("/get-exam", getAllExams);

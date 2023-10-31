@@ -11,9 +11,9 @@ const router = express.Router();
 
 //CREATE
 router.post("/", authenticateUser, createClass);
-router.delete("/:id", deleteClass);
+router.delete("/:id", authenticateUser, deleteClass);
 
-router.get("/", getClass);
-router.get("/find/:id", getsingleClass);
+router.get("/", authenticateUser, getClass);
+router.get("/find/:id", authenticateUser, getsingleClass);
 
 export default router;

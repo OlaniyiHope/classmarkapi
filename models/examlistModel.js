@@ -33,6 +33,24 @@ const ExamlistSchema = new mongoose.Schema(
     instruction: {
       type: String,
     },
+    questions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Question", // Reference to the "Question" model
+      },
+    ],
+    submittedAnswers: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User", // Reference to the User model
+        },
+        answers: {
+          type: Object, // Use a Map to store answers with question IDs as keys
+          of: String, // Assuming answers are strings
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

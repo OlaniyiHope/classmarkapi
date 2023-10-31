@@ -8,6 +8,7 @@ import stuRoute from "./routes/stuRoute.js";
 import teRoute from "./routes/teRoute.js";
 import commonRoute from "./routes/commonRoute.js";
 import questionRoute from "./routes/questionRoute.js";
+import examRoute from "./routes/examRoute.js";
 import subRoute from "./routes/subRoute.js";
 import markRoute from "./routes/markRoute.js";
 import dotenv from "dotenv";
@@ -30,6 +31,7 @@ app.use("/api/", stuRoute);
 app.use("/api/", teRoute);
 app.use("/api/", subRoute);
 app.use("/api/", questionRoute);
+app.use("/api/", examRoute);
 
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, console.log(`Server running on port ${PORT}`));

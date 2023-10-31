@@ -68,3 +68,22 @@ export const deleteExam = async (req, res) => {
       .json({ error: "An error occurred while deleting the exam." });
   }
 };
+
+// examlistController.js
+// ... other imports ...
+
+// Function to get exams by class
+export const getExamsByClass = async (req, res) => {
+  try {
+    const classId = req.params.classId; // Get the class identifier from the request parameters
+
+    // Use a database query to fetch exams by class
+    const exams = await Exam.find({ className: classId }); // Assuming your schema field for class is 'className'
+
+    // Return the filtered exams as a response
+    res.status(200).json(exams);
+  } catch (error) {
+    console.error("Error fetching exams by class:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
