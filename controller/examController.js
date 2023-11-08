@@ -1,52 +1,116 @@
-// examController.js
 import Exam from "../models/examlistModel.js";
+import User from "../models/userModel.js";
 
-import Question from "../models/questionModel.js";
-
-// Function to calculate the exam score
-const calculateScore = (examId, answers) => {
-  // Replace this with your actual scoring logic.
-  // You need to compare the answers with the correct answers for the exam.
-  // Calculate the score and return it.
-
-  // Example: Calculate the score based on correct answers in the exam.
-  // For simplicity, let's assume all answers are correct.
-  // You should implement your own scoring logic.
-  return 100; // Return a perfect score of 100 for demonstration.
-};
-
-// Create a controller function to handle exam submission
-// examController.js
 export const submitExam = async (req, res) => {
   try {
-    // Get the submitted exam answers and user ID from the request body
-    const { examId, answers, userId } = req.body;
-    console.log("Received data:", req.body);
+    const { examId, answers, userId, score } = req.body; // Include the "score" in the destructuring
 
-    // Fetch the exam and its associated questions
+    if (!examId || !answers || !userId) {
+      return res.status(400).json({ message: "Invalid submission data" });
+    }
+
+    // Fetch the exam and ensure it exists
     const exam = await Exam.findById(examId).populate("questions");
 
     if (!exam) {
       return res.status(404).json({ message: "Exam not found" });
     }
 
-    // Store the submitted answers and user ID in the submittedAnswers array
-    exam.submittedAnswers.push({ userId, answers });
+    // Update the user's score in the exam
+    const userSubmittedAnswers = {
+      userId,
+      answers,
+      score, // Use the received score
+    };
+
+    exam.submittedAnswers.push(userSubmittedAnswers);
     await exam.save();
 
-    // Extract correct answers from the questions
-    const correctAnswers = exam.questions.reduce((result, question) => {
-      result[question._id] = question.correctAnswer;
-      return result;
-    }, {});
+    res.json({
+      message: "Exam submitted successfully",
+      score, // Respond with the received score
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
-    // You can now perform actions to evaluate the answers and calculate the score
-    // Compare 'answers' with 'correctAnswers' to calculate the score
-    const score = calculateScore(examId, answers, correctAnswers);
+export const getExamScore = async (req, res) => {
+  try {
+    const { examId, userId } = req.params;
 
-    // You can also save the score or results to the database if needed.
+    if (!examId || !userId) {
+      return res.status(400).json({ message: "Invalid parameters" });
+    }
 
-    res.json({ message: "Exam submitted successfully", score: score });
+    // Find the exam by its ID
+    const exam = await Exam.findById(examId);
+
+    if (!exam) {
+      return res.status(404).json({ message: "Exam not found" });
+    }
+
+    // Find the student's submission within the exam
+    const submission = exam.submittedAnswers.find(
+      (answer) => answer.userId.toString() === userId
+    );
+
+    if (!submission) {
+      return res.status(404).json({ message: "Student submission not found" });
+    }
+
+    // Retrieve the student's score and user details
+    const { score } = submission;
+    const student = await User.findById(userId);
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Respond with the student's name and score
+    res.json({
+      studentName: student.studentName,
+      score,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getAllScore = async (req, res) => {
+  try {
+    const { examId } = req.params;
+
+    if (!examId) {
+      return res.status(400).json({ message: "Invalid parameters" });
+    }
+
+    // Find the exam by its ID and populate the submittedAnswers field
+    const exam = await Exam.findById(examId).populate({
+      path: "submittedAnswers.userId", // Reference to the User model
+      select: "studentName", // Include the studentName field
+    });
+
+    // Log the userId
+    console.log(
+      "User IDs:",
+      exam.submittedAnswers.map((submission) => submission.userId)
+    );
+
+    // Extract the student names and scores
+    const studentScores = exam.submittedAnswers.map((submission) => {
+      const { userId, score } = submission;
+      return {
+        studentName: userId.studentName,
+        score,
+      };
+    });
+
+    console.log("Student Scores:", studentScores);
+
+    res.json(studentScores);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });

@@ -33,6 +33,7 @@ const ExamlistSchema = new mongoose.Schema(
     instruction: {
       type: String,
     },
+
     questions: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -44,10 +45,14 @@ const ExamlistSchema = new mongoose.Schema(
         userId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User", // Reference to the User model
+          select: "studentName",
         },
         answers: {
           type: Object, // Use a Map to store answers with question IDs as keys
           of: String, // Assuming answers are strings
+        },
+        score: {
+          type: Number, // Add the score field to store the exam score
         },
       },
     ],

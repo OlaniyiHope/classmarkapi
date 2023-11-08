@@ -1,44 +1,5 @@
 import Question from "../models/questionModel.js";
 
-// // Create a new question
-// export const createQuestion = async (req, res) => {
-//   try {
-//     const {
-//       questionType,
-//       questionTitle,
-//       options,
-//       correctAnswer,
-//       mark,
-//       examId,
-//     } = req.body;
-
-//     let questionData = {
-//       questionType,
-//       questionTitle,
-//       mark,
-//       exam: examId,
-//     };
-
-//     if (questionType === "multiple_choice") {
-//       // For multiple-choice questions
-//       questionData.options = options.map((option) => ({
-//         option: option.option,
-//         isCorrect: option.isCorrect,
-//       }));
-//     } else if (questionType === "true_false") {
-//       // For True/False questions
-//       questionData.correctAnswer = correctAnswer;
-//     }
-
-//     const question = new Question(questionData);
-
-//     await question.save();
-//     res.json({ message: "Question saved successfully" });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// };
 // Create a new question
 export const createQuestion = async (req, res) => {
   try {
@@ -46,7 +7,7 @@ export const createQuestion = async (req, res) => {
       questionType,
       questionTitle,
       options,
-      correctAnswer, // Include correctAnswer in the request
+      correctAnswer,
       mark,
       examId,
     } = req.body;
@@ -62,7 +23,7 @@ export const createQuestion = async (req, res) => {
       // For multiple-choice questions
       questionData.options = options.map((option) => ({
         option: option.option,
-        isCorrect: option.option === correctAnswer, // Set isCorrect based on correctAnswer
+        isCorrect: option.isCorrect,
       }));
     } else if (questionType === "true_false") {
       // For True/False questions
