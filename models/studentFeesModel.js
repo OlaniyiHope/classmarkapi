@@ -4,7 +4,6 @@ const studentFeesSchema = mongoose.Schema(
     accountant: {
       type: String,
       required: true,
-
     },
     student_name: {
       type: String,

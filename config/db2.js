@@ -6,7 +6,7 @@ const connectDB = async () => {
   app.use(cors());
   try {
     const conn = await mongoose.connect(
-      "mongodb+srv://olaniyihoppee:take100@cluster0.fzjtw.mongodb.net/yoo?retryWrites=true&w=majority",
+      "mongodb://127.0.0.1:27017/hopeOla",
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,

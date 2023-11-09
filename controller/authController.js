@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
+import sessions from "../models/sessions.js";
 
 export const register = async (req, res) => {
   try {
@@ -75,6 +76,8 @@ export const login = async (req, res) => {
 
     // Create a JWT with user information
     const token = jwt.sign({ user, role }, process.env.JWT_SECRET);
+
+    req.session.user = user._id;
 
     return res.status(200).json({ token, user });
   } catch (error) {
