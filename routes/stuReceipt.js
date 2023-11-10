@@ -8,7 +8,7 @@ import User from "../models/userModel.js";
 const router = express.Router();
 
 
-router.post('/receipt/form', async (req, res ) => { 
+router.post('/receipt/', async (req, res ) => { 
     // const id = req.params.id
     const values = req.body;
     const {typeOfPayment, reason, studentName, classname, balance, amount, date} = values
@@ -56,10 +56,10 @@ router.post('/receipt/form', async (req, res ) => {
     });
 })
 
-router.get('/receipt/invoice/:id', getInvoiceId)
+router.get('/receipt/:id', getInvoiceId)
 
-router.get('/receipt/invoice/student/:id', getStudentInvoiceId)
-router.get('/receipt/invoice/admin/:id', getTransactionHistInv)
+//router.get('/receipt/invoice/student/:id', getStudentInvoiceId)
+//router.get('/receipt/invoice/admin/:id', getTransactionHistInv)
 
 router.delete('/receipt/:id', deleteInv )
   
