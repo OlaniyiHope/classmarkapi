@@ -25,7 +25,7 @@ app.use("/api/ad", adRoutes);
 app.use("/api/class", classRoute);
 app.use("/api/", examlistRoute);
 app.use("/api/", commonRoute);
-app.use("/api/grade", gradeRoute);
+app.use("/api/", gradeRoute);
 app.use("/api/mark", markRoute);
 app.use("/api/", stuRoute);
 app.use("/api/", teRoute);

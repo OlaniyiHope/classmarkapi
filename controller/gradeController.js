@@ -6,10 +6,10 @@ export const createGrade = async (req, res, next) => {
     const savedGrade = await newGrade.save();
     res.status(200).json(savedGrade);
   } catch (err) {
-    res.status(500).json(err);
+    console.error("Error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
-
 //GET RESULT
 export const getGrade = async (req, res) => {
   try {

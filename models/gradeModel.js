@@ -7,15 +7,15 @@ const GradeSchema = new mongoose.Schema(
       required: true,
     },
     gradepoint: {
-      type: String,
+      type: Number,
       required: true,
     },
     markfrom: {
-      type: String,
+      type: Number,
       required: true,
     },
     markupto: {
-      type: String,
+      type: Number,
       required: true,
     },
 

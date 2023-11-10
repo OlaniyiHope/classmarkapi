@@ -9,10 +9,10 @@ import {
 const router = express.Router();
 
 //CREATE
-router.post("/", createGrade);
-router.delete("/:id", deleteGrade);
+router.post("/grade", createGrade);
+router.delete("/grade/:id", deleteGrade);
 
-router.get("/", getGrade);
-router.get("/find/:id", getsingleGrade);
+router.get("/grade", getGrade);
+router.get("/grade/find/:id", getsingleGrade);
 
 export default router;

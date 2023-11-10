@@ -116,3 +116,41 @@ export const getAllScore = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+export const getAllStudentScores = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid parameters" });
+    }
+
+    // Find all exams that the student has submitted answers for
+    const exams = await Exam.find({
+      "submittedAnswers.userId": userId,
+    }).populate({
+      path: "submittedAnswers",
+      match: { userId }, // Filter by userId
+    });
+
+    // Extract student names, exam titles, and scores
+    const studentScores = exams.map((exam) => {
+      const { title, subject } = exam;
+      const submission = exam.submittedAnswers.find(
+        (answer) => answer.userId.toString() === userId
+      );
+      const { score } = submission;
+      return {
+        examTitle: title,
+        subject,
+        score,
+      };
+    });
+
+    console.log("Student Scores:", studentScores);
+
+    res.json(studentScores);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

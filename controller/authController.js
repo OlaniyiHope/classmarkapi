@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import User from "../models/userModel.js";
 
 export const register = async (req, res) => {
@@ -80,5 +81,71 @@ export const login = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Login failed" });
+  }
+};
+// authController.js
+// export const getStudentsByClass = async (req, res) => {
+//   const className = req.params.className;
+
+//   try {
+//     const students = await User.find({
+//       role: "student",
+//       classname: className,
+//     }).exec();
+
+//     if (!students) {
+//       return res.status(404).json({ error: "No students found in that class" });
+//     }
+
+//     return res.status(200).json(students);
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: "Failed to get students" });
+//   }
+// };
+export const getStudentsByClass = async (req, res) => {
+  const className = req.params.className;
+
+  try {
+    const students = await User.find({
+      role: "student",
+      classname: className,
+    }).exec();
+
+    if (students.length === 0) {
+      return res.status(404).json({ error: "No students found in that class" });
+    }
+
+    return res.status(200).json(students);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to get students" });
+  }
+};
+
+export const getStudentById = async (req, res) => {
+  const studentId = req.params.id;
+  console.log("Received student ID:", studentId);
+
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    return res.status(400).json({ error: "Invalid student ID" });
+  }
+
+  try {
+    const student = await User.findById(studentId).exec();
+
+    if (!student) {
+      return res.status(404).json({ error: "No student found with that ID" });
+    }
+
+    // Check if the user's role is "student"
+    if (student.role !== "student") {
+      return res.status(403).json({ error: "Access denied. Not a student." });
+    }
+
+    return res.status(200).json(student); // Directly return the user object
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to get student" });
   }
 };

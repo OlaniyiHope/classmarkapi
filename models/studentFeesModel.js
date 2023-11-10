@@ -1,11 +1,6 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 const studentFeesSchema = mongoose.Schema(
   {
-    accountant: {
-      type: String,
-      required: true,
-
-    },
     student_name: {
       type: String,
       required: true,
@@ -50,7 +45,7 @@ const studentFeesSchema = mongoose.Schema(
   {
     timestamps: true,
   }
-)
+);
 
-const StudentFees = mongoose.model('StudentFees', studentFeesSchema)
-export default StudentFees
+const StudentFees = mongoose.model("StudentFees", studentFeesSchema);
+export default StudentFees;

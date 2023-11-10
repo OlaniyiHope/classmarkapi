@@ -5,6 +5,7 @@ import {
   getAllScore,
   getExamScore,
   submitExam,
+  getAllStudentScores,
 } from "../controller/examController.js";
 import authenticateUser from "../middleware/authMiddleware.js";
 
@@ -15,6 +16,11 @@ router.post("/exams/submit", authenticateUser, submitExam);
 
 // Create a route to get the student's score and name
 router.get("/exams/score/:examId/:userId", authenticateUser, getExamScore);
+router.get(
+  "/students/all-scores/:userId",
+  authenticateUser,
+  getAllStudentScores
+);
 
 // Create a route to get all students' scores for a specific exam
 router.get("/exams/all-scores/:examId", getAllScore);
