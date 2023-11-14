@@ -125,7 +125,6 @@ export const getStudentsByClass = async (req, res) => {
 
 export const getStudentById = async (req, res) => {
   const studentId = req.params.id;
-  console.log("Received student ID:", studentId);
 
   if (!mongoose.Types.ObjectId.isValid(studentId)) {
     return res.status(400).json({ error: "Invalid student ID" });
@@ -143,9 +142,19 @@ export const getStudentById = async (req, res) => {
       return res.status(403).json({ error: "Access denied. Not a student." });
     }
 
-    return res.status(200).json(student); // Directly return the user object
+    return res.status(200).json(student);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Failed to get student" });
+  }
+};
+export const getAdmin = async (req, res, next) => {
+  try {
+    // Verify the user role (only "admin" can get teachers)
+
+    const teachers = await User.find({ role: "admin" });
+    res.status(200).json(teachers);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
   }
 };
