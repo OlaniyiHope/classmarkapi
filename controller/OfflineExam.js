@@ -20,3 +20,4 @@ export const getExam = async (req, res) => {
     res.status(500).json(err);
   }
 };
+// Save exam marks
