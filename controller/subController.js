@@ -51,3 +51,18 @@ export const getSubjectsByClass = async (req, res) => {
     res.status(500).json(err);
   }
 };
+// Update the getStudentSubjects function
+export const getStudentSubjects = async (req, res) => {
+  const { classname } = req.user.user;
+  console.log("Class Name:", classname);
+
+  try {
+    // Fetch the subjects based on the classname
+    const subjects = await Subject.find({ classname }, "name"); // Only fetch the 'name' property
+    console.log("Subjects found:", subjects);
+    res.status(200).json({ subjects });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
