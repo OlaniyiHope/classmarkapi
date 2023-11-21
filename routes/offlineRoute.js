@@ -5,15 +5,20 @@ import {
   getMarkbyStudent,
   saveMark,
 } from "../controller/offMarkController.js";
+import authenticateUser from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-//CREATE
+//CREATE route
 router.post("/offlineexam", submitExam);
 router.get("/getofflineexam", getExam);
 router.post("/save-marks", saveMark);
 // Add the new route for getting scores
-router.get("/get-scores/:examName", getMark);
-router.get("/get-scores-by-student/:studentId", getMarkbyStudent);
+router.get("/get-scores/:examName", authenticateUser, getMark);
+router.get(
+  "/get-scores-by-student/:studentId",
+  authenticateUser,
+  getMarkbyStudent
+);
 
 export default router;

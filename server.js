@@ -12,6 +12,7 @@ import examRoute from "./routes/examRoute.js";
 import subRoute from "./routes/subRoute.js";
 import markRoute from "./routes/markRoute.js";
 import offlineRoute from "./routes/offlineRoute.js";
+import receiptRoute from "./routes/receiptRoute.js";
 import dotenv from "dotenv";
 import connectDB from "./config/db2.js";
 import cors from "cors";
@@ -34,6 +35,7 @@ app.use("/api/", subRoute);
 app.use("/api/", questionRoute);
 app.use("/api/", examRoute);
 app.use("/api/", offlineRoute);
+app.use("/api/", receiptRoute);
 
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, console.log(`Server running on port ${PORT}`));
