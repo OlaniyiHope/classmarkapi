@@ -5,6 +5,6 @@ import authenticateUser from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post("/create-teachers", authenticateUser, createTeacher);
-router.get("/get-teachers", authenticateUser, getTeachers);
+router.get("/get-teachers", getTeachers);
 
 export default router;

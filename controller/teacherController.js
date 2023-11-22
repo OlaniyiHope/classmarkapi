@@ -37,9 +37,9 @@ export const createTeacher = async (req, res, next) => {
 export const getTeachers = async (req, res, next) => {
   try {
     // Verify the user role (only "admin" can get teachers)
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Permission denied" });
-    }
+    // if (req.user.role !== "admin") {
+    //   return res.status(403).json({ message: "Permission denied" });
+    // }
 
     const teachers = await User.find({ role: "teacher" });
     res.status(200).json(teachers);
