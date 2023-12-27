@@ -10,10 +10,10 @@ import authenticateUser from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 //CREATE
-router.post("/", authenticateUser, createClass);
-router.delete("/:id", authenticateUser, deleteClass);
+router.post("/class", authenticateUser, createClass);
+router.delete("/class/:id", authenticateUser, deleteClass);
 
-router.get("/", authenticateUser, getClass);
-router.get("/find/:id", authenticateUser, getsingleClass);
+router.get("/class", authenticateUser, getClass);
+router.get("/class/:id", getsingleClass);
 
 export default router;

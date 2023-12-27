@@ -39,6 +39,9 @@ const userSchema = new mongoose.Schema(
     studentName: {
       type: String, // Add student-specific fields as needed
     },
+    AdmNo: {
+      type: String,
+    },
     classname: {
       type: String,
     },

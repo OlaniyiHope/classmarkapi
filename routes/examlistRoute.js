@@ -4,7 +4,6 @@ import {
   createExam,
   getAllExams,
   getExamById,
-  updateExam,
   deleteExam,
   getExamsByClass,
 } from "../controller/examlistController.js";
@@ -22,7 +21,7 @@ router.get("/get-exam", getAllExams);
 router.get("/get-exam/:id", getExamById);
 
 // Update an existing exam by ID (accessible only to admins)
-router.put("/:id", updateExam);
+// router.put("/:id", updateExam);
 
 // Delete an exam by ID (accessible only to admins)
 router.delete("/:id", deleteExam);

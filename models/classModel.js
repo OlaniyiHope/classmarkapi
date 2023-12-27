@@ -14,6 +14,12 @@ const ClassSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    students: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User", // Assuming your student model is named 'Student'
+      },
+    ],
   },
   { timestamps: true }
 );

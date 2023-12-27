@@ -22,9 +22,13 @@ connectDB();
 
 app.use(express.json());
 app.use(cors());
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).send("Something broke!");
+// });
 app.use("/api/ad", adRoutes);
 
-app.use("/api/class", classRoute);
+app.use("/api/", classRoute);
 app.use("/api/", examlistRoute);
 app.use("/api/", commonRoute);
 app.use("/api/", gradeRoute);

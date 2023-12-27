@@ -1,5 +1,4 @@
 // import jwt from "jsonwebtoken";
-
 // const authenticateUser = (req, res, next) => {
 //   const token = req.headers.authorization;
 
@@ -18,14 +17,15 @@
 //     );
 //     console.log("Decoded Token:", decodedToken);
 
-//     // Check if the token payload includes the 'role' property
-//     const userRole = decodedToken.role;
-//     if (!userRole) {
-//       console.log("Unauthorized - Role not found in token");
-//       return res.status(403).json({ error: "Role not found in token" });
+//     // Check if the token payload includes the 'sub' property (user ID)
+//     const userId = decodedToken.user._id;
+//     if (!userId) {
+//       console.log("Unauthorized - User ID not found in token");
+//       return res.status(403).json({ error: "User ID not found in token" });
 //     }
 
-//     req.user = decodedToken;
+//     req.user = { id: userId };
+//     console.log("Authenticated user:", req.user);
 
 //     next();
 //   } catch (error) {
@@ -33,10 +33,10 @@
 //     return res.status(401).json({ error: "Invalid token" });
 //   }
 // };
-
 // export default authenticateUser;
 
 import jwt from "jsonwebtoken";
+
 const authenticateUser = (req, res, next) => {
   const token = req.headers.authorization;
 
@@ -53,10 +53,15 @@ const authenticateUser = (req, res, next) => {
       token.replace("Bearer ", ""),
       process.env.JWT_SECRET
     );
+
     console.log("Decoded Token:", decodedToken);
 
+    // Set decodedToken on the request object
+    req.decodedToken = decodedToken;
+
     // Check if the token payload includes the 'sub' property (user ID)
-    const userId = decodedToken.user._id;
+    const userId = decodedToken.user && decodedToken.user._id;
+
     if (!userId) {
       console.log("Unauthorized - User ID not found in token");
       return res.status(403).json({ error: "User ID not found in token" });
@@ -71,4 +76,5 @@ const authenticateUser = (req, res, next) => {
     return res.status(401).json({ error: "Invalid token" });
   }
 };
+
 export default authenticateUser;

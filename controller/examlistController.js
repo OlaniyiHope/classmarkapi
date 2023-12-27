@@ -38,21 +38,21 @@ export const getExamById = async (req, res) => {
 };
 
 // Update an existing exam by ID
-export const updateExam = async (req, res) => {
-  try {
-    const updatedExam = await Exam.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    if (!updatedExam) {
-      return res.status(404).json({ error: "Exam not found" });
-    }
-    res.status(200).json(updatedExam);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while updating the exam." });
-  }
-};
+// export const updateExam = async (req, res) => {
+//   try {
+//     const updatedExam = await Exam.findByIdAndUpdate(req.params.id, req.body, {
+//       new: true,
+//     });
+//     if (!updatedExam) {
+//       return res.status(404).json({ error: "Exam not found" });
+//     }
+//     res.status(200).json(updatedExam);
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while updating the exam." });
+//   }
+// };
 
 // Delete an exam by ID
 export const deleteExam = async (req, res) => {

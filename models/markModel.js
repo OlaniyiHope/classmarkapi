@@ -7,13 +7,43 @@
 //       ref: "Exam",
 //       required: true,
 //     },
-//     subjectId: {
+//     marks: [
+//       {
+//         subjectName: { type: String, required: true },
+//         subjectId: {
+//           type: mongoose.Schema.Types.ObjectId,
+//           ref: "Subject",
+//         },
+//         studentId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+//         examscore: { type: Number, required: true },
+//         testscore: { type: Number, required: true },
+//         marksObtained: { type: Number, required: true },
+//         comment: { type: String },
+//       },
+//     ],
+//   },
+//   { timestamps: true }
+// );
+
+// export default mongoose.model("Mark", MarkSchema);
+
+// import mongoose from "mongoose";
+
+// const MarkSchema = new mongoose.Schema(
+//   {
+//     examId: {
 //       type: mongoose.Schema.Types.ObjectId,
-//       ref: "Subject",
+//       ref: "Exam",
+//       required: true,
 //     },
 //     marks: [
 //       {
-//         studentId: { type: String, required: true },
+//         subjectName: { type: String, required: true },
+//         subjectId: {
+//           type: mongoose.Schema.Types.ObjectId,
+//           ref: "Subject",
+//         },
+//         studentId: { type: String, required: true }, // Change this line
 //         examscore: { type: Number, required: true },
 //         testscore: { type: Number, required: true },
 //         marksObtained: { type: Number, required: true },
@@ -37,12 +67,16 @@ const MarkSchema = new mongoose.Schema(
     },
     marks: [
       {
-        subjectName: { type: String, required: true }, // Add subjectName
+        subjectName: { type: String, required: true },
         subjectId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Subject",
         },
-        studentId: { type: String, required: true },
+        studentId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        }, // Change this line
         examscore: { type: Number, required: true },
         testscore: { type: Number, required: true },
         marksObtained: { type: Number, required: true },

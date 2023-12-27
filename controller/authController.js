@@ -1,6 +1,31 @@
+// import jwt from "jsonwebtoken";
+// import mongoose from "mongoose";
+// import User from "../models/userModel.js";
+
+// export const register = async (req, res) => {
+//   try {
+//     const { role, ...userData } = req.body; // Capture role and user data
+
+//     if (!["admin", "teacher", "student"].includes(role)) {
+//       return res.status(400).json({ error: "Invalid role" });
+//     }
+
+//     const user = new User({ role, ...userData });
+//     await user.save();
+
+//     const token = jwt.sign({ user, role: user.role }, process.env.JWT_SECRET);
+
+//     return res.status(201).json({ token, user });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: "Registration failed" });
+//   }
+// };
+
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import User from "../models/userModel.js";
+import Class from "../models/classModel.js";
 
 export const register = async (req, res) => {
   try {
