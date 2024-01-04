@@ -45,26 +45,13 @@ const userSchema = new mongoose.Schema(
     classname: {
       type: String,
     },
-    rollNo: {
-      type: Number,
-    },
+
     parentsName: {
       type: String,
     },
-    contactNo: {
-      type: String,
-    },
+
     gender: {
       type: String,
-    },
-    previousDues: {
-      type: Number,
-    },
-    date: {
-      type: Date,
-    },
-    registrationFees: {
-      type: Number,
     },
   },
   { timestamps: true }

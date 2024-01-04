@@ -13,6 +13,7 @@ import subRoute from "./routes/subRoute.js";
 import markRoute from "./routes/markRoute.js";
 import offlineRoute from "./routes/offlineRoute.js";
 import receiptRoute from "./routes/receiptRoute.js";
+import noticeRoute from "./routes/noticeRoute.js";
 import dotenv from "dotenv";
 import connectDB from "./config/db2.js";
 import cors from "cors";
@@ -38,6 +39,7 @@ app.use("/api/", teRoute);
 app.use("/api/", subRoute);
 app.use("/api/", questionRoute);
 app.use("/api/", examRoute);
+app.use("/api/", noticeRoute);
 app.use("/api/", offlineRoute);
 app.use("/api/", receiptRoute);
 

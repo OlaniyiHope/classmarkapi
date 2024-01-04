@@ -41,22 +41,22 @@ export const createClass = async (req, res, next) => {
 };
 
 //GET CATEGORY
+// export const getClass = async (req, res) => {
+//   try {
+//     const clas = await Class.find();
+//     res.status(200).json(clas);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// };
 export const getClass = async (req, res) => {
   try {
-    const clas = await Class.find();
-    res.status(200).json(clas);
+    const classes = await Class.find().populate("students");
+    res.status(200).json(classes);
   } catch (err) {
     res.status(500).json(err);
   }
 };
-// export const getsingleClass = async (req, res, next) => {
-//   try {
-//     const classes = await Class.findById(req.params.id);
-//     res.status(200).json(classes);
-//   } catch (err) {
-//     next(err);
-//   }
-// };
 
 export const getsingleClass = async (req, res, next) => {
   try {
