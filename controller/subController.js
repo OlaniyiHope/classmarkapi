@@ -66,3 +66,26 @@ export const getStudentSubjects = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+// Import necessary modules and models
+
+export const deleteSubject = async (req, res) => {
+  const { subjectId } = req.params; // Extract the subject ID from the route parameters
+
+  try {
+    // Find and delete the subject by ID
+    const deletedSubject = await Subject.findByIdAndDelete(subjectId);
+
+    if (!deletedSubject) {
+      // If subject not found, return an error
+      return res.status(404).json({ error: "Subject not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Subject deleted successfully", deletedSubject });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

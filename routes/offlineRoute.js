@@ -1,5 +1,5 @@
 import express from "express";
-import { getExam, submitExam } from "../controller/OfflineExam.js";
+import { getExam, submitExam, deleteExam } from "../controller/OfflineExam.js";
 import {
   getMark,
   getMarkbyStudent,
@@ -14,6 +14,7 @@ const router = express.Router();
 
 //CREATE route
 router.post("/offlineexam", submitExam);
+
 router.get("/getofflineexam", getExam);
 router.post("/save-marks", saveMark);
 // Add the new route for getting scores
@@ -30,5 +31,6 @@ router.get("/get-all-scores/:examId/:subjectId", getScores);
 router.put("/update-all-marks", updateMarks);
 
 router.put("/update-marks/:studentId", updateMark);
+router.delete("/deleteexam/:examId", deleteExam);
 
 export default router;
