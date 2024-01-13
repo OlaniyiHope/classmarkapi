@@ -237,6 +237,7 @@ export const getAccountSetting = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
 export const createAccount = async (req, res) => {
   try {
     const {
@@ -251,8 +252,11 @@ export const createAccount = async (req, res) => {
       sessionEnd,
     } = req.body;
 
-    // Remove the findOne, just create a new instance
-    const school = new Account();
+    // Check if school profile exists, create if not
+    let school = await Account.findOne();
+    if (!school) {
+      school = new Account();
+    }
 
     school.name = name;
     school.motto = motto;
