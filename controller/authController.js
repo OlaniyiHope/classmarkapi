@@ -110,17 +110,12 @@ export const getStudentsByClass = async (req, res) => {
       role: "student",
       classname: className,
     })
-      .select("AdmNo studentName _id")
+      .select("AdmNo studentName email address username _id")
       .exec();
 
     if (students.length === 0) {
       return res.status(404).json({ error: "No students found in that class" });
     }
-    const studentsWithAdmNo = students.map((student) => ({
-      _id: student._id,
-      AdmNo: student.AdmNo,
-      studentName: student.studentName,
-    }));
 
     return res.status(200).json(students);
   } catch (error) {
