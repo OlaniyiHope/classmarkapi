@@ -25,7 +25,13 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://hlhs.edupro.com.ng",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
 // app.use((err, req, res, next) => {
 //   console.error(err.stack);
 //   res.status(500).send("Something broke!");
