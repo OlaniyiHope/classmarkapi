@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
+      // required: true,
     },
     password: {
       type: String,
@@ -23,11 +23,11 @@ const userSchema = new mongoose.Schema(
     // Include additional fields that are common to all user roles
     address: {
       type: String,
-      required: true,
+      // required: true,
     },
     phone: {
       type: Number,
-      required: true,
+      // required: true,
     },
     // Include fields specific to teachers
     // Example:

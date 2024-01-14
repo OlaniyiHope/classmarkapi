@@ -4,7 +4,7 @@ import User from "../models/userModel.js";
 import Setting from "../models/settingModel.js";
 import Class from "../models/classModel.js";
 import Account from "../models/accountModel.js";
-
+import bcrypt from "bcryptjs";
 export const register = async (req, res) => {
   try {
     const { role, ...userData } = req.body; // Capture role and user data
@@ -12,8 +12,10 @@ export const register = async (req, res) => {
     if (!["admin", "teacher", "parent", "student"].includes(role)) {
       return res.status(400).json({ error: "Invalid role" });
     }
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-    const user = new User({ role, ...userData });
+    // const user = new User({ role, ...userData });
+    const user = new User({ role, ...userData, password: hashedPassword });
     await user.save();
 
     const token = jwt.sign({ user, role: user.role }, process.env.JWT_SECRET);
@@ -42,29 +44,44 @@ export const getUserByRole = async (req, res) => {
     return res.status(500).json({ error: "Failed to get users" });
   }
 };
+// ...
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { identifier, password } = req.body;
 
   try {
-    // Find the user by email and password
-    const user = await User.findOne({ email, password }).exec();
+    // Find the user by email or username
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { username: identifier }],
+    }).exec();
+
+    console.log("User found:", user);
 
     if (!user) {
+      console.log("User not found");
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // The user's role can be determined from the 'user' object
+    // Verify the password
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      console.log("Password does not match");
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
     const role = user.role;
 
-    // Create a JWT with user information
     const token = jwt.sign({ user, role }, process.env.JWT_SECRET);
 
     return res.status(200).json({ token, user });
   } catch (error) {
-    console.error(error);
+    console.error("Login error:", error);
     return res.status(500).json({ error: "Login failed" });
   }
 };
+
+// ...
+
 // authController.js
 // export const getStudentsByClass = async (req, res) => {
 //   const className = req.params.className;
