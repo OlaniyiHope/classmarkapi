@@ -12,6 +12,9 @@ import {
   getSetting,
   createAccount,
   getAccountSetting,
+  updateStudentById,
+  updateTeacherById,
+  getTeacherById,
 } from "../controller/authController.js";
 import multer from "multer";
 import authenticateUser from "../middleware/authMiddleware.js";
@@ -38,8 +41,13 @@ router.post("/register", register);
 router.post("/login", login);
 router.get("/users/:role", getUserByRole);
 router.get("/students/:id", authenticateUser, getStudentById);
+router.get("/teachers/:id", authenticateUser, getTeacherById);
+
 router.get("/student/:className", getStudentsByClass); // New route for getting students by class
 router.get("/get-admin", authenticateUser, getAdmin);
+router.put("/students/:id", authenticateUser, updateStudentById);
+router.put("/teachers/:id", authenticateUser, updateTeacherById);
+
 router.delete("/users/:userId", deleteUser);
 // router.post("/setting", createSetting);
 

@@ -25,13 +25,14 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: "https://hlhs.edupro.com.ng",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: "http://localhost:3000",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // enable set cookie
+};
+
+app.use(cors(corsOptions));
+
 // app.use((err, req, res, next) => {
 //   console.error(err.stack);
 //   res.status(500).send("Something broke!");

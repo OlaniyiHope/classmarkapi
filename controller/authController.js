@@ -110,7 +110,10 @@ export const getStudentsByClass = async (req, res) => {
       role: "student",
       classname: className,
     })
-      .select("AdmNo studentName email address username _id")
+      // Select all fields you want to retrieve
+      .select(
+        "AdmNo studentName address phone email  parentsName classname _id"
+      )
       .exec();
 
     if (students.length === 0) {
@@ -292,5 +295,90 @@ export const createAccount = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const updateStudentById = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const updatedData = req.body; // Assuming you send the updated data in the request body
+
+    // Validate and update the fields you want to allow modification for
+    const allowedUpdates = [
+      "studentName",
+      "AdmNo",
+      "classname",
+      "parentsName",
+      "gender",
+      "username",
+      "address",
+      "email",
+      "password",
+      "phone",
+    ];
+    const isValidUpdate = Object.keys(updatedData).every((update) =>
+      allowedUpdates.includes(update)
+    );
+
+    if (!isValidUpdate) {
+      return res.status(400).json({ error: "Invalid updates" });
+    }
+
+    const updatedStudent = await User.findByIdAndUpdate(
+      studentId,
+      updatedData,
+      {
+        new: true, // Return the updated document
+        runValidators: true, // Run model validators on the update
+      }
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    res.status(200).json(updatedStudent);
+  } catch (error) {
+    console.error("Error updating student by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const updateTeacherById = async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  try {
+    const updatedTeacher = await User.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true } // This option returns the modified document
+    );
+
+    if (!updatedTeacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    res.status(200).json(updatedTeacher);
+  } catch (error) {
+    console.error("Error updating teacher:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const getTeacherById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const teacher = await User.findOne({ _id: id, role: "teacher" });
+
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    res.status(200).json({ teacher });
+  } catch (error) {
+    console.error("Error fetching teacher by ID:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
