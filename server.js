@@ -25,23 +25,41 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-const corsOptions = {
-  origin: ["https://hlhs.edupro.com.ng", "http://localhost:3000"],
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true,
-};
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3001");
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,CONNECT,TRACE"
+//   );
+//   res.setHeader(
+//     "Access-Control-Allow-Headers",
+//     "Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
+//   );
+//   res.setHeader("Access-Control-Allow-Credentials", true);
+//   res.setHeader("Access-Control-Allow-Private-Network", true);
+//   //  Firefox caps this at 24 hours (86400 seconds). Chromium (starting in v76) caps at 2 hours (7200 seconds). The default value is 5 seconds.
+//   res.setHeader("Access-Control-Max-Age", 7200);
 
-app.use(cors(corsOptions));
-app.options("/api/login", (req, res) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "http://localhost:3000",
-    "https://hlhs.edupro.com.ng"
-  );
-  res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  res.send();
-});
+//   next();
+// });
+
+// const corsOptions = {
+//   origin: ["https://hlhs.edupro.com.ng", "http://localhost:3000"],
+//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   credentials: true,
+// };
+
+// app.use(cors(corsOptions));
+// app.options("/api/login", (req, res) => {
+//   res.header(
+//     "Access-Control-Allow-Origin",
+//     "http://localhost:3000",
+//     "https://hlhs.edupro.com.ng"
+//   );
+//   res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+//   res.header("Access-Control-Allow-Headers", "Content-Type");
+//   res.send();
+// });
 
 // app.use((err, req, res, next) => {
 //   console.error(err.stack);
