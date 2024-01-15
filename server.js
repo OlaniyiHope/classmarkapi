@@ -26,12 +26,22 @@ connectDB();
 
 app.use(express.json());
 const corsOptions = {
-  origin: "https://hlhs.edupro.com.ng",
+  origin: ["https://hlhs.edupro.com.ng", "http://localhost:3000"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true, // enable set cookie
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
+app.options("/api/login", (req, res) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "http://localhost:3000",
+    "https://hlhs.edupro.com.ng"
+  );
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.send();
+});
 
 // app.use((err, req, res, next) => {
 //   console.error(err.stack);
