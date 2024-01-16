@@ -16,6 +16,8 @@ import offlineRoute from "./routes/offlineRoute.js";
 import receiptRoute from "./routes/receiptRoute.js";
 import onScreenRoute from "./routes/onScreenRoute.js";
 import noticeRoute from "./routes/noticeRoute.js";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import dotenv from "dotenv";
 import path from "path";
 import connectDB from "./config/db2.js";
@@ -25,53 +27,14 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-// app.use((req, res, next) => {
-//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3001");
-//   res.setHeader(
-//     "Access-Control-Allow-Methods",
-//     "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS,CONNECT,TRACE"
-//   );
-//   res.setHeader(
-//     "Access-Control-Allow-Headers",
-//     "Content-Type, Authorization, X-Content-Type-Options, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers"
-//   );
-//   res.setHeader("Access-Control-Allow-Credentials", true);
-//   res.setHeader("Access-Control-Allow-Private-Network", true);
-//   //  Firefox caps this at 24 hours (86400 seconds). Chromium (starting in v76) caps at 2 hours (7200 seconds). The default value is 5 seconds.
-//   res.setHeader("Access-Control-Max-Age", 7200);
 
-//   next();
-// });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-// const corsOptions = {
-//   origin: ["https://hlhs.edupro.com.ng", "http://localhost:3000"],
-//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-//   credentials: true,
-// };
-
-// app.use(cors(corsOptions));
-// app.options("/api/login", (req, res) => {
-//   res.header(
-//     "Access-Control-Allow-Origin",
-//     "http://localhost:3000",
-//     "https://hlhs.edupro.com.ng"
-//   );
-//   res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
-//   res.header("Access-Control-Allow-Headers", "Content-Type");
-//   res.send();
-// });
-
-// app.use((err, req, res, next) => {
-//   console.error(err.stack);
-//   res.status(500).send("Something broke!");
-// });
-
-const uploadDir = path.join(
-  path.dirname(new URL(import.meta.url).pathname),
-  "uploads"
-);
+const uploadDir = path.join(__dirname, "uploads");
 
 app.use("/uploads", express.static(uploadDir));
+app.use(cors());
 app.use("/api/ad", adRoutes);
 
 app.use("/api/", classRoute);

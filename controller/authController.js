@@ -288,6 +288,11 @@ export const createAccount = async (req, res) => {
     }
 
     await school.save();
+    console.log(
+      "Uploaded File:",
+      req.file ? req.file.filename : "No file uploaded"
+    );
+    console.log("Updated School Profile:", school);
 
     res
       .status(200)

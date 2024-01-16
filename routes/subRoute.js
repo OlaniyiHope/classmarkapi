@@ -16,7 +16,7 @@ router.post("/create-subject", authenticateUser, createSubject);
 router.get("/get-subject", authenticateUser, getallSubject);
 router.delete("/delete-subject/:subjectId", deleteSubject);
 
-router.get("/get-subject/:classname", authenticateUser, getSubjectsByClass); // Define a route with a parameter
+router.get("/get-subject/:classname", getSubjectsByClass); // Define a route with a parameter
 router.get("/get-student-subjects", authenticateUser, getStudentSubjects);
 
 export default router;
