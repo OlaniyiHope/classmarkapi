@@ -5,6 +5,7 @@ import Setting from "../models/settingModel.js";
 import Class from "../models/classModel.js";
 import Account from "../models/accountModel.js";
 import bcrypt from "bcryptjs";
+
 export const register = async (req, res) => {
   try {
     const { role, ...userData } = req.body; // Capture role and user data
@@ -253,7 +254,78 @@ export const getAccountSetting = async (req, res) => {
   }
 };
 
-export const createAccount = async (req, res) => {
+// export const createAccount = async (req, res, s3) => {
+//   console.log("Received S3 object:", s3);
+//   try {
+//     const {
+//       name,
+//       motto,
+//       address,
+//       phone,
+//       phonetwo,
+//       currency,
+//       email,
+//       sessionStart,
+//       sessionEnd,
+//     } = req.body;
+
+//     // Check if school profile exists, create if not
+//     let school = await Account.findOne();
+//     if (!school) {
+//       school = new Account();
+//     }
+
+//     school.name = name;
+//     school.motto = motto;
+//     school.address = address;
+//     school.phone = phone;
+//     school.phonetwo = phonetwo;
+//     school.currency = currency;
+//     school.email = email;
+//     school.sessionStart = sessionStart;
+//     school.sessionEnd = sessionEnd;
+
+//     if (req.file) {
+//       console.log("Uploading file to S3...");
+
+//       // Add this function to handle the actual S3 upload
+//       const uploadParams = {
+//         Bucket: "edupros", // Replace with your bucket name
+//         Key: `${Date.now()}-${req.file.originalname}`,
+//         Body: req.file.buffer,
+//         ACL: "public-read",
+//         ContentType: req.file.mimetype,
+//       };
+
+//       // // Use the S3 uploadParams for the upload
+//       // const result = await s3.putObject(uploadParams).promise();
+//       // Use the putObject method
+//       const result = await s3.putObject(uploadParams);
+
+//       console.log("File uploaded successfully:", result.Location);
+//       if (result && result.Location) {
+//         school.schoolLogo = result.Key; // Use result.Key for the S3 key
+//         console.log("File URL:", result.Location);
+//       } else {
+//         console.error("Error uploading file to S3:", result);
+//       }
+
+//       school.schoolLogo = result.Key; // Use result.Key for the S3 key
+//     }
+
+//     await school.save();
+//     console.log("Updated School Profile:", school);
+
+//     res
+//       .status(200)
+//       .json({ success: true, message: "School profile updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating school profile:", error);
+//     res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
+export const createAccount = async (req, res, s3) => {
+  console.log("Received S3 object:", s3);
   try {
     const {
       name,
@@ -284,7 +356,26 @@ export const createAccount = async (req, res) => {
     school.sessionEnd = sessionEnd;
 
     if (req.file) {
-      school.schoolLogo = req.file.key; // Use req.file.key for the S3 key
+      console.log("Uploading file to S3...");
+
+      const uploadParams = {
+        Bucket: "edupros", // Replace with your bucket name
+        Key: `${Date.now()}-${req.file.originalname}`,
+        Body: req.file.buffer,
+        ACL: "public-read",
+        ContentType: req.file.mimetype,
+      };
+
+      const result = await s3.putObject(uploadParams).promise();
+
+      console.log("File uploaded successfully:", result.Location);
+
+      if (result && result.Location) {
+        school.schoolLogo = result.Location; // Use result.Location for the S3 URL
+        console.log("File URL:", result.Location);
+      } else {
+        console.error("Error uploading file to S3:", result);
+      }
     }
 
     await school.save();
@@ -294,7 +385,7 @@ export const createAccount = async (req, res) => {
       .status(200)
       .json({ success: true, message: "School profile updated successfully" });
   } catch (error) {
-    console.error(error);
+    console.error("Error updating school profile:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
