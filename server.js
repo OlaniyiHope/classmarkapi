@@ -21,6 +21,7 @@ import { dirname } from "path";
 import dotenv from "dotenv";
 import path from "path";
 import connectDB from "./config/db2.js";
+import AWS from "aws-sdk";
 import cors from "cors";
 dotenv.config();
 const app = express();
@@ -35,6 +36,13 @@ const uploadDir = path.join(__dirname, "uploads");
 
 app.use("/uploads", express.static(uploadDir));
 app.use(cors());
+
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
+
 app.use("/api/ad", adRoutes);
 
 app.use("/api/", classRoute);

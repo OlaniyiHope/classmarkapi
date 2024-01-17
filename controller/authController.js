@@ -284,14 +284,10 @@ export const createAccount = async (req, res) => {
     school.sessionEnd = sessionEnd;
 
     if (req.file) {
-      school.schoolLogo = req.file.filename;
+      school.schoolLogo = req.file.key; // Use req.file.key for the S3 key
     }
 
     await school.save();
-    console.log(
-      "Uploaded File:",
-      req.file ? req.file.filename : "No file uploaded"
-    );
     console.log("Updated School Profile:", school);
 
     res
