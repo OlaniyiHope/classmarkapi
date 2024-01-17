@@ -324,6 +324,7 @@ export const getAccountSetting = async (req, res) => {
 //     res.status(500).json({ success: false, message: "Internal server error" });
 //   }
 // };
+
 export const createAccount = async (req, res, s3) => {
   console.log("Received S3 object:", s3);
   try {
@@ -358,6 +359,7 @@ export const createAccount = async (req, res, s3) => {
     if (req.file) {
       console.log("Uploading file to S3...");
 
+      // Add this function to handle the actual S3 upload
       const uploadParams = {
         Bucket: "edupros", // Replace with your bucket name
         Key: `${Date.now()}-${req.file.originalname}`,
@@ -366,13 +368,19 @@ export const createAccount = async (req, res, s3) => {
         ContentType: req.file.mimetype,
       };
 
-      const result = await s3.putObject(uploadParams).promise();
+      // Use the putObject method
+      const result = await s3.putObject(uploadParams);
+      console.log("S3 Upload Result:", result);
+      console.log("Upload Parameters:", uploadParams);
 
       console.log("File uploaded successfully:", result.Location);
+      if (result && result.ETag) {
+        // Update the schoolLogo field with the file URL
+        // school.schoolLogo = `${uploadParams.Bucket}.s3.amazonaws.com/${uploadParams.Key}`;
 
-      if (result && result.Location) {
-        school.schoolLogo = result.Location; // Use result.Location for the S3 URL
-        console.log("File URL:", result.Location);
+        school.schoolLogo = uploadParams.Key;
+
+        console.log("File URL:", school.schoolLogo);
       } else {
         console.error("Error uploading file to S3:", result);
       }
@@ -380,6 +388,10 @@ export const createAccount = async (req, res, s3) => {
 
     await school.save();
     console.log("Updated School Profile:", school);
+
+    // Add this console log to see the data in the database
+    const updatedSchool = await Account.findOne();
+    console.log("Data in the database:", updatedSchool);
 
     res
       .status(200)

@@ -37,6 +37,7 @@
 // const School = mongoose.model("Account", accountSchema);
 
 // export default School;
+
 import mongoose from "mongoose";
 
 const accountSchema = new mongoose.Schema({
