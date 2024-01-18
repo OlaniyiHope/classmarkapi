@@ -24,6 +24,7 @@ import path from "path";
 import connectDB from "./config/db2.js";
 import cors from "cors";
 import { getStudentsByClass } from "./controller/authController.js";
+import authenticateUser from "./middleware/authMiddleware.js";
 
 dotenv.config();
 
@@ -57,6 +58,17 @@ console.log(
 );
 
 app.use("/api/ad", adRoutes);
+const authRoutes = [
+  { method: "get", path: "/students/:id", middleware: authenticateUser },
+  { method: "get", path: "/teachers/:id", middleware: authenticateUser },
+  { method: "get", path: "/get-admin", middleware: authenticateUser },
+  { method: "put", path: "/students/:id", middleware: authenticateUser },
+  { method: "put", path: "/teachers/:id", middleware: authenticateUser },
+];
+
+// Use commonRouter with specific routes requiring authentication
+const commonRouterWithAuth = commonRoute(s3, authRoutes);
+app.use("/api/", commonRouterWithAuth);
 app.use("/api/student/:className", getStudentsByClass);
 
 app.use("/api/", classRoute);
@@ -75,6 +87,6 @@ app.use("/api/", noticeRoute);
 app.use("/api/", offlineRoute);
 app.use("/api/", receiptRoute);
 
-app.use("/api/", commonRoute(s3));
+// app.use("/api/", commonRoute(s3));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, console.log(`Server running on port ${PORT}`));
