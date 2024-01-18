@@ -23,6 +23,7 @@ import dotenv from "dotenv";
 import path from "path";
 import connectDB from "./config/db2.js";
 import cors from "cors";
+import { getStudentsByClass } from "./controller/authController.js";
 
 dotenv.config();
 
@@ -56,7 +57,7 @@ console.log(
 );
 
 app.use("/api/ad", adRoutes);
-
+app.use("/api/student/:className", getStudentsByClass);
 app.use("/api/", classRoute);
 app.use("/api/", examlistRoute);
 // app.use("/api/", commonRoute(s3));
