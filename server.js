@@ -26,6 +26,7 @@ import cors from "cors";
 import {
   getStudentById,
   getStudentsByClass,
+  login,
 } from "./controller/authController.js";
 import authenticateUser from "./middleware/authMiddleware.js";
 
@@ -59,11 +60,13 @@ console.log(
   process.env.AWS_ACCESS_KEY_ID,
   process.env.AWS_SECRET_ACCESS_KEY
 );
-
+app.use(authenticateUser);
 app.use("/api/ad", adRoutes);
-app.use("/api/students/:id", getStudentById);
+// app.use("/api/students/:id", authenticateUser, getStudentById);
 app.use("/api/student/:className", getStudentsByClass);
-
+const commonRouterWithoutAuth = commonRoute(s3, false);
+app.use("/api/", commonRouterWithoutAuth);
+app.use("/api/login", login);
 app.use("/api/", classRoute);
 app.use("/api/", examlistRoute);
 // app.use("/api/", commonRoute(s3));
@@ -80,6 +83,10 @@ app.use("/api/", noticeRoute);
 app.use("/api/", offlineRoute);
 app.use("/api/", receiptRoute);
 
-// app.use("/api/", commonRoute(s3));
+// const commonRouter = commonRoute(s3);
+// app.use("/api/", commonRouter);
+// const commonRouter = commonRoute(s3);
+// app.use("/api/", commonRouter);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, console.log(`Server running on port ${PORT}`));
