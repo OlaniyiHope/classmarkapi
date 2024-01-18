@@ -23,7 +23,11 @@ import dotenv from "dotenv";
 import path from "path";
 import connectDB from "./config/db2.js";
 import cors from "cors";
-import { getStudentsByClass } from "./controller/authController.js";
+import {
+  getStudentById,
+  getStudentsByClass,
+} from "./controller/authController.js";
+import authenticateUser from "./middleware/authMiddleware.js";
 
 dotenv.config();
 
@@ -57,7 +61,9 @@ console.log(
 );
 
 app.use("/api/ad", adRoutes);
+app.use("/api/students/:id", getStudentById);
 app.use("/api/student/:className", getStudentsByClass);
+
 app.use("/api/", classRoute);
 app.use("/api/", examlistRoute);
 // app.use("/api/", commonRoute(s3));
@@ -74,6 +80,6 @@ app.use("/api/", noticeRoute);
 app.use("/api/", offlineRoute);
 app.use("/api/", receiptRoute);
 
-app.use("/api/", commonRoute(s3));
+// app.use("/api/", commonRoute(s3));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, console.log(`Server running on port ${PORT}`));

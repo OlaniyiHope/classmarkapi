@@ -128,31 +128,6 @@ export const login = async (req, res) => {
 //   }
 // };
 
-export const getStudentById = async (req, res) => {
-  const studentId = req.params.id;
-
-  if (!mongoose.Types.ObjectId.isValid(studentId)) {
-    return res.status(400).json({ error: "Invalid student ID" });
-  }
-
-  try {
-    const student = await User.findById(studentId).exec();
-
-    if (!student) {
-      return res.status(404).json({ error: "No student found with that ID" });
-    }
-
-    // Check if the user's role is "student"
-    if (student.role !== "student") {
-      return res.status(403).json({ error: "Access denied. Not a student." });
-    }
-
-    return res.status(200).json(student);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Failed to get student" });
-  }
-};
 export const getAdmin = async (req, res, next) => {
   try {
     // Verify the user role (only "admin" can get teachers)
@@ -561,6 +536,30 @@ export const getTeacherById = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+// export const getStudentsByClass = async (req, res) => {
+//   const className = req.params.className;
+
+//   try {
+//     const students = await User.find({
+//       role: "student",
+//       classname: className,
+//     })
+//       // Select all fields you want to retrieve
+//       .select("AdmNo studentName address phone email parentsName classname _id")
+//       .exec();
+
+//     console.log("Backend Response:", students); // Add this line
+
+//     if (students.length === 0) {
+//       return res.status(404).json({ error: "No students found in that class" });
+//     }
+
+//     return res.status(200).json(students);
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: "Failed to get students" });
+//   }
+// };
 export const getStudentsByClass = async (req, res) => {
   const className = req.params.className;
 
@@ -569,9 +568,10 @@ export const getStudentsByClass = async (req, res) => {
       role: "student",
       classname: className,
     })
-      // Select all fields you want to retrieve
       .select("AdmNo studentName address phone email parentsName classname _id")
       .exec();
+
+    console.log("Backend Response:", students); // Add this line
 
     if (students.length === 0) {
       return res.status(404).json({ error: "No students found in that class" });
@@ -581,5 +581,61 @@ export const getStudentsByClass = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Failed to get students" });
+  }
+};
+
+// export const getStudentById = async (req, res) => {
+//   const studentId = req.params.id;
+//   console.log("Requested studentId:", studentId);
+//   if (!mongoose.Types.ObjectId.isValid(studentId)) {
+//     return res.status(400).json({ error: "Invalid student ID" });
+//   }
+//   console.log("Requested studentId:", studentId);
+//   try {
+//     const student = await User.findById(studentId).exec();
+
+//     if (!student) {
+//       return res.status(404).json({ error: "No student found with that ID" });
+//     }
+
+//     // Check if the user's role is "student"
+//     if (student.role !== "student") {
+//       return res.status(403).json({ error: "Access denied. Not a student." });
+//     }
+
+//     return res.status(200).json(student);
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: "Failed to get student" });
+//   }
+// };
+
+export const getStudentById = async (req, res) => {
+  const studentId = req.params.id;
+  console.log("Requested studentId:", studentId);
+
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    console.log("Invalid student ID");
+    return res.status(400).json({ error: "Invalid student ID" });
+  }
+
+  try {
+    const student = await User.findById(studentId).exec();
+    console.log("Found student in database:", student);
+
+    if (!student) {
+      console.log("No student found with that ID");
+      return res.status(404).json({ error: "No student found with that ID" });
+    }
+
+    if (student.role !== "student") {
+      console.log("Access denied. Not a student.");
+      return res.status(403).json({ error: "Access denied. Not a student." });
+    }
+
+    return res.status(200).json(student);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to get student" });
   }
 };
