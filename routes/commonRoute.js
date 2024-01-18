@@ -27,14 +27,8 @@ import fs from "fs";
 
 const router = express.Router();
 
-// /// commonRoute.js
-
-// ... (other imports)
-
-// const router = express.Router();
-
-// Modify the commonRoute function to accept the s3 instance and authentication flag
-const commonRoute = (s3, requireAuth = true) => {
+// Modify the commonRoute function to accept the s3 instance
+const commonRoute = (s3) => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
 
@@ -63,23 +57,20 @@ const commonRoute = (s3, requireAuth = true) => {
     }),
   });
 
-  // Apply authenticateUser only if requireAuth is true
-  if (requireAuth) {
-    router.use(authenticateUser);
-  }
-
-  // Define routes
-  router.get("/students/:id", getStudentById);
-  router.get("/teachers/:id", getTeacherById);
-
-  router.get("/get-admin", getAdmin);
-  router.put("/students/:id", updateStudentById);
-  router.put("/teachers/:id", updateTeacherById);
   router.post("/register", register);
   router.post("/login", login);
   router.get("/users/:role", getUserByRole);
+  // router.get("/student/:className", getStudentsByClass);
+  router.get("/students/:id", authenticateUser, getStudentById);
+  router.get("/teachers/:id", authenticateUser, getTeacherById);
+
+  router.get("/get-admin", authenticateUser, getAdmin);
+  router.put("/students/:id", authenticateUser, updateStudentById);
+  router.put("/teachers/:id", authenticateUser, updateTeacherById);
+
   router.delete("/users/:userId", deleteUser);
   router.post("/setting", upload.single("signature"), createSetting);
+  // router.post("/account-setting", upload.single("schoolLogo"), createAccount);
 
   router.post("/account-setting", multer().single("schoolLogo"), (req, res) => {
     // Pass the s3 object to the createAccount function
@@ -88,11 +79,6 @@ const commonRoute = (s3, requireAuth = true) => {
 
   router.get("/setting", getSetting);
   router.get("/account-setting", getAccountSetting);
-
-  //   return router;
-  // };
-
-  // export default commonRoute;
 
   return router;
 };
