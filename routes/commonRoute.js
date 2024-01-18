@@ -24,11 +24,15 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import fs from "fs";
-
 const router = express.Router();
+const applyAuthMiddleware = (method, path, middleware) => {
+  if (middleware) {
+    router[method](path, middleware);
+  }
+};
 
-// Modify the commonRoute function to accept the s3 instance
-const commonRoute = (s3) => {
+// Modify the commonRoute function to accept the s3 instance and authentication routes
+const commonRoute = (s3, authRoutes = []) => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
 
@@ -57,23 +61,23 @@ const commonRoute = (s3) => {
     }),
   });
 
+  // Apply authenticateUser only to specified routes
+  authRoutes.forEach(({ method, path, middleware }) => {
+    applyAuthMiddleware(method, path, middleware);
+  });
+
   router.post("/register", register);
   router.post("/login", login);
   router.get("/users/:role", getUserByRole);
-  // router.get("/student/:className", getStudentsByClass);
   router.get("/students/:id", authenticateUser, getStudentById);
   router.get("/teachers/:id", authenticateUser, getTeacherById);
-
   router.get("/get-admin", authenticateUser, getAdmin);
   router.put("/students/:id", authenticateUser, updateStudentById);
   router.put("/teachers/:id", authenticateUser, updateTeacherById);
-
   router.delete("/users/:userId", deleteUser);
   router.post("/setting", upload.single("signature"), createSetting);
-  // router.post("/account-setting", upload.single("schoolLogo"), createAccount);
 
   router.post("/account-setting", multer().single("schoolLogo"), (req, res) => {
-    // Pass the s3 object to the createAccount function
     createAccount(req, res, s3);
   });
 
