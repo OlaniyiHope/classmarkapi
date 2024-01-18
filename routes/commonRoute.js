@@ -61,7 +61,7 @@ const commonRoute = (s3) => {
   router.post("/login", login);
   router.get("/users/:role", getUserByRole);
   // router.get("/student/:className", getStudentsByClass);
-  router.get("/students/:id", authenticateUser, getStudentById);
+
   router.get("/teachers/:id", authenticateUser, getTeacherById);
 
   router.get("/get-admin", authenticateUser, getAdmin);
