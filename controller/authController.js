@@ -103,30 +103,30 @@ export const login = async (req, res) => {
 //     return res.status(500).json({ error: "Failed to get students" });
 //   }
 // };
-export const getStudentsByClass = async (req, res) => {
-  const className = req.params.className;
+// export const getStudentsByClass = async (req, res) => {
+//   const className = req.params.className;
 
-  try {
-    const students = await User.find({
-      role: "student",
-      classname: className,
-    })
-      // Select all fields you want to retrieve
-      .select(
-        "AdmNo studentName address phone email  parentsName classname _id"
-      )
-      .exec();
+//   try {
+//     const students = await User.find({
+//       role: "student",
+//       classname: className,
+//     })
+//       // Select all fields you want to retrieve
+//       .select(
+//         "AdmNo studentName address phone email  parentsName classname _id"
+//       )
+//       .exec();
 
-    if (students.length === 0) {
-      return res.status(404).json({ error: "No students found in that class" });
-    }
+//     if (students.length === 0) {
+//       return res.status(404).json({ error: "No students found in that class" });
+//     }
 
-    return res.status(200).json(students);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Failed to get students" });
-  }
-};
+//     return res.status(200).json(students);
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: "Failed to get students" });
+//   }
+// };
 
 export const getStudentById = async (req, res) => {
   const studentId = req.params.id;
@@ -403,7 +403,6 @@ export const getAccountSetting = async (req, res) => {
 // };
 
 export const createAccount = async (req, res, s3) => {
-  console.log("Received S3 object:", s3);
   try {
     const {
       name,
@@ -436,7 +435,7 @@ export const createAccount = async (req, res, s3) => {
     school.sessionEnd = sessionEnd;
 
     if (req.file) {
-      console.log("Uploading file to S3...");
+      console.log("Received file:", req.file);
 
       // Add this function to handle the actual S3 upload
       const uploadParams = {
@@ -455,11 +454,7 @@ export const createAccount = async (req, res, s3) => {
 
       console.log("File uploaded successfully:", result.Location);
       if (result && result.ETag) {
-        // Update the schoolLogo field with the file URL
-        // school.schoolLogo = `${uploadParams.Bucket}.s3.amazonaws.com/${uploadParams.Key}`;
-
         school.schoolLogo = uploadParams.Key;
-
         console.log("File URL:", school.schoolLogo);
       } else {
         console.error("Error uploading file to S3:", result);
@@ -564,5 +559,27 @@ export const getTeacherById = async (req, res) => {
   } catch (error) {
     console.error("Error fetching teacher by ID:", error);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+export const getStudentsByClass = async (req, res) => {
+  const className = req.params.className;
+
+  try {
+    const students = await User.find({
+      role: "student",
+      classname: className,
+    })
+      // Select all fields you want to retrieve
+      .select("AdmNo studentName address phone email parentsName classname _id")
+      .exec();
+
+    if (students.length === 0) {
+      return res.status(404).json({ error: "No students found in that class" });
+    }
+
+    return res.status(200).json(students);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to get students" });
   }
 };

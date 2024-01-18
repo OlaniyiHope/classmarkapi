@@ -3,7 +3,6 @@ import {
   login,
   register,
   getUserByRole,
-  getStudentsByClass,
   getStudentById,
   getAdmin,
   deleteUser,
@@ -61,10 +60,10 @@ const commonRoute = (s3) => {
   router.post("/register", register);
   router.post("/login", login);
   router.get("/users/:role", getUserByRole);
+  // router.get("/student/:className", getStudentsByClass);
   router.get("/students/:id", authenticateUser, getStudentById);
   router.get("/teachers/:id", authenticateUser, getTeacherById);
 
-  router.get("/student/:className", getStudentsByClass);
   router.get("/get-admin", authenticateUser, getAdmin);
   router.put("/students/:id", authenticateUser, updateStudentById);
   router.put("/teachers/:id", authenticateUser, updateTeacherById);
