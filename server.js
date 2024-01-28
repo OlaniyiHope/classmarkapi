@@ -40,7 +40,6 @@ const __dirname = dirname(__filename);
 const uploadDir = path.join(__dirname, "uploads");
 
 app.use("/uploads", express.static(uploadDir));
-app.use(cors());
 
 // Update the AWS SDK configuration
 // Update the AWS SDK configuration
@@ -57,7 +56,7 @@ console.log(
   process.env.AWS_ACCESS_KEY_ID,
   process.env.AWS_SECRET_ACCESS_KEY
 );
-
+app.use(cors());
 app.use("/api/ad", adRoutes);
 const authRoutes = [
   { method: "get", path: "/students/:id", middleware: authenticateUser },

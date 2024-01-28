@@ -24,6 +24,6 @@ router.get("/get-exam/:id", getExamById);
 // router.put("/:id", updateExam);
 
 // Delete an exam by ID (accessible only to admins)
-router.delete("/:id", deleteExam);
+router.delete("/exam/:id", deleteExam);
 
 export default router;
