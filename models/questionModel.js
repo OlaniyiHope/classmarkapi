@@ -17,6 +17,7 @@ const questionSchema = new mongoose.Schema({
     ref: "Examlist", // Reference to the Exam model
   },
   // Add more fields as needed
+  possibleAnswers: [String],
 });
 
 export default mongoose.model("Question", questionSchema);
