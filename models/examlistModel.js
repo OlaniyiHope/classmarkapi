@@ -19,11 +19,11 @@ const ExamlistSchema = new mongoose.Schema(
       required: true,
     },
     fromTime: {
-      type: Date, // Change the type as needed (e.g., String for HH:mm format)
+      type: String, // Change the type as needed (e.g., String for HH:mm format)
       required: true,
     },
     toTime: {
-      type: Date, // Change the type as needed (e.g., String for HH:mm format)
+      type: String, // Change the type as needed (e.g., String for HH:mm format)
       required: true,
     },
     percent: {
