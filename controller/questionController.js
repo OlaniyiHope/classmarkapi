@@ -8,6 +8,7 @@ export const createQuestion = async (req, res) => {
       questionTitle,
       options,
       correctAnswer,
+      possibleAnswers,
       mark,
       examId,
     } = req.body;
