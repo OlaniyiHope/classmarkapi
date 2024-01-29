@@ -28,6 +28,9 @@ export const createQuestion = async (req, res) => {
     } else if (questionType === "true_false") {
       // For True/False questions
       questionData.correctAnswer = correctAnswer;
+    } else if (questionType === "fill_in_the_blanks") {
+      // For Fill In The Blanks questions
+      questionData.possibleAnswers = possibleAnswers;
     }
 
     const question = new Question(questionData);
