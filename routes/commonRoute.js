@@ -24,6 +24,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import fs from "fs";
+import { createDownload } from "../controller/downloadController.js";
 const router = express.Router();
 const applyAuthMiddleware = (method, path, middleware) => {
   if (middleware) {
@@ -79,6 +80,9 @@ const commonRoute = (s3, authRoutes = []) => {
 
   router.post("/account-setting", multer().single("schoolLogo"), (req, res) => {
     createAccount(req, res, s3);
+  });
+  router.post("/download", multer().single("Download"), (req, res) => {
+    createDownload(req, res, s3);
   });
 
   router.get("/setting", getSetting);
