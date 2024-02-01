@@ -24,7 +24,10 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import fs from "fs";
-import { createDownload } from "../controller/downloadController.js";
+import {
+  createDownload,
+  getDownload,
+} from "../controller/downloadController.js";
 const router = express.Router();
 const applyAuthMiddleware = (method, path, middleware) => {
   if (middleware) {
@@ -86,6 +89,7 @@ const commonRoute = (s3, authRoutes = []) => {
   });
 
   router.get("/setting", getSetting);
+  router.get("/download", getDownload);
   router.get("/account-setting", getAccountSetting);
 
   return router;
