@@ -62,7 +62,7 @@ export const createDownload = async (req, res, s3) => {
 export const getDownload = async (req, res) => {
   try {
     // Assuming you only have one school profile, you can fetch the first one
-    const schoolSetting = await Download.findOne();
+    const schoolSetting = await Download.find();
 
     if (!schoolSetting) {
       return res
