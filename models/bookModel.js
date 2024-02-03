@@ -20,6 +20,9 @@ const bookSchema = new mongoose.Schema({
   Download: {
     type: String,
   },
+  imageUrl: {
+    type: "string",
+  },
   price: {
     type: "Number",
   },
