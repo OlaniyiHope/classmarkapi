@@ -18,7 +18,7 @@ const downloadSchema = new mongoose.Schema({
     type: String,
   },
 
-  Download: {
+  Downloads: {
     type: String,
   },
 });
