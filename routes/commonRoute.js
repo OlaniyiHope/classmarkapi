@@ -95,9 +95,17 @@ const commonRoute = (s3, authRoutes = []) => {
   router.post("/download", multer().single("Downloads"), (req, res) => {
     createDownload(req, res, s3);
   });
-  router.post("/book", multer().single("Download"), (req, res) => {
-    createBook(req, res, s3);
-  });
+  // router.post("/book", multer().single("Download"), (req, res) => {
+  //   createBook(req, res, s3);
+  // });
+
+  router.post(
+    "/book",
+    multer().fields([{ name: "Download" }, { name: "imageFile" }]),
+    (req, res) => {
+      createBook(req, res, s3);
+    }
+  );
 
   router.get("/setting", getSetting);
   router.get("/download", getDownload);
