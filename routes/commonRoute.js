@@ -28,6 +28,7 @@ import {
   createDownload,
   getDownload,
 } from "../controller/downloadController.js";
+import { createBook, getBook } from "../controller/bookController.js";
 const router = express.Router();
 const applyAuthMiddleware = (method, path, middleware) => {
   if (middleware) {
@@ -69,7 +70,13 @@ const commonRoute = (s3, authRoutes = []) => {
   authRoutes.forEach(({ method, path, middleware }) => {
     applyAuthMiddleware(method, path, middleware);
   });
-
+  // router.post(
+  //   "/book",
+  //   upload.fields([{ name: "bookFile" }, { name: "imgUrl" }]),
+  //   (req, res) => {
+  //     createBook(req, res, s3);
+  //   }
+  // );
   router.post("/register", register);
   router.post("/login", login);
   router.get("/users/:role", getUserByRole);
@@ -79,17 +86,22 @@ const commonRoute = (s3, authRoutes = []) => {
   router.put("/students/:id", authenticateUser, updateStudentById);
   router.put("/teachers/:id", authenticateUser, updateTeacherById);
   router.delete("/users/:userId", deleteUser);
+
   router.post("/setting", upload.single("signature"), createSetting);
 
   router.post("/account-setting", multer().single("schoolLogo"), (req, res) => {
     createAccount(req, res, s3);
   });
-  router.post("/download", multer().single("Download"), (req, res) => {
+  router.post("/download", multer().single("Downloads"), (req, res) => {
     createDownload(req, res, s3);
+  });
+  router.post("/book", multer().single("Download"), (req, res) => {
+    createBook(req, res, s3);
   });
 
   router.get("/setting", getSetting);
   router.get("/download", getDownload);
+  router.get("/book", getBook);
   router.get("/account-setting", getAccountSetting);
 
   return router;

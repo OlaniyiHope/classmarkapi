@@ -1,23 +1,21 @@
 import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
-import User from "../models/userModel.js";
-import Setting from "../models/settingModel.js";
-import Class from "../models/classModel.js";
-import Download from "../models/downloadModel.js";
 
-export const createDownload = async (req, res, s3) => {
+import Book from "../models/bookModel.js";
+
+export const createBook = async (req, res, s3) => {
   try {
-    const { date, title, desc, className, subject } = req.body;
+    const { category, price, title, desc, authorName, language } = req.body;
 
     console.log("Received request body:", req.body);
 
     // Create a new instance of Download model
-    const newDownload = new Download({
-      date,
+    const newDownload = new Book({
+      category,
+      price,
       title,
       desc,
-      className,
-      subject,
+      authorName,
+      language,
     });
 
     if (req.file) {
@@ -43,7 +41,7 @@ export const createDownload = async (req, res, s3) => {
       console.log("File uploaded successfully:", result.Location);
 
       // Save the filename to the newDownload object
-      newDownload.Downloads = fileName;
+      newDownload.Download = fileName;
     }
 
     // Save the newDownload object to the database
@@ -58,19 +56,19 @@ export const createDownload = async (req, res, s3) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
-export const getDownload = async (req, res) => {
+export const getBook = async (req, res) => {
   try {
-    // Assuming you only have one school profile, you can fetch the first one
-    const schoolSetting = await Download.find();
+    const books = await Book.find().select(
+      "title desc category authorName language "
+    );
 
-    if (!schoolSetting) {
+    if (!books) {
       return res
         .status(404)
-        .json({ success: false, message: "Download not found" });
+        .json({ success: false, message: "Books not found" });
     }
 
-    res.status(200).json({ success: true, data: schoolSetting });
+    res.status(200).json({ success: true, data: books });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Internal server error" });
