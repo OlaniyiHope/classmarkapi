@@ -58,34 +58,61 @@ import Book from "../models/bookModel.js";
 // };
 export const createBook = async (req, res, s3) => {
   try {
-    const { category, price, title, desc, authorName, language } = req.body;
+    const {
+      category,
+      genprice,
+      ourprice,
+      title,
+      desc,
+      status,
+      authorName,
+      language,
+      format,
+      pages,
+      dimensions,
+      pubDate,
+      ISBN,
+      Reviews,
+      AboutAuthor,
+      AuthorSince,
+    } = req.body;
 
     console.log("Received request body:", req.body);
 
     // Create a new instance of Book model
     const newBook = new Book({
       category,
-      price,
+      genprice,
+      ourprice,
       title,
       desc,
+      status,
       authorName,
       language,
+      format,
+      pages,
+      dimensions,
+      pubDate,
+      ISBN,
+      Reviews,
+      AboutAuthor,
+      AuthorSince,
     });
 
     if (req.files) {
       console.log("Received files:", req.files);
 
       // Upload image file
-      if (req.files.imageFile) {
-        const imageFile = req.files.imageFile[0];
-        const imageFileName = `${Date.now()}-${imageFile.originalname}`;
+      if (req.files.imageUrl) {
+        const imageFiles = req.files.imageUrl[0];
+        const imageFilesName = `${Date.now()}-${imageFiles.originalname}`;
 
         const imageUploadParams = {
           Bucket: "edupros",
-          Key: imageFileName,
-          Body: imageFile.buffer,
+          Key: imageFilesName,
+          Body: imageFiles.buffer,
           ACL: "public-read",
-          ContentType: imageFile.mimetype,
+          ContentType: imageFiles.mimetype,
         };
 
         const imageUploadResult = await s3.putObject(imageUploadParams);
@@ -140,7 +167,7 @@ export const createBook = async (req, res, s3) => {
 export const getBook = async (req, res) => {
   try {
     const books = await Book.find().select(
-      "title desc category authorName language "
+      "title desc status category authorName language imageUrl Download genprice ourprice  format pages dimensions pubDate ISBN Reviews AboutAuthor AuthorSince"
     );
 
     if (!books) {
@@ -151,6 +178,29 @@ export const getBook = async (req, res) => {
 
     res.status(200).json({ success: true, data: books });
   } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+export const getBookById = async (req, res) => {
+  try {
+    // Extract the book ID from the request parameters
+    const { id } = req.params;
+
+    // Find the book by its ID
+    const book = await Book.findById(id);
+
+    // Check if the book with the specified ID exists
+    if (!book) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Book not found" });
+    }
+
+    // If the book is found, return it in the response
+    res.status(200).json({ success: true, data: book });
+  } catch (error) {
+    // If an error occurs, handle it and return an error response
     console.error(error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }

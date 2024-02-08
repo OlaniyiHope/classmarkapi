@@ -28,7 +28,11 @@ import {
   createDownload,
   getDownload,
 } from "../controller/downloadController.js";
-import { createBook, getBook } from "../controller/bookController.js";
+import {
+  createBook,
+  getBook,
+  getBookById,
+} from "../controller/bookController.js";
 const router = express.Router();
 const applyAuthMiddleware = (method, path, middleware) => {
   if (middleware) {
@@ -101,7 +105,7 @@ const commonRoute = (s3, authRoutes = []) => {
 
   router.post(
     "/book",
-    multer().fields([{ name: "Download" }, { name: "imageFile" }]),
+    multer().fields([{ name: "Download" }, { name: "imageUrl" }]),
     (req, res) => {
       createBook(req, res, s3);
     }
@@ -110,6 +114,8 @@ const commonRoute = (s3, authRoutes = []) => {
   router.get("/setting", getSetting);
   router.get("/download", getDownload);
   router.get("/book", getBook);
+  router.get("/book/:id", getBookById);
+
   router.get("/account-setting", getAccountSetting);
 
   return router;

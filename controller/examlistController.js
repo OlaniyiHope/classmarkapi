@@ -1,8 +1,26 @@
 import Exam from "../models/examlistModel.js";
+import { parseISO } from "date-fns";
+
 // Create a new exam
+// export const createExam = async (req, res) => {
+//   try {
+//     const exam = new Exam(req.body);
+//     const createdExam = await exam.save();
+//     res.status(201).json(createdExam);
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while creating the exam." });
+//   }
+// };
+
 export const createExam = async (req, res) => {
   try {
-    const exam = new Exam(req.body);
+    const { date } = req.body;
+    const exam = new Exam({
+      ...req.body,
+      date: parseISO(date),
+    });
     const createdExam = await exam.save();
     res.status(201).json(createdExam);
   } catch (error) {
