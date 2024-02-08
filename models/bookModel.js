@@ -13,6 +13,9 @@ const bookSchema = new mongoose.Schema({
   desc: {
     type: String,
   },
+  status: {
+    type: "string",
+  },
   category: {
     type: String,
   },
@@ -23,8 +26,35 @@ const bookSchema = new mongoose.Schema({
   imageUrl: {
     type: "string",
   },
-  price: {
+  genprice: {
     type: "Number",
+  },
+  ourprice: {
+    type: "Number",
+  },
+  format: {
+    type: "String",
+  },
+  pages: {
+    type: "Number",
+  },
+  dimensions: {
+    type: "String",
+  },
+  pubDate: {
+    type: "Date",
+  },
+  ISBN: {
+    type: "Number",
+  },
+  Reviews: {
+    type: "String",
+  },
+  AboutAuthor: {
+    type: "String",
+  },
+  AuthorSince: {
+    type: "Date",
   },
 });
 
