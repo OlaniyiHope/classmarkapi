@@ -18,6 +18,8 @@ const questionSchema = new mongoose.Schema({
   },
   // Add more fields as needed
   possibleAnswers: [String],
+
+  onscreenMarking: String, // Add onscreenMarking field here
 });
 
 export default mongoose.model("Question", questionSchema);
