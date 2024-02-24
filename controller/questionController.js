@@ -11,6 +11,7 @@ export const createQuestion = async (req, res) => {
       possibleAnswers,
       mark,
       examId,
+      onscreenMarking,
     } = req.body;
 
     let questionData = {
@@ -32,8 +33,10 @@ export const createQuestion = async (req, res) => {
     } else if (questionType === "fill_in_the_blanks") {
       // For Fill In The Blanks questions
       questionData.possibleAnswers = possibleAnswers;
+    } else if (questionType === "theory") {
+      // For Theory questions
+      questionData.onscreenMarking = onscreenMarking;
     }
-
     const question = new Question(questionData);
 
     await question.save();
