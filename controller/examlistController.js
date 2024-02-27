@@ -14,47 +14,14 @@ import User from "../models/userModel.js";
 //   }
 // };
 
-// export const createExam = async (req, res) => {
-//   try {
-//     const { date } = req.body;
-//     const exam = new Exam({
-//       ...req.body,
-//       date: parseISO(date),
-//     });
-//     const createdExam = await exam.save();
-//     res.status(201).json(createdExam);
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ error: "An error occurred while creating the exam." });
-//   }
-// };
-
 export const createExam = async (req, res) => {
   try {
-    const { date, questions } = req.body;
-
-    // Create an array to store question IDs
-    const questionIds = [];
-
-    // Save each question to the database and collect their IDs
-    for (const questionData of questions) {
-      const question = new Question(questionData);
-      const createdQuestion = await question.save();
-      questionIds.push(createdQuestion._id);
-    }
-
-    // Create the exam and associate the question IDs
+    const { date } = req.body;
     const exam = new Exam({
       ...req.body,
       date: parseISO(date),
-      questions: questionIds, // Associate the question IDs with the exam
     });
-
-    // Save the exam to the database
     const createdExam = await exam.save();
-
-    // Send the response
     res.status(201).json(createdExam);
   } catch (error) {
     res
