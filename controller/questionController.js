@@ -112,3 +112,18 @@ export const updateQuestion = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const getQuestionById = async (req, res) => {
+  try {
+    const { questionId } = req.params;
+    const question = await Question.findById(questionId);
+    if (!question) {
+      return res.status(404).json({ error: "Question not found" });
+    }
+    res.status(200).json(question);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching the question" });
+  }
+};
