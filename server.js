@@ -61,6 +61,7 @@ console.log(
 app.use(cors());
 app.use("/api/ad", adRoutes);
 app.use("/api/", OffRoutes);
+app.use("/api/", noticeRoute);
 const authRoutes = [
   { method: "get", path: "/students/:id", middleware: authenticateUser },
   { method: "get", path: "/teachers/:id", middleware: authenticateUser },
@@ -87,7 +88,7 @@ app.use("/api/", onScreenRoute);
 app.use("/api/", subRoute);
 app.use("/api/", questionRoute);
 app.use("/api/", examRoute);
-app.use("/api/", noticeRoute);
+
 app.use("/api/", offlineRoute);
 
 app.use("/api/", psyRoute);
