@@ -15,6 +15,7 @@ import examRoute from "./routes/examRoute.js";
 import subRoute from "./routes/subRoute.js";
 import markRoute from "./routes/markRoute.js";
 import offlineRoute from "./routes/offlineRoute.js";
+import OffRoutes from "./routes/OffRoutes.js";
 import psyRoute from "./routes/psyRoute.js";
 import receiptRoute from "./routes/receiptRoute.js";
 import onScreenRoute from "./routes/onScreenRoute.js";
@@ -59,6 +60,7 @@ console.log(
 );
 app.use(cors());
 app.use("/api/ad", adRoutes);
+app.use("/api/", OffRoutes);
 const authRoutes = [
   { method: "get", path: "/students/:id", middleware: authenticateUser },
   { method: "get", path: "/teachers/:id", middleware: authenticateUser },
@@ -87,6 +89,7 @@ app.use("/api/", questionRoute);
 app.use("/api/", examRoute);
 app.use("/api/", noticeRoute);
 app.use("/api/", offlineRoute);
+
 app.use("/api/", psyRoute);
 app.use("/api/", receiptRoute);
 
