@@ -62,6 +62,12 @@ app.use(cors());
 app.use("/api/ad", adRoutes);
 app.use("/api/", OffRoutes);
 app.use("/api/", noticeRoute);
+
+// Use commonRouter with specific routes requiring authentication
+const commonRouterWithAuth = commonRoute(s3, authRoutes);
+app.use("/api/", commonRouterWithAuth);
+app.use("/api/student/:className", getStudentsByClass);
+
 const authRoutes = [
   { method: "get", path: "/students/:id", middleware: authenticateUser },
   { method: "get", path: "/teachers/:id", middleware: authenticateUser },
@@ -69,11 +75,6 @@ const authRoutes = [
   { method: "put", path: "/students/:id", middleware: authenticateUser },
   { method: "put", path: "/teachers/:id", middleware: authenticateUser },
 ];
-
-// Use commonRouter with specific routes requiring authentication
-const commonRouterWithAuth = commonRoute(s3, authRoutes);
-app.use("/api/", commonRouterWithAuth);
-app.use("/api/student/:className", getStudentsByClass);
 
 app.use("/api/", classRoute);
 app.use("/api/", examlistRoute);
