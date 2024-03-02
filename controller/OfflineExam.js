@@ -17,9 +17,13 @@ export const getExam = async (req, res) => {
     const list = await Exam.find();
     res.status(200).json(list);
   } catch (err) {
-    res.status(500).json(err);
+    console.error("Error fetching exams:", err);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching the examsiner" });
   }
 };
+
 // Save exam marks
 export const deleteExam = async (req, res) => {
   const examId = req.params.examId;
