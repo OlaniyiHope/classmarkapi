@@ -60,6 +60,7 @@ console.log(
 );
 app.use(cors());
 app.use("/api/ad", adRoutes);
+app.use("/api/", examlistRoute);
 app.use("/api/", OffRoutes);
 app.use("/api/", noticeRoute);
 
@@ -78,7 +79,7 @@ app.use("/api/", commonRouterWithAuth);
 app.use("/api/student/:className", getStudentsByClass);
 
 app.use("/api/", classRoute);
-app.use("/api/", examlistRoute);
+
 // app.use("/api/", commonRoute(s3));
 app.use("/api/", gradeRoute);
 app.use("/api/", catRoute);
