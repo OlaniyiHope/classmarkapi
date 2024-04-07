@@ -39,7 +39,18 @@ export const createClass = async (req, res, next) => {
     res.status(500).json(err);
   }
 };
-
+export const updateClass = async (req, res, next) => {
+  try {
+    const updatedClass = await Class.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.status(200).json(updatedClass);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
 //GET CATEGORY
 // export const getClass = async (req, res) => {
 //   try {

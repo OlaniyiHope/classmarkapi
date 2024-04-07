@@ -1,27 +1,23 @@
 import mongoose from "mongoose";
-const onScreenSchema = new mongoose.Schema(
-  {
-    class: {
-      type: String,
-      required: true,
-    },
-    subject: {
-      type: String,
-      required: true,
-    },
-    studentName: {
-      type: String,
-      required: true,
-    },
-    filePath: {
-      type: String,
-    },
-    uploadDate: {
-      type: Date,
-      default: Date.now,
-    },
-  },
-  { timestamps: true }
-);
 
-export default mongoose.model("onScreen", onScreenSchema);
+const scriptSchema = new mongoose.Schema({
+  className: {
+    type: String,
+    required: true,
+  },
+  subject: {
+    type: String,
+  },
+
+  studentName: {
+    type: String,
+  },
+
+  answerScriptFiles: {
+    type: Array,
+  },
+});
+
+const Script = mongoose.model("Script", scriptSchema); // Change "School" to "Account"
+
+export default Script;
