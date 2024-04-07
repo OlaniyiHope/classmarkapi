@@ -32,6 +32,36 @@ export const createSubject = async (req, res, next) => {
   }
 };
 
+export const updateSubject = async (req, res) => {
+  const { subjectId } = req.params;
+  const { name, teacher, classname } = req.body;
+
+  try {
+    // Find the subject by ID
+    const subject = await Subject.findById(subjectId);
+
+    if (!subject) {
+      // If subject not found, return error
+      return res.status(404).json({ error: "Subject not found" });
+    }
+
+    // Update the subject properties
+    subject.name = name;
+    subject.teacher = teacher;
+    subject.classname = classname;
+
+    // Save the updated subject
+    const updatedSubject = await subject.save();
+
+    // Send back the updated subject as response
+    res.status(200).json(updatedSubject);
+  } catch (error) {
+    // Handle errors
+    console.error("Error updating subject:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const getallSubject = async (req, res) => {
   try {
     const subjects = await Subject.find();

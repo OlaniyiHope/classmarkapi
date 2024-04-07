@@ -75,6 +75,9 @@ const authRoutes = [
 ];
 
 const commonRouterWithAuth = commonRoute(s3, authRoutes);
+const onScreen = onScreenRoute(s3);
+
+app.use("/api/", onScreen);
 app.use("/api/", commonRouterWithAuth);
 app.use("/api/student/:className", getStudentsByClass);
 
@@ -87,7 +90,7 @@ app.use("/api/mark", markRoute);
 app.use("/api/", stuRoute);
 app.use("/api/", teRoute);
 app.use("/api/", parentRoute);
-app.use("/api/", onScreenRoute);
+
 app.use("/api/", subRoute);
 app.use("/api/", questionRoute);
 app.use("/api/", examRoute);

@@ -4,16 +4,19 @@ import {
   deleteClass,
   getClass,
   getsingleClass,
+  updateClass,
 } from "../controller/classController.js";
-import authenticateUser from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 //CREATE
 router.post("/class", createClass);
-router.delete("/class/:id", deleteClass);
 
 router.get("/class", getClass);
 router.get("/class/:id", getsingleClass);
+
+// Update a class
+router.put("/class/:id", updateClass);
+router.delete("/class/:id", deleteClass);
 
 export default router;

@@ -140,6 +140,23 @@ export const getMarkbyStudent = async (req, res) => {
       .populate("examId", "name")
       .populate("marks.subjectId", "name");
 
+    // const scores = marks.flatMap((mark) =>
+    //   mark.marks
+    //     .filter(
+    //       (m) =>
+    //         m.studentId.toString() === userId &&
+    //         (m.testscore !== 0 || m.examscore !== 0) &&
+    //         m.comment.trim() !== ""
+    //     )
+    //     .map((m) => ({
+    //       examId: mark.examId,
+    //       subjectId: m.subjectId,
+    //       examName: mark.examId.name,
+    //       subjectName: m.subjectId.name,
+    //       testscore: m.testscore,
+    //       ...m.toObject(),
+    //     }))
+    // );
     const scores = marks.flatMap((mark) =>
       mark.marks
         .filter(
@@ -151,8 +168,8 @@ export const getMarkbyStudent = async (req, res) => {
         .map((m) => ({
           examId: mark.examId,
           subjectId: m.subjectId,
-          examName: mark.examId.name,
-          subjectName: m.subjectId.name,
+          examName: mark.examId?.name || "Unknown Exam",
+          subjectName: m.subjectId?.name || "Unknown Subject",
           testscore: m.testscore,
           ...m.toObject(),
         }))

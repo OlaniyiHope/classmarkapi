@@ -1,48 +1,99 @@
-// import express from "express";
-// import multer from "multer";
-// import { onScreenController } from "../controller/onScreenController.js";
-
-// const router = express.Router();
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "uploads/");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, `${Date.now()}-${file.originalname}`);
-//   },
-// });
-
-// const upload = multer({ storage });
-
-// router.post("/upload", upload.single("onScreenFile"), onScreenController);
-
-// export default router;
 import express from "express";
+import {
+  login,
+  register,
+  getUserByRole,
+  getStudentById,
+  getAdmin,
+  deleteUser,
+  createSetting,
+  getSetting,
+  createAccount,
+  getAccountSetting,
+  updateStudentById,
+  updateTeacherById,
+  getTeacherById,
+} from "../controller/authController.js";
+// commonRoute.js
+
 import multer from "multer";
-import { onScreenController } from "../controller/onScreenController.js";
+import multerS3 from "multer-s3";
+import { S3 } from "@aws-sdk/client-s3";
+
 import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import fs from "fs";
-
+import {
+  createDownload,
+  getDownload,
+} from "../controller/downloadController.js";
+import {
+  createBook,
+  getBook,
+  getBookById,
+} from "../controller/bookController.js";
+import {
+  getByClassNameStudentAndSubject,
+  uploadAndMarkAnswerScripts,
+} from "../controller/onScreenController.js";
 const router = express.Router();
-const uploadDir = path.join(
-  path.dirname(new URL(import.meta.url).pathname),
-  "uploads"
-);
+const applyAuthMiddleware = (method, path, middleware) => {
+  if (middleware) {
+    router[method](path, middleware);
+  }
+};
 
-// Create the 'uploads' directory if it doesn't exist
-fs.mkdirSync(uploadDir, { recursive: true });
+// Modify the commonRoute function to accept the s3 instance and authentication routes
+const onScreenRoute = (s3, authRoutes = []) => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
+  const uploadDir = path.join(__dirname, "..", "uploads");
 
-const upload = multer({ storage });
+  fs.mkdirSync(uploadDir, { recursive: true });
 
-router.post("/upload", upload.single("onScreenFile"), onScreenController);
+  const upload = multer({
+    storage: multerS3({
+      s3: s3,
+      bucket: "edupros", // Replace with your bucket name
+      acl: "public-read",
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: function (req, file, cb) {
+        cb(null, `${Date.now()}-${file.originalname}`);
+      },
+    }),
+  });
+  router.post(
+    "/upload-and-mark-answer-scripts",
+    upload.array("answerScriptFiles"),
+    uploadAndMarkAnswerScripts
+  );
+  router.get(
+    "/data/:className/:studentName/:subject",
+    getByClassNameStudentAndSubject
+  );
 
-export default router;
+  // router.post("/setting", upload.single("signature"), createSetting);
+
+  // router.post("/account-setting", multer().single("schoolLogo"), (req, res) => {
+  //   createAccount(req, res, s3);
+  // });
+  // router.post("/download", multer().single("Downloads"), (req, res) => {
+  //   createDownload(req, res, s3);
+  // });
+  // router.post("/book", multer().single("Download"), (req, res) => {
+  //   createBook(req, res, s3);
+  // });
+
+  // router.get("/setting", getSetting);
+  // router.get("/download", getDownload);
+  // router.get("/book", getBook);
+  // router.get("/book/:id", getBookById);
+
+  // router.get("/account-setting", getAccountSetting);
+
+  return router;
+};
+
+export default onScreenRoute;
