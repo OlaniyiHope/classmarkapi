@@ -21,7 +21,7 @@ router.get("/get-scores/:examName", getMark);
 
 router.get(
   "/get-scores-by-student/:studentId",
-  authenticateUser,
+  // authenticateUser,
   getMarkbyStudent
 );
 
