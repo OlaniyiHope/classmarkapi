@@ -157,19 +157,38 @@ export const getMarkbyStudent = async (req, res) => {
     //       ...m.toObject(),
     //     }))
     // );
+    // const scores = marks.flatMap((mark) =>
+    //   mark.marks
+    //     .filter(
+    //       (m) =>
+    //         m.studentId.toString() === userId &&
+    //         (m.testscore !== 0 || m.examscore !== 0) &&
+    //         m.comment.trim() !== ""
+    //     )
+    //     .map((m) => ({
+    //       examId: mark.examId,
+    //       subjectId: m.subjectId,
+    //       examName: mark.examId?.name || "Unknown Exam",
+    //       subjectName: m.subjectId?.name || "Unknown Subject",
+    //       testscore: m.testscore,
+    //       ...m.toObject(),
+    //     }))
+    // );
     const scores = marks.flatMap((mark) =>
       mark.marks
         .filter(
           (m) =>
             m.studentId.toString() === userId &&
             (m.testscore !== 0 || m.examscore !== 0) &&
-            m.comment.trim() !== ""
+            m.comment.trim() !== "" &&
+            mark.examId &&
+            m.subjectId
         )
         .map((m) => ({
           examId: mark.examId,
           subjectId: m.subjectId,
-          examName: mark.examId?.name || "Unknown Exam",
-          subjectName: m.subjectId?.name || "Unknown Subject",
+          examName: mark.examId.name,
+          subjectName: m.subjectId.name,
           testscore: m.testscore,
           ...m.toObject(),
         }))
