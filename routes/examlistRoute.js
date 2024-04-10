@@ -29,6 +29,7 @@ router.post(
   saveStudentTheoryScore
 );
 router.post("/save-total-scores", saveTotalScores);
+router.get("/get-exam/:id", getExamById);
 router.get(
   "/student-theory-scores/:studentId",
   getStudentTheoryScoresByStudent
@@ -41,6 +42,7 @@ router.get(
 router.get("/get-exams-by-class/:classId", authenticateUser, getExamsByClass);
 
 // Get a list of all exams
+
 router.get("/get-exam", getAllExams);
 router.get("/student-theory-scores/:examId", getStudentTheoryScoresByExam);
 router.get(
@@ -51,7 +53,7 @@ router.get(
 router.get("/calculate-total-score/:studentId", calculateTotalScore);
 
 // Get a specific exam by ID
-router.get("/get-exam/:id", getExamById);
+
 // Get a specific exam for a specific student by IDs
 router.get("/get-exam/:examId/student/:studentId", getExamForStudent);
 
