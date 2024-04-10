@@ -6,12 +6,10 @@ const ReceiptSchema = new mongoose.Schema(
     typeOfPayment: {
       type: String,
       enum: ["Cash", "Transfer", "Cheque"],
-      required: true,
     },
     status: {
       type: String,
       enum: ["Pending", "Success"],
-      required: true,
     },
     reason: {
       type: String,
@@ -25,13 +23,12 @@ const ReceiptSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    balance: {
-      type: Number,
+    paid: {
+      type: String,
       required: true,
     },
     amount: {
-      type: Number,
-      required: true,
+      type: String,
     },
     date: {
       type: Date,

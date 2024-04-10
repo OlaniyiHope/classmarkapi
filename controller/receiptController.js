@@ -75,7 +75,7 @@ export const createReceipt = async (req, res) => {
       reason,
       studentName,
       classname,
-      balance,
+      paid,
       amount,
       date,
     } = req.body;
@@ -99,7 +99,7 @@ export const createReceipt = async (req, res) => {
       reason,
       studentName,
       classname,
-      balance,
+      paid,
       amount,
       date,
     });

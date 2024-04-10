@@ -63,6 +63,7 @@ app.use("/api/ad", adRoutes);
 app.use("/api/", examlistRoute);
 app.use("/api/", OffRoutes);
 app.use("/api/", noticeRoute);
+app.use("/api/", receiptRoute);
 
 // Use commonRouter with specific routes requiring authentication
 
@@ -98,7 +99,6 @@ app.use("/api/", examRoute);
 app.use("/api/", offlineRoute);
 
 app.use("/api/", psyRoute);
-app.use("/api/", receiptRoute);
 
 // app.use("/api/", commonRoute(s3));
 const PORT = process.env.PORT || 5000;
