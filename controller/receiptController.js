@@ -118,6 +118,47 @@ export const createReceipt = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const getReceiptById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the receipt by ID
+    const receipt = await Receipt.findById(id);
+
+    if (!receipt) {
+      console.log("Receipt not found for ID:", id);
+      return res.status(404).json({ error: "Receipt not found" });
+    }
+
+    console.log("Receipt found:", receipt);
+
+    return res.status(200).json(receipt);
+  } catch (error) {
+    console.error("Error fetching receipt by ID:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+// controllers/receiptController.js
+
+export const getReceiptsByStudentsId = async (req, res) => {
+  const studentId = req.params.id;
+
+  try {
+    // Find the receipts associated with the student ID
+    const receipts = await Receipt.find({ studentId });
+
+    if (!receipts || receipts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "Receipts not found for the student ID" });
+    }
+
+    return res.status(200).json(receipts);
+  } catch (error) {
+    console.error("Error retrieving receipts:", error);
+    return res.status(500).json({ error: "Failed to get receipts" });
+  }
+};
 
 // controllers/receiptController.js
 // controllers/receiptController.js
