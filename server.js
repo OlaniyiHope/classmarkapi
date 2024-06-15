@@ -65,7 +65,7 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use("/api/ad", adRoutes);
 app.use("/api/", examlistRoute);
 app.use("/api/", OffRoutes);
