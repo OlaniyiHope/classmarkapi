@@ -58,6 +58,13 @@ console.log(
   process.env.AWS_ACCESS_KEY_ID,
   process.env.AWS_SECRET_ACCESS_KEY
 );
+// Configure CORS
+const corsOptions = {
+  origin: "https://hlhs.edupro.com.ng", // specify your client's URL
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
 app.use(cors());
 app.use("/api/ad", adRoutes);
 app.use("/api/", examlistRoute);
