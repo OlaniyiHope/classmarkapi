@@ -1,8 +1,7 @@
 import express from "express";
-import connectDB from "../config/db2.js";
 import products from "../data.js";
 import Cause from "../models/cause.js";
-import Stu from "../models/stuModel.js";
+
 import mongoose from "mongoose";
 //import db2 from "../config/db2";
 const router = express.Router();

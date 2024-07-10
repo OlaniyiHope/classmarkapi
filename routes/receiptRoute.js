@@ -3,7 +3,6 @@ import express from "express";
 import {
   createReceipt,
   deleteInv,
-  getAll,
   getAllReceipts,
   getReceiptById,
   //   getInvoiceId,
@@ -11,7 +10,6 @@ import {
   getReceiptsByStudentsId,
   getStudentInvoiceId,
 } from "../controller/receiptController.js";
-import authenticateUser from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 

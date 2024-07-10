@@ -1,16 +1,28 @@
+/* global process */
+
 import Ad from "../models/adModel.js";
 import bcrypt from "bcryptjs";
-import { createError } from "../utils/error.js";
+
 import jwt from "jsonwebtoken";
-// Generate Token
-// Generate Token
+
+import dotenv from "dotenv";
+
+dotenv.config();
+// const generateToken = (id) => {
+//   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+// };
+
 const generateToken = (id) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined in the environment variables.");
+  }
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
-export const register = async (req, res, next) => {
+
+export const register = async (req, res) => {
   const salt = bcrypt.genSaltSync(10);
   const hash = bcrypt.hashSync(req.body.password, salt);
-  const { username, email, password, address, phone, isAdmin } = req.body;
+  const { username, email, address, phone, isAdmin } = req.body;
   const user = await Ad.create({
     email,
     phone,
@@ -47,7 +59,7 @@ export const register = async (req, res, next) => {
   }
 };
 
-export const loginUser = async (req, res, next) => {
+export const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await Ad.findOne({ email, password });
@@ -138,7 +150,7 @@ export const loginUser = async (req, res, next) => {
     res.status(400);
   }
 };*/
-export const getallUsers = async (req, res, next) => {
+export const getallUsers = async (res, next) => {
   try {
     const users = await Ad.find();
     res.status(200).json(users);

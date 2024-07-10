@@ -1,11 +1,5 @@
 import express from "express";
-import {
-  deleteGrade,
-  getGrade,
-  getsingleGrade,
-  createGrade,
-  updateGrade,
-} from "../controller/gradeController.js";
+
 import { createCat } from "../controller/catController.js";
 
 const router = express.Router();

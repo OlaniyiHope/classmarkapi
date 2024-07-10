@@ -26,7 +26,7 @@ export const createExam = async (req, res) => {
     });
     const createdExam = await exam.save();
     res.status(201).json(createdExam);
-  } catch (error) {
+  } catch {
     res
       .status(500)
       .json({ error: "An error occurred while creating the exam." });
@@ -48,8 +48,7 @@ export const editExam = async (req, res) => {
     }
 
     res.json(updatedExam);
-  } catch (error) {
-    console.error("Error editing exam:", error);
+  } catch {
     res.status(500).json({ error: "An error occurred while editing the exam" });
   }
 };
@@ -59,7 +58,7 @@ export const getAllExams = async (req, res) => {
   try {
     const exams = await Exam.find();
     res.status(200).json(exams);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "An error occurred while fetching exams." });
   }
 };
@@ -72,7 +71,7 @@ export const getExamById = async (req, res) => {
       return res.status(404).json({ error: "Exam not found" });
     }
     res.status(200).json(exam);
-  } catch (error) {
+  } catch {
     res
       .status(500)
       .json({ error: "An error occurred while fetching the exam." });
@@ -104,7 +103,7 @@ export const deleteExam = async (req, res) => {
       return res.status(404).json({ error: "Exam not found" });
     }
     res.status(200).json({ message: "Exam deleted successfully" });
-  } catch (error) {
+  } catch {
     res
       .status(500)
       .json({ error: "An error occurred while deleting the exam." });
@@ -124,8 +123,7 @@ export const getExamsByClass = async (req, res) => {
 
     // Return the filtered exams as a response
     res.status(200).json(exams);
-  } catch (error) {
-    console.error("Error fetching exams by class:", error);
+  } catch {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -149,7 +147,7 @@ export const getExamForStudent = async (req, res) => {
     }
 
     res.status(200).json({ exam, studentAnswer });
-  } catch (error) {
+  } catch {
     res
       .status(500)
       .json({ error: "An error occurred while fetching the exam." });
@@ -213,8 +211,7 @@ export const getTheoryAnswer = async (req, res) => {
 
     // Return the theory answer
     res.status(200).json({ theoryAnswer });
-  } catch (error) {
-    console.error("Error fetching theory answer:", error);
+  } catch {
     res
       .status(500)
       .json({ error: "An error occurred while fetching the theory answer" });
@@ -256,8 +253,7 @@ export const getTheoryAnswerByName = async (req, res) => {
     // Return the theory answer
     console.log("Theory Answer:", theoryAnswer);
     res.status(200).json({ theoryAnswer });
-  } catch (error) {
-    console.error("Error fetching theory answer by name:", error);
+  } catch {
     res.status(500).json({
       error: "An error occurred while fetching the theory answer by name",
     });
@@ -331,10 +327,8 @@ const getClassIdFromClassName = async (className) => {
 
     // Return the classId of the found class
     return foundClass._id; // Assuming _id is the classId field
-  } catch (error) {
+  } catch {
     // Handle any errors
-    console.error("Error getting classId from className:", error);
-    throw error; // Rethrow the error to be caught by the caller
   }
 };
 const getSubjectIdFromSubjectName = async (subjectName) => {
@@ -349,13 +343,11 @@ const getSubjectIdFromSubjectName = async (subjectName) => {
 
     // Return the subjectId of the found subject
     return foundSubject._id; // Assuming _id is the subjectId field
-  } catch (error) {
+  } catch {
     // Handle any errors
-    console.error("Error getting subjectId from subjectName:", error);
-    throw error; // Rethrow the error to be caught by the caller
   }
 };
-const getStudentIdFromStudentName = async (studentName) => {
+const getStudentIdFromStudentName = async (studentName, res) => {
   try {
     // Query the Student collection to find the student with the provided studentName
     const foundStudent = await User.findOne({ studentName });
@@ -367,10 +359,8 @@ const getStudentIdFromStudentName = async (studentName) => {
 
     // Return the studentId of the found student
     return foundStudent._id; // Assuming _id is the studentId field
-  } catch (error) {
-    // Handle any errors
-    console.error("Error getting studentId from studentName:", error);
-    throw error; // Rethrow the error to be caught by the caller
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 // export const saveStudentTheoryScore = async (req, res) => {
@@ -486,8 +476,7 @@ export const saveStudentTheoryScore = async (req, res) => {
 
     // Return a success message
     res.json({ message: "Student theory score saved successfully" });
-  } catch (error) {
-    console.error("Error saving student theory score:", error);
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -501,8 +490,7 @@ export const getStudentTheoryScoresByExam = async (req, res) => {
 
     // Return the student theory scores
     res.json({ studentTheoryScores });
-  } catch (error) {
-    console.error("Error getting student theory scores:", error);
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -525,8 +513,7 @@ export const getStudentTheoryScoresByExamAndStudent = async (req, res) => {
 
     // Return the student theory scores
     res.json({ studentTheoryScores });
-  } catch (error) {
-    console.error("Error getting student theory scores:", error);
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -557,8 +544,7 @@ export const calculateTotalScore = async (req, res) => {
 
     // Return the total outOfScore and total scoreGiven
     res.json({ totalOutOfScore, totalScoreGiven });
-  } catch (error) {
-    console.error("Error calculating total score:", error);
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -581,8 +567,7 @@ export const getStudentTheoryScoresByStudent = async (req, res) => {
 
     // Return the student theory scores
     res.json({ studentTheoryScores });
-  } catch (error) {
-    console.error("Error getting student theory scores:", error);
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -670,8 +655,7 @@ export const getStudentTheoryScoresByStudentAndClassNameAndSubject = async (
 
     // Return the student theory scores
     res.json({ studentTheoryScores });
-  } catch (error) {
-    console.error("Error getting student theory scores:", error);
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -718,22 +702,22 @@ export const getStudentTheoryScoresByStudentAndClassNameAndSubject = async (
 //   }
 // };
 // Function to save total scores
-export const saveTotalScores = async (req, res) => {
-  try {
-    const { studentId, totalOutOfScore, totalScoreGiven } = req.body;
+// export const saveTotalScores = async (req, res) => {
+//   try {
+//     const { studentId, totalOutOfScore, totalScoreGiven } = req.body;
 
-    // Save the total outOfScore and total scoreGiven for the student
-    // Here you can perform any necessary validation before saving the data
-    // For example, you might want to check if the studentId exists in the database
+//     // Save the total outOfScore and total scoreGiven for the student
+//     // Here you can perform any necessary validation before saving the data
+//     // For example, you might want to check if the studentId exists in the database
 
-    // For demonstration purposes, let's assume the data is valid and save it directly
-    // You can adjust this logic based on your application requirements
+//     // For demonstration purposes, let's assume the data is valid and save it directly
+//     // You can adjust this logic based on your application requirements
 
-    // Save total scores to the database or perform any other required operations
+//     // Save total scores to the database or perform any other required operations
 
-    res.status(201).json({ message: "Total scores saved successfully" });
-  } catch (error) {
-    console.error("Error saving total scores:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+//     res.status(201).json({ message: "Total scores saved successfully" });
+//   } catch (error) {
+//     console.error("Error saving total scores:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };

@@ -1,7 +1,5 @@
-import Class from "../models/classModel.js";
-import express from "express";
 import Mark from "../models/markModel.js";
-export const createMark = async (req, res, next) => {
+export const createMark = async (req, res) => {
   const newMark = new Mark(req.body);
   try {
     const savedMark = await newMark.save();

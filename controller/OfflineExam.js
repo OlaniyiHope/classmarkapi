@@ -1,5 +1,4 @@
 import Exam from "../models/examModel.js";
-import User from "../models/userModel.js";
 
 export const submitExam = async (req, res) => {
   const newExam = new Exam(req.body); // Include the "score" in the destructuring

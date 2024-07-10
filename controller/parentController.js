@@ -1,12 +1,12 @@
 import express from "express";
-import jwt from "jsonwebtoken";
+
 import User from "../models/userModel.js"; // Replace with your actual model
 
 const router = express.Router();
 
 // Create a Teacher (Authenticated Route)
 
-export const createParent = async (req, res, next) => {
+export const createParent = async (req, res) => {
   try {
     // Verify the user role (only "admin" can create teachers)
     if (req.user.role !== "admin") {
@@ -21,20 +21,20 @@ export const createParent = async (req, res, next) => {
       password: req.body.password,
       address: req.body.address,
       phone: req.body.phone,
-      role: req.body.role,
+
       // subjectTaught: req.body.subjectTaught, // Add other teacher-specific fields
     });
 
     const createdParent = await parent.save();
     res.status(201).json(createdParent);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: "Server Error" });
   }
 };
 
 // Get All Teachers (Authenticated Route)
 
-export const getParent = async (req, res, next) => {
+export const getParent = async (req, res) => {
   try {
     // Verify the user role (only "admin" can get teachers)
     // if (req.user.role !== "admin") {
@@ -43,7 +43,7 @@ export const getParent = async (req, res, next) => {
 
     const parent = await User.find({ role: "parent" });
     res.status(200).json(parent);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: "Server Error" });
   }
 };

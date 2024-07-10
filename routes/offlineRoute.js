@@ -1,5 +1,5 @@
 import express from "express";
-import { getExam, submitExam, deleteExam } from "../controller/OfflineExam.js";
+import { submitExam, deleteExam } from "../controller/OfflineExam.js";
 import {
   getMark,
   getMarkbyStudent,
@@ -8,7 +8,6 @@ import {
   updateMark,
   updateMarks,
 } from "../controller/offMarkController.js";
-import authenticateUser from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-mongoose.Promise = global.Promise;
+
 const causeSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   title: {

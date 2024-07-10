@@ -1,6 +1,5 @@
-import express from "express";
 import Grade from "../models/gradeModel.js";
-export const createGrade = async (req, res, next) => {
+export const createGrade = async (req, res) => {
   const newGrade = new Grade(req.body);
   try {
     const savedGrade = await newGrade.save();

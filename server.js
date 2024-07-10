@@ -1,3 +1,5 @@
+/* global process */
+
 import { S3 } from "@aws-sdk/client-s3";
 
 import express from "express";
@@ -60,7 +62,7 @@ console.log(
 );
 // Configure CORS
 const corsOptions = {
-  origin: "https://hlhs.edupro.com.ng", // specify your client's URL
+  origin: ["https://hlhs.edupro.com.ng", "http://localhost:3000"], // specify your client's URL
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };

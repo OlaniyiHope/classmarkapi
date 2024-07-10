@@ -1,6 +1,5 @@
-import express from "express";
 import Cat from "../models/bookCatModel.js";
-export const createCat = async (req, res, next) => {
+export const createCat = async (req, res) => {
   const { catName } = req.body; // Destructure catName from req.body
   if (!catName) {
     return res.status(400).json({ error: "catName is required" });
