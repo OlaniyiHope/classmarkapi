@@ -24,8 +24,11 @@ const onScreenRoute = (s3 = []) => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
 
-  const uploadDir = path.join(__dirname, "..", "uploads");
+  // const uploadDir = path.join(__dirname, "..", "uploads");
 
+  // fs.mkdirSync(uploadDir, { recursive: true });
+
+  const uploadDir = process.env.UPLOADS_DIR || "/var/task/uploads";
   fs.mkdirSync(uploadDir, { recursive: true });
 
   const upload = multer({
