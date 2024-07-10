@@ -43,9 +43,9 @@ const __dirname = dirname(__filename);
 
 // const uploadDir = path.join(__dirname, "uploads");
 
-const uploadDir = path.join(process.cwd(), "uploads");
+// const uploadDir = path.join(process.cwd(), "uploads");
 
-app.use("/uploads", express.static(uploadDir));
+// app.use("/uploads", express.static(uploadDir));
 
 // Update the AWS SDK configuration
 // Update the AWS SDK configuration

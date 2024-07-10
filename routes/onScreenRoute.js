@@ -28,8 +28,8 @@ const onScreenRoute = (s3 = []) => {
 
   // fs.mkdirSync(uploadDir, { recursive: true });
 
-  const uploadDir = process.env.UPLOADS_DIR || "/var/task/uploads";
-  fs.mkdirSync(uploadDir, { recursive: true });
+  // const uploadDir = process.env.UPLOADS_DIR || "/var/task/uploads";
+  // fs.mkdirSync(uploadDir, { recursive: true });
 
   const upload = multer({
     storage: multerS3({

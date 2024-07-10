@@ -49,8 +49,8 @@ const commonRoute = (s3, authRoutes = []) => {
 
   // fs.mkdirSync(uploadDir, { recursive: true });
 
-  const uploadDir = process.env.UPLOADS_DIR || "/var/task/uploads";
-  fs.mkdirSync(uploadDir, { recursive: true });
+  // const uploadDir = process.env.UPLOADS_DIR || "/var/task/uploads";
+  // fs.mkdirSync(uploadDir, { recursive: true });
 
   // const storage = multer.diskStorage({
   //   destination: (req, file, cb) => {
