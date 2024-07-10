@@ -1,8 +1,9 @@
+/* global process */
+
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import User from "../models/userModel.js";
 import Setting from "../models/settingModel.js";
-import Class from "../models/classModel.js";
 import Account from "../models/accountModel.js";
 import bcrypt from "bcryptjs";
 
@@ -22,8 +23,7 @@ export const register = async (req, res) => {
     const token = jwt.sign({ user, role: user.role }, process.env.JWT_SECRET);
 
     return res.status(201).json({ token, user });
-  } catch (error) {
-    console.error(error);
+  } catch {
     return res.status(500).json({ error: "Registration failed" });
   }
 };
@@ -40,8 +40,7 @@ export const getUserByRole = async (req, res) => {
     }
 
     return res.status(200).json(users);
-  } catch (error) {
-    console.error(error);
+  } catch {
     return res.status(500).json({ error: "Failed to get users" });
   }
 };
@@ -75,8 +74,7 @@ export const login = async (req, res) => {
     const token = jwt.sign({ user, role }, process.env.JWT_SECRET);
 
     return res.status(200).json({ token, user });
-  } catch (error) {
-    console.error("Login error:", error);
+  } catch {
     return res.status(500).json({ error: "Login failed" });
   }
 };
@@ -128,13 +126,13 @@ export const login = async (req, res) => {
 //   }
 // };
 
-export const getAdmin = async (req, res, next) => {
+export const getAdmin = async (res) => {
   try {
     // Verify the user role (only "admin" can get teachers)
 
     const teachers = await User.find({ role: "admin" });
     res.status(200).json(teachers);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: "Server Error" });
   }
 };
@@ -158,8 +156,7 @@ export const deleteUser = async (req, res) => {
     await user.remove(); // Remove the user from the database
 
     return res.status(200).json({ message: "User deleted successfully" });
-  } catch (error) {
-    console.error(error);
+  } catch {
     return res.status(500).json({ error: "Failed to delete user" });
   }
 };
@@ -188,8 +185,7 @@ export const createSetting = async (req, res) => {
     res
       .status(200)
       .json({ success: true, message: "School profile updated successfully" });
-  } catch (error) {
-    console.error(error);
+  } catch {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -206,8 +202,7 @@ export const getSetting = async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: schoolSetting });
-  } catch (error) {
-    console.error(error);
+  } catch {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -223,8 +218,7 @@ export const getAccountSetting = async (req, res) => {
     }
 
     res.status(200).json({ success: true, data: schoolSetting });
-  } catch (error) {
-    console.error(error);
+  } catch {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -446,8 +440,7 @@ export const createAccount = async (req, res, s3) => {
     res
       .status(200)
       .json({ success: true, message: "School profile updated successfully" });
-  } catch (error) {
-    console.error("Error updating school profile:", error);
+  } catch {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -492,8 +485,7 @@ export const updateStudentById = async (req, res) => {
     }
 
     res.status(200).json(updatedStudent);
-  } catch (error) {
-    console.error("Error updating student by ID:", error);
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -514,8 +506,7 @@ export const updateTeacherById = async (req, res) => {
     }
 
     res.status(200).json(updatedTeacher);
-  } catch (error) {
-    console.error("Error updating teacher:", error);
+  } catch {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -531,8 +522,7 @@ export const getTeacherById = async (req, res) => {
     }
 
     res.status(200).json({ teacher });
-  } catch (error) {
-    console.error("Error fetching teacher by ID:", error);
+  } catch {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -578,8 +568,7 @@ export const getStudentsByClass = async (req, res) => {
     }
 
     return res.status(200).json(students);
-  } catch (error) {
-    console.error(error);
+  } catch {
     return res.status(500).json({ error: "Failed to get students" });
   }
 };
@@ -634,8 +623,7 @@ export const getStudentById = async (req, res) => {
     }
 
     return res.status(200).json(student);
-  } catch (error) {
-    console.error(error);
+  } catch {
     return res.status(500).json({ error: "Failed to get student" });
   }
 };

@@ -1,9 +1,8 @@
 import Subject from "../models/subModel.js";
 import User from "../models/userModel.js";
 import Class from "../models/classModel.js";
-import express from "express";
 
-export const createSubject = async (req, res, next) => {
+export const createSubject = async (req, res) => {
   const { name, teacher, classname } = req.body;
   try {
     // Find the teacher and class documents by name

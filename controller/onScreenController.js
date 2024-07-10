@@ -1,13 +1,8 @@
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
-import User from "../models/userModel.js";
-import Setting from "../models/settingModel.js";
-import Class from "../models/classModel.js";
-import Account from "../models/accountModel.js";
+/* global process */
+/* global Buffer */
+
 import Script from "../models/onScreenModel.js";
 import { Readable } from "stream";
-
-import bcrypt from "bcryptjs";
 
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 

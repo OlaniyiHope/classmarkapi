@@ -1,51 +1,26 @@
 import express from "express";
-import {
-  login,
-  register,
-  getUserByRole,
-  getStudentById,
-  getAdmin,
-  deleteUser,
-  createSetting,
-  getSetting,
-  createAccount,
-  getAccountSetting,
-  updateStudentById,
-  updateTeacherById,
-  getTeacherById,
-} from "../controller/authController.js";
-// commonRoute.js
 
 import multer from "multer";
 import multerS3 from "multer-s3";
-import { S3 } from "@aws-sdk/client-s3";
 
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import fs from "fs";
-import {
-  createDownload,
-  getDownload,
-} from "../controller/downloadController.js";
-import {
-  createBook,
-  getBook,
-  getBookById,
-} from "../controller/bookController.js";
+
 import {
   getByClassNameStudentAndSubject,
   uploadAndMarkAnswerScripts,
 } from "../controller/onScreenController.js";
 const router = express.Router();
-const applyAuthMiddleware = (method, path, middleware) => {
-  if (middleware) {
-    router[method](path, middleware);
-  }
-};
+// const applyAuthMiddleware = (method, path, middleware) => {
+//   if (middleware) {
+//     router[method](path, middleware);
+//   }
+// };
 
 // Modify the commonRoute function to accept the s3 instance and authentication routes
-const onScreenRoute = (s3, authRoutes = []) => {
+const onScreenRoute = (s3 = []) => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
 

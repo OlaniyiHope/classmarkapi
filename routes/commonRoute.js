@@ -18,7 +18,7 @@ import {
 
 import multer from "multer";
 import multerS3 from "multer-s3";
-import { S3 } from "@aws-sdk/client-s3";
+
 import authenticateUser from "../middleware/authMiddleware.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -49,14 +49,14 @@ const commonRoute = (s3, authRoutes = []) => {
 
   fs.mkdirSync(uploadDir, { recursive: true });
 
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-      cb(null, `${Date.now()}-${file.originalname}`);
-    },
-  });
+  // const storage = multer.diskStorage({
+  //   destination: (req, file, cb) => {
+  //     cb(null, uploadDir);
+  //   },
+  //   filename: (req, file, cb) => {
+  //     cb(null, `${Date.now()}-${file.originalname}`);
+  //   },
+  // });
 
   const upload = multer({
     storage: multerS3({

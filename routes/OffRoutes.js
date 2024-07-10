@@ -1,5 +1,5 @@
 import express from "express";
-import { getExam, submitExam, deleteExam } from "../controller/OfflineExam.js";
+import { getExam } from "../controller/OfflineExam.js";
 
 const router = express.Router();
 

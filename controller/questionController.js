@@ -41,8 +41,7 @@ export const createQuestion = async (req, res) => {
 
     await question.save();
     res.json({ message: "Question saved successfully" });
-  } catch (error) {
-    console.error(error);
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -55,8 +54,7 @@ export const getQuestions = async (req, res) => {
     const questions = await Question.find({ exam: examId });
 
     res.json(questions);
-  } catch (error) {
-    console.error(error);
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -74,8 +72,7 @@ export const deleteQuestion = async (req, res) => {
     }
 
     res.json({ message: "Question deleted successfully" });
-  } catch (error) {
-    console.error(error);
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -107,8 +104,7 @@ export const updateQuestion = async (req, res) => {
     await question.save();
 
     res.json({ message: "Question updated successfully" });
-  } catch (error) {
-    console.error(error);
+  } catch {
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -121,7 +117,7 @@ export const getQuestionById = async (req, res) => {
       return res.status(404).json({ error: "Question not found" });
     }
     res.status(200).json(question);
-  } catch (error) {
+  } catch {
     res
       .status(500)
       .json({ error: "An error occurred while fetching the question" });

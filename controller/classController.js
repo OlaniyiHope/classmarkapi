@@ -1,5 +1,4 @@
 import Class from "../models/classModel.js";
-import express from "express";
 
 // export const createClass = async (req, res, next) => {
 //   try {
@@ -21,7 +20,7 @@ import express from "express";
 //     res.status(500).json(err);
 //   }
 // };
-export const createClass = async (req, res, next) => {
+export const createClass = async (req, res) => {
   try {
     const latestClass = await Class.findOne({}, {}, { sort: { classId: -1 } });
     const nextClassId = (latestClass && latestClass.classId + 1) || 1;
@@ -39,7 +38,7 @@ export const createClass = async (req, res, next) => {
     res.status(500).json(err);
   }
 };
-export const updateClass = async (req, res, next) => {
+export const updateClass = async (req, res) => {
   try {
     const updatedClass = await Class.findByIdAndUpdate(
       req.params.id,

@@ -1,6 +1,4 @@
 import mongoose from "mongoose";
-const { ObjectId } = mongoose.Types;
-import Subject from "../models/subModel.js";
 import Mark from "../models/markModel.js";
 import Exam from "../models/examModel.js";
 

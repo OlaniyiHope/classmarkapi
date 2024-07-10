@@ -15,7 +15,7 @@ import {
   getStudentTheoryScoresByExamAndStudent,
   calculateTotalScore,
   getStudentTheoryScoresByStudent,
-  saveTotalScores,
+  // saveTotalScores,
   getStudentTheoryScoresByStudentAndClassNameAndSubject,
 } from "../controller/examlistController.js";
 import authenticateUser from "../middleware/authMiddleware.js";
@@ -28,7 +28,7 @@ router.post(
 
   saveStudentTheoryScore
 );
-router.post("/save-total-scores", saveTotalScores);
+// router.post("/save-total-scores", saveTotalScores);
 router.get("/get-exam/:id", getExamById);
 router.get(
   "/student-theory-scores/:studentId",

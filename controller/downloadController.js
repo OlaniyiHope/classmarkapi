@@ -1,8 +1,3 @@
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
-import User from "../models/userModel.js";
-import Setting from "../models/settingModel.js";
-import Class from "../models/classModel.js";
 import Download from "../models/downloadModel.js";
 
 export const createDownload = async (req, res, s3) => {
