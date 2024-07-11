@@ -136,6 +136,37 @@ export const getAdmin = async (req, res) => {
   }
 };
 
+export const updateAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedAdmin = await User.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    if (!updatedAdmin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+    res.status(200).json(updatedAdmin);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const getAdminById = async (req, res) => {
+  try {
+    const adminId = req.params.id;
+    const admin = await User.findById(adminId); // Assuming you have an Admin model
+
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    res.json({ admin });
+  } catch (error) {
+    console.error("Error fetching admin by ID:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 export const deleteUser = async (req, res) => {
   const userId = req.params.userId;
 
