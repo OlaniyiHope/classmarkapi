@@ -13,6 +13,8 @@ import {
   updateStudentById,
   updateTeacherById,
   getTeacherById,
+  updateAdmin,
+  getAdminById,
 } from "../controller/authController.js";
 // commonRoute.js
 
@@ -89,7 +91,9 @@ const commonRoute = (s3, authRoutes = []) => {
   router.get("/users/:role", getUserByRole);
   router.get("/students/:id", authenticateUser, getStudentById);
   router.get("/teachers/:id", authenticateUser, getTeacherById);
+  router.get("/get-admin/:id", authenticateUser, getAdminById);
   router.get("/get-admin", authenticateUser, getAdmin);
+  router.put("/admin/:id", authenticateUser, updateAdmin);
   router.put("/students/:id", authenticateUser, updateStudentById);
   router.put("/teachers/:id", authenticateUser, updateTeacherById);
   router.delete("/users/:userId", deleteUser);
