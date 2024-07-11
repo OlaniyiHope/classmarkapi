@@ -79,53 +79,6 @@ export const login = async (req, res) => {
   }
 };
 
-// ...
-
-// authController.js
-// export const getStudentsByClass = async (req, res) => {
-//   const className = req.params.className;
-
-//   try {
-//     const students = await User.find({
-//       role: "student",
-//       classname: className,
-//     }).exec();
-
-//     if (!students) {
-//       return res.status(404).json({ error: "No students found in that class" });
-//     }
-
-//     return res.status(200).json(students);
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ error: "Failed to get students" });
-//   }
-// };
-// export const getStudentsByClass = async (req, res) => {
-//   const className = req.params.className;
-
-//   try {
-//     const students = await User.find({
-//       role: "student",
-//       classname: className,
-//     })
-//       // Select all fields you want to retrieve
-//       .select(
-//         "AdmNo studentName address phone email  parentsName classname _id"
-//       )
-//       .exec();
-
-//     if (students.length === 0) {
-//       return res.status(404).json({ error: "No students found in that class" });
-//     }
-
-//     return res.status(200).json(students);
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ error: "Failed to get students" });
-//   }
-// };
-
 export const getAdmin = async (req, res) => {
   try {
     // Verify the user role (only "admin" can get teachers)
@@ -541,19 +494,35 @@ export const updateTeacherById = async (req, res) => {
   }
 };
 
-export const getTeacherById = async (req, res) => {
-  const { id } = req.params;
+// export const getTeacherById = async (req, res) => {
+//   const { id } = req.params;
 
+//   try {
+//     const teacher = await User.findOne({ _id: id, role: "teacher" });
+
+//     if (!teacher) {
+//       return res.status(404).json({ message: "Teacher not found" });
+//     }
+
+//     res.status(200).json({ teacher });
+//   } catch {
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
+
+export const getTeacherById = async (req, res) => {
   try {
-    const teacher = await User.findOne({ _id: id, role: "teacher" });
+    const teacherId = req.params.id;
+    const teacher = await User.findById(teacherId); // Assuming you have an Admin model
 
     if (!teacher) {
       return res.status(404).json({ message: "Teacher not found" });
     }
 
-    res.status(200).json({ teacher });
-  } catch {
-    res.status(500).json({ message: "Internal Server Error" });
+    res.json({ teacher });
+  } catch (error) {
+    console.error("Error fetching teacher by ID:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 // export const getStudentsByClass = async (req, res) => {
