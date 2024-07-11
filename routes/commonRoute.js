@@ -15,6 +15,9 @@ import {
   getTeacherById,
   updateAdmin,
   getAdminById,
+  getParent,
+  getParentById,
+  updateParent,
 } from "../controller/authController.js";
 // commonRoute.js
 
@@ -92,8 +95,11 @@ const commonRoute = (s3, authRoutes = []) => {
   router.get("/students/:id", authenticateUser, getStudentById);
   router.get("/teachers/:id", authenticateUser, getTeacherById);
   router.get("/get-admin/:id", authenticateUser, getAdminById);
+  router.get("/get-parent/:id", authenticateUser, getParentById);
   router.get("/get-admin", authenticateUser, getAdmin);
+  router.get("/get-parent", authenticateUser, getParent);
   router.put("/admin/:id", authenticateUser, updateAdmin);
+  router.put("/parent/:id", authenticateUser, updateParent);
   router.put("/students/:id", authenticateUser, updateStudentById);
   router.put("/teachers/:id", authenticateUser, updateTeacherById);
   router.delete("/users/:userId", deleteUser);
