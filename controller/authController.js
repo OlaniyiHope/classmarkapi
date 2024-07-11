@@ -126,13 +126,12 @@ export const login = async (req, res) => {
 //   }
 // };
 
-export const getAdmin = async (res) => {
+export const getAdmin = async (req, res) => {
   try {
     // Verify the user role (only "admin" can get teachers)
-
     const teachers = await User.find({ role: "admin" });
     res.status(200).json(teachers);
-  } catch {
+  } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
 };
