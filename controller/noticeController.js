@@ -71,3 +71,42 @@ export const deleteNotice = async (req, res) => {
     res.status(500).json({ error: "Failed to delete notice" });
   }
 };
+
+export const editNotice = async (req, res) => {
+  const { id } = req.params;
+  const { date, notice, posted_by } = req.body;
+
+  try {
+    const updatedNotice = await Notice.findByIdAndUpdate(
+      id,
+      { date, notice, posted_by },
+      { new: true } // This option returns the updated document
+    );
+
+    if (!updatedNotice) {
+      return res.status(404).json({ error: "Notice not found" });
+    }
+
+    res.status(200).json(updatedNotice);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update notice" });
+  }
+};
+
+export const getNoticebyId = async (req, res) => {
+  const noticeId = req.params.id; // Assuming the ID is passed as a route parameter
+
+  try {
+    const notice = await Notice.findById(noticeId);
+
+    if (!notice) {
+      return res.status(404).json({ error: "Notice not found" });
+    }
+
+    res.status(200).json(notice);
+  } catch (error) {
+    console.error("Error fetching notice by ID:", error);
+    res.status(500).json({ error: "Failed to fetch notice" });
+  }
+};
