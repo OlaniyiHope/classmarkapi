@@ -8,12 +8,11 @@ const ExamSchema = new mongoose.Schema(
     },
     comment: {
       type: String,
-      required: true,
     },
 
     date: {
       type: Date,
-      required: true,
+      // required: true,
     },
   },
   { timestamps: true }
