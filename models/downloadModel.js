@@ -21,6 +21,11 @@ const downloadSchema = new mongoose.Schema({
   Downloads: {
     type: String,
   },
+  session: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Session", // Reference to the Session model
+    required: true,
+  },
 });
 
 const Download = mongoose.model("Download", downloadSchema); // Change "School" to "Account"

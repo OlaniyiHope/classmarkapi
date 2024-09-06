@@ -15,6 +15,11 @@ const settingSchema = new mongoose.Schema({
   resumptionDate: {
     type: Date,
   },
+  session: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Session", // Reference to the Session model
+    required: true,
+  },
 });
 
 const School = mongoose.model("Setting", settingSchema);

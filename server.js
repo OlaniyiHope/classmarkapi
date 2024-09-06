@@ -22,6 +22,7 @@ import psyRoute from "./routes/psyRoute.js";
 import receiptRoute from "./routes/receiptRoute.js";
 import onScreenRoute from "./routes/onScreenRoute.js";
 import noticeRoute from "./routes/noticeRoute.js";
+import sessionRoute from "./routes/sessionRoute.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import dotenv from "dotenv";
@@ -65,7 +66,7 @@ console.log(
 // Configure CORS
 const corsOptions = {
   origin: ["https://hlhs.edupro.com.ng", "http://localhost:3000"], // specify your client's URL
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
@@ -75,6 +76,8 @@ app.use("/api/", examlistRoute);
 app.use("/api/", OffRoutes);
 app.use("/api/", noticeRoute);
 app.use("/api/", receiptRoute);
+// Use the session routes
+app.use("/api/sessions", sessionRoute);
 
 // Use commonRouter with specific routes requiring authentication
 
@@ -91,7 +94,8 @@ const onScreen = onScreenRoute(s3);
 
 app.use("/api/", onScreen);
 app.use("/api/", commonRouterWithAuth);
-app.use("/api/student/:className", getStudentsByClass);
+
+app.use("/api/student/:className/:sessionId", getStudentsByClass);
 
 app.use("/api/", classRoute);
 

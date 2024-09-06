@@ -33,7 +33,11 @@ const ExamlistSchema = new mongoose.Schema(
     instruction: {
       type: String,
     },
-
+    session: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session", // Reference to the Session model
+      required: true,
+    },
     questions: [
       {
         type: mongoose.Schema.Types.ObjectId,

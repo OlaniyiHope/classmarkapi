@@ -16,6 +16,11 @@ const scriptSchema = new mongoose.Schema({
   answerScriptFiles: {
     type: Array,
   },
+  session: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Session", // Reference to the Session model
+    required: true,
+  },
 });
 
 const Script = mongoose.model("Script", scriptSchema); // Change "School" to "Account"
