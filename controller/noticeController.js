@@ -1,6 +1,7 @@
 // noticeController.js
 import Notice from "../models/noticeModel.js";
-
+import Session from "../models/sessionModel.js";
+import mongoose from "mongoose";
 export const createNotice = async (req, res) => {
   const { date, notice, posted_by } = req.body;
 
@@ -38,21 +39,44 @@ export const getNotice = async (req, res) => {
   }
 };
 
-export const getallNotice = async (req, res) => {
-  try {
-    // Find all notices
-    const notices = await Notice.find({}).exec();
+// export const getallNotice = async (req, res) => {
+//   try {
+//     // Find all notices
+//     const notices = await Notice.find({}).exec();
 
-    if (!notices) {
-      return res.status(404).json({ error: "No notices found" });
+//     if (!notices) {
+//       return res.status(404).json({ error: "No notices found" });
+//     }
+
+//     return res.status(200).json(notices);
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ error: "Failed to get notices" });
+//   }
+// };
+export const getallNotice = async (req, res) => {
+  const { sessionId } = req.params;
+
+  try {
+    // Convert sessionId to ObjectId if needed
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+    // Find all notices for the given session
+    const notices = await Notice.find({ session: sessionObjectId }).exec();
+
+    if (!notices || notices.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No notices found for the specified session" });
     }
 
     return res.status(200).json(notices);
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching notices:", error);
     return res.status(500).json({ error: "Failed to get notices" });
   }
 };
+
 export const deleteNotice = async (req, res) => {
   const noticeId = req.params.id;
 
@@ -108,5 +132,31 @@ export const getNoticebyId = async (req, res) => {
   } catch (error) {
     console.error("Error fetching notice by ID:", error);
     res.status(500).json({ error: "Failed to fetch notice" });
+  }
+};
+
+export const addSessionToNoticeWithoutSession = async (req, res) => {
+  try {
+    const { sessionId } = req.body;
+
+    // Validate sessionId
+    const session = await Session.findById(sessionId);
+    if (!session) {
+      return res.status(400).json({ error: "Invalid session ID" });
+    }
+
+    // Bulk update users to include the sessionId if they don't already have one
+    const updateResult = await Notice.updateMany(
+      { session: { $exists: false } }, // Find users without a session field
+      { $set: { session: sessionId } } // Set the session field
+    );
+
+    res.status(200).json({
+      message: "Notice updated successfully",
+      matchedCount: updateResult.matchedCount,
+      modifiedCount: updateResult.modifiedCount,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
   }
 };

@@ -65,7 +65,7 @@ console.log(
 );
 // Configure CORS
 const corsOptions = {
-  origin: ["https://hlhs.edupro.com.ng", "http://localhost:3000"], // specify your client's URL
+  origin: ["https://hlhs.edupro.com.ng", "http://localhost:3001"], // specify your client's URL
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
@@ -106,13 +106,10 @@ app.use("/api/mark", markRoute);
 app.use("/api/", stuRoute);
 app.use("/api/", teRoute);
 app.use("/api/", parentRoute);
-
 app.use("/api/", subRoute);
 app.use("/api/", questionRoute);
 app.use("/api/", examRoute);
-
 app.use("/api/", offlineRoute);
-
 app.use("/api/", psyRoute);
 
 // app.use("/api/", commonRoute(s3));
