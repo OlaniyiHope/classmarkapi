@@ -14,6 +14,11 @@ const ExamSchema = new mongoose.Schema(
       type: Date,
       // required: true,
     },
+    session: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session", // Reference to the Session model
+      required: true,
+    },
   },
   { timestamps: true }
 );

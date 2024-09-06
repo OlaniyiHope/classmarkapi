@@ -18,6 +18,7 @@ import {
   getParent,
   getParentById,
   updateParent,
+  addSessionToUsersWithoutSession,
 } from "../controller/authController.js";
 // commonRoute.js
 
@@ -92,6 +93,11 @@ const commonRoute = (s3, authRoutes = []) => {
   router.post("/register", register);
   router.post("/login", login);
   router.get("/users/:role", getUserByRole);
+  router.post(
+    "/addSessionToUsersWithoutSession",
+    addSessionToUsersWithoutSession
+  );
+
   router.get("/students/:id", authenticateUser, getStudentById);
   router.get("/teachers/:id", authenticateUser, getTeacherById);
   router.get("/get-admin/:id", authenticateUser, getAdminById);

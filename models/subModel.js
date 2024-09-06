@@ -16,6 +16,11 @@ const SubjectSchema = new mongoose.Schema(
       ref: "Class", // Define the Class model name
       required: true,
     },
+    session: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session", // Reference to the Session model
+      required: true,
+    },
   },
   { timestamps: true }
 );

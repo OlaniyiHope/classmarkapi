@@ -15,6 +15,11 @@ const NoticeSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    session: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session", // Reference to the Session model
+      required: true,
+    },
   },
   { timestamps: true }
 );
