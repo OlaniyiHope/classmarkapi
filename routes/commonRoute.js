@@ -102,7 +102,10 @@ const commonRoute = (s3, authRoutes = []) => {
   router.get("/teachers/:id", authenticateUser, getTeacherById);
   router.get("/get-admin/:id", authenticateUser, getAdminById);
   router.get("/get-parent/:id", authenticateUser, getParentById);
-  router.get("/get-admin", authenticateUser, getAdmin);
+  // router.get("/get-admin", authenticateUser, getAdmin);
+
+  router.get("/get-session-admin/:sessionId", getAdmin);
+
   router.get("/get-parent", authenticateUser, getParent);
   router.put("/admin/:id", authenticateUser, updateAdmin);
   router.put("/parent/:id", authenticateUser, updateParent);

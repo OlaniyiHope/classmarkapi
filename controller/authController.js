@@ -117,15 +117,70 @@ export const login = async (req, res) => {
   }
 };
 
+// export const getAdmin = async (req, res) => {
+//   try {
+//     // Verify the user role (only "admin" can get teachers)
+//     const teachers = await User.find({ role: "admin" });
+//     res.status(200).json(teachers);
+//   } catch (error) {
+//     res.status(500).json({ message: "Server Error" });
+//   }
+// };
+// export const getAdmin = async (req, res) => {
+//   const { sessionId } = req.params;
+
+//   try {
+//     // Convert sessionId to ObjectId
+//     const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+//     // Fetch admins for the specified session
+//     const admins = await User.find({
+//       role: "admin",
+//       session: sessionObjectId, // Add session filter here
+//     })
+//       .select("username email address phone _id") // Adjust fields as needed
+//       .exec();
+
+//     if (admins.length === 0) {
+//       return res
+//         .status(404)
+//         .json({ error: "No admins found for that session" });
+//     }
+
+//     return res.status(200).json(admins);
+//   } catch (error) {
+//     console.error("Error fetching admins:", error);
+//     return res.status(500).json({ error: "Failed to get admins" });
+//   }
+// };
+
 export const getAdmin = async (req, res) => {
+  const { sessionId } = req.params;
+
   try {
-    // Verify the user role (only "admin" can get teachers)
-    const teachers = await User.find({ role: "admin" });
-    res.status(200).json(teachers);
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+    // Fetch admins for the specified session
+    const admins = await User.find({
+      role: "admin",
+      session: sessionObjectId, // Remove ObjectId conversion if session is stored as a string
+    })
+      .select("username email address phone _id") // Adjust fields as needed
+      .exec();
+
+    if (admins.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No admins found for that session" });
+    }
+
+    return res.status(200).json(admins);
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    console.error("Error fetching admins:", error);
+    return res.status(500).json({ error: "Failed to get admins" });
   }
 };
+
 export const getParent = async (req, res) => {
   try {
     // Verify the user role (only "admin" can get teachers)
