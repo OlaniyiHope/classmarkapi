@@ -63,19 +63,44 @@ export const register = async (req, res) => {
     return res.status(500).json({ error: "Registration failed" });
   }
 };
+// export const getUserByRole = async (req, res) => {
+//   const role = req.params.role;
+
+//   try {
+//     // Find users based on their role
+//     const users = await User.find({ role: role }).exec();
+
+//     if (!users) {
+//       return res.status(404).json({ error: "No users found with that role" });
+//     }
+
+//     return res.status(200).json(users);
+//   } catch {
+//     return res.status(500).json({ error: "Failed to get users" });
+//   }
+// };
 export const getUserByRole = async (req, res) => {
-  const role = req.params.role;
+  const { role, sessionId } = req.params;
 
   try {
-    // Find users based on their role
-    const users = await User.find({ role: role }).exec();
+    // Convert sessionId to ObjectId
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
 
-    if (!users) {
-      return res.status(404).json({ error: "No users found with that role" });
+    // Find users based on their role and session
+    const users = await User.find({
+      role: role,
+      session: sessionObjectId, // Add session filter here
+    }).exec();
+
+    if (!users || users.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No users found with that role and session" });
     }
 
     return res.status(200).json(users);
-  } catch {
+  } catch (error) {
+    console.error("Error fetching users:", error);
     return res.status(500).json({ error: "Failed to get users" });
   }
 };

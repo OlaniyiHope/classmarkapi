@@ -92,7 +92,7 @@ const commonRoute = (s3, authRoutes = []) => {
   // );
   router.post("/register", register);
   router.post("/login", login);
-  router.get("/users/:role", getUserByRole);
+  router.get("/users/:role/:sessionId", getUserByRole);
   router.post(
     "/addSessionToUsersWithoutSession",
     addSessionToUsersWithoutSession
