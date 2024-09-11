@@ -7,6 +7,7 @@ import Session from "../models/sessionModel.js";
 import Setting from "../models/settingModel.js";
 import Account from "../models/accountModel.js";
 import bcrypt from "bcryptjs";
+import Download from "../models/downloadModel.js";
 
 // export const register = async (req, res) => {
 //   try {
@@ -60,6 +61,7 @@ export const register = async (req, res) => {
 
     return res.status(201).json({ token, user });
   } catch (error) {
+    console.error("Registration error:", error);
     return res.status(500).json({ error: "Registration failed" });
   }
 };
@@ -883,6 +885,32 @@ export const addSessionToUsersWithoutSession = async (req, res) => {
 
     // Bulk update users to include the sessionId if they don't already have one
     const updateResult = await User.updateMany(
+      { session: { $exists: false } }, // Find users without a session field
+      { $set: { session: sessionId } } // Set the session field
+    );
+
+    res.status(200).json({
+      message: "Users updated successfully",
+      matchedCount: updateResult.matchedCount,
+      modifiedCount: updateResult.modifiedCount,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const addSessionToDownloadWithoutSession = async (req, res) => {
+  try {
+    const { sessionId } = req.body;
+
+    // Validate sessionId
+    const session = await Session.findById(sessionId);
+    if (!session) {
+      return res.status(400).json({ error: "Invalid session ID" });
+    }
+
+    // Bulk update users to include the sessionId if they don't already have one
+    const updateResult = await Download.updateMany(
       { session: { $exists: false } }, // Find users without a session field
       { $set: { session: sessionId } } // Set the session field
     );

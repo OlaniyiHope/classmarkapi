@@ -1,5 +1,6 @@
 import Receipt from "../models/receiptModel.js";
-
+import Session from "../models/sessionModel.js";
+import mongoose from "mongoose";
 import User from "../models/userModel.js";
 
 export const getInvoiceId = async (req, res) => {
@@ -192,13 +193,55 @@ export const getReceiptsByStudentId = async (req, res) => {
   }
 };
 export const getAllReceipts = async (req, res) => {
+  const { sessionId } = req.params; // Extract the session ID from the route parameters
+
   try {
-    // Find all receipts
-    const receipts = await Receipt.find();
+    // Convert sessionId to ObjectId if stored as ObjectId in the database
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+    console.log("Session ID:", sessionId); // Log the sessionId
+    console.log("Session ObjectId:", sessionObjectId); // Log the converted ObjectId
+
+    // Find all receipts for the specified session
+    const receipts = await Receipt.find({ session: sessionObjectId }).exec();
+
+    console.log("Receipts found:", receipts); // Log the receipts found
+
+    if (receipts.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No receipts found for the specified session" });
+    }
 
     return res.status(200).json(receipts);
   } catch (error) {
-    console.error("Error fetching all receipts:", error);
+    console.error("Error fetching receipts:", error);
     return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export const addSessionToReceiptWithoutSession = async (req, res) => {
+  try {
+    const { sessionId } = req.body;
+
+    // Validate sessionId
+    const session = await Session.findById(sessionId);
+    if (!session) {
+      return res.status(400).json({ error: "Invalid session ID" });
+    }
+
+    // Bulk update users to include the sessionId if they don't already have one
+    const updateResult = await Receipt.updateMany(
+      { session: { $exists: false } }, // Find users without a session field
+      { $set: { session: sessionId } } // Set the session field
+    );
+
+    res.status(200).json({
+      message: "Users updated successfully",
+      matchedCount: updateResult.matchedCount,
+      modifiedCount: updateResult.modifiedCount,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
   }
 };

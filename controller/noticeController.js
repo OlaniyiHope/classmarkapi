@@ -3,20 +3,28 @@ import Notice from "../models/noticeModel.js";
 import Session from "../models/sessionModel.js";
 import mongoose from "mongoose";
 export const createNotice = async (req, res) => {
-  const { date, notice, posted_by } = req.body;
+  const { date, notice, posted_by, sessionId } = req.body;
 
   try {
+    // Validate session ID
+    const session = await Session.findById(sessionId);
+    if (!session) {
+      return res.status(400).json({ error: "Invalid session ID" });
+    }
+
+    // Create a new notice with the session association
     const newNotice = new Notice({
       date,
       notice,
       posted_by,
+      session: sessionId, // Associate with the session
     });
 
     const savedNotice = await newNotice.save();
 
     res.status(201).json(savedNotice);
   } catch (error) {
-    console.error(error);
+    console.error("Failed to create notice:", error);
     res.status(500).json({ error: "Failed to create notice" });
   }
 };

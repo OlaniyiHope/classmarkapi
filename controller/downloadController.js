@@ -1,5 +1,6 @@
 import Download from "../models/downloadModel.js";
-
+import Session from "../models/sessionModel.js";
+import mongoose from "mongoose";
 export const createDownload = async (req, res, s3) => {
   try {
     const { date, title, desc, className, subject } = req.body;
@@ -55,19 +56,27 @@ export const createDownload = async (req, res, s3) => {
 };
 
 export const getDownload = async (req, res) => {
-  try {
-    // Assuming you only have one school profile, you can fetch the first one
-    const schoolSetting = await Download.find();
+  const { sessionId } = req.params;
 
-    if (!schoolSetting) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Download not found" });
+  try {
+    // Convert sessionId to ObjectId if necessary
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+    // Find all downloads for the specified session
+    const schoolSetting = await Download.find({
+      session: sessionObjectId,
+    }).exec();
+
+    if (!schoolSetting || schoolSetting.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Download not found for the specified session",
+      });
     }
 
     res.status(200).json({ success: true, data: schoolSetting });
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching downloads:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };

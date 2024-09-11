@@ -1,6 +1,7 @@
 import express from "express";
 
 import {
+  addSessionToReceiptWithoutSession,
   createReceipt,
   deleteInv,
   getAllReceipts,
@@ -14,6 +15,10 @@ import {
 const router = express.Router();
 
 router.post("/receipt", createReceipt);
+router.post(
+  "/addSessionToReceiptWithoutSession",
+  addSessionToReceiptWithoutSession
+);
 router.get("/receipt/:id", getReceiptById);
 
 // routes/receiptRoutes.js
@@ -22,7 +27,8 @@ router.get("/receipt/:studentId", getReceiptsByStudentId);
 // router.get("/receipt/:id", getInvoiceId);
 router.get("/receipt/student/:id", getStudentInvoiceId);
 // router.get("/receipt/", getAll);
-router.get("/receipt", getAllReceipts);
+router.get("/receipt-session/:sessionId", getAllReceipts);
+
 // Define the route in your Express application
 router.get("/receipts/student/:id", getReceiptsByStudentsId);
 
