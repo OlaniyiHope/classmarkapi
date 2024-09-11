@@ -17,6 +17,7 @@ import {
   getStudentTheoryScoresByStudent,
   // saveTotalScores,
   getStudentTheoryScoresByStudentAndClassNameAndSubject,
+  addSessionToOnlineExamWithoutSession,
 } from "../controller/examlistController.js";
 import authenticateUser from "../middleware/authMiddleware.js";
 const router = express.Router();
@@ -28,6 +29,11 @@ router.post(
 
   saveStudentTheoryScore
 );
+router.post(
+  "/addSessionToOnlineExamWithoutSession",
+  addSessionToOnlineExamWithoutSession
+);
+router.get("/get-exam/:sessionId", getAllExams);
 // router.post("/save-total-scores", saveTotalScores);
 router.get("/get-exam/:id", getExamById);
 router.get(
@@ -43,7 +49,8 @@ router.get("/get-exams-by-class/:classId", authenticateUser, getExamsByClass);
 
 // Get a list of all exams
 
-router.get("/get-exam", getAllExams);
+// router.get("/get-exam", getAllExams);
+
 router.get("/student-theory-scores/:examId", getStudentTheoryScoresByExam);
 router.get(
   "/student-theory-scores/:examId/:studentId",

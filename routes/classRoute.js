@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  addSessionToClassWithoutSession,
   createClass,
   deleteClass,
   getClass,
@@ -11,8 +12,14 @@ const router = express.Router();
 
 //CREATE
 router.post("/class", createClass);
+router.post(
+  "/addSessionToClassWithoutSession",
+  addSessionToClassWithoutSession
+);
 
-router.get("/class", getClass);
+// router.get("/class", getClass);
+router.get("/class/:sessionId", getClass);
+
 router.get("/class/:id", getsingleClass);
 
 // Update a class

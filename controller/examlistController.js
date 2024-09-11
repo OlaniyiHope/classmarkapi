@@ -4,6 +4,8 @@ import StudentTheoryScore from "../models/theoryModel.js";
 import User from "../models/userModel.js";
 import classModel from "../models/classModel.js";
 import Subject from "../models/subModel.js";
+import Session from "../models/sessionModel.js";
+import mongoose from "mongoose";
 // Create a new exam
 // export const createExam = async (req, res) => {
 //   try {
@@ -54,11 +56,55 @@ export const editExam = async (req, res) => {
 };
 
 // Get a list of all exams
+// export const getAllExams = async (req, res) => {
+//   try {
+//     const exams = await Exam.find();
+//     res.status(200).json(exams);
+//   } catch {
+//     res.status(500).json({ error: "An error occurred while fetching exams." });
+//   }
+// };
+// export const getAllExams = async (req, res) => {
+//   const { sessionId } = req.params; // Extract the session ID from the route parameters
+
+//   try {
+//     // Convert sessionId to ObjectId if needed
+//     const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+//     // Find all exams with the specified session ID
+//     const exams = await Exam.find({ session: sessionObjectId }).exec();
+
+//     if (exams.length === 0) {
+//       return res
+//         .status(404)
+//         .json({ error: "No exams found for the specified session" });
+//     }
+
+//     res.status(200).json(exams);
+//   } catch (err) {
+//     console.error("Error fetching exams:", err);
+//     res.status(500).json({ error: "An error occurred while fetching exams." });
+//   }
+// };
 export const getAllExams = async (req, res) => {
+  const { sessionId } = req.params;
+
+  console.log("Session ID:", sessionId);
+
   try {
-    const exams = await Exam.find();
+    const exams = await Exam.find({ session: sessionId }).exec();
+
+    console.log("Found Exams:", exams);
+
+    if (exams.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No exams found for the specified session" });
+    }
+
     res.status(200).json(exams);
-  } catch {
+  } catch (err) {
+    console.error("Error fetching exams:", err);
     res.status(500).json({ error: "An error occurred while fetching exams." });
   }
 };
@@ -721,3 +767,28 @@ export const getStudentTheoryScoresByStudentAndClassNameAndSubject = async (
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // };
+export const addSessionToOnlineExamWithoutSession = async (req, res) => {
+  try {
+    const { sessionId } = req.body;
+
+    // Validate sessionId
+    const session = await Session.findById(sessionId);
+    if (!session) {
+      return res.status(400).json({ error: "Invalid session ID" });
+    }
+
+    // Bulk update users to include the sessionId if they don't already have one
+    const updateResult = await Exam.updateMany(
+      { session: { $exists: false } }, // Find users without a session field
+      { $set: { session: sessionId } } // Set the session field
+    );
+
+    res.status(200).json({
+      message: "Users updated successfully",
+      matchedCount: updateResult.matchedCount,
+      modifiedCount: updateResult.modifiedCount,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
+};
