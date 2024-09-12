@@ -5,6 +5,7 @@ import {
   getsingleGrade,
   createGrade,
   updateGrade,
+  addSessionToGradeWithoutSession,
 } from "../controller/gradeController.js";
 
 const router = express.Router();
@@ -13,7 +14,12 @@ const router = express.Router();
 router.post("/grade", createGrade);
 // router.delete("/grade/:id", deleteGrade);
 
-router.get("/grade", getGrade);
+router.post(
+  "/addSessionToGradeWithoutSession",
+  addSessionToGradeWithoutSession
+);
+
+router.get("/grade/:sessionId", getGrade);
 router.get("/grade/find/:id", getsingleGrade);
 router.put("/grade/:id", updateGrade);
 

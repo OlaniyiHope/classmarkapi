@@ -1,8 +1,35 @@
 import Grade from "../models/gradeModel.js";
+
+import mongoose from "mongoose";
+
+import Session from "../models/sessionModel.js";
+// export const createGrade = async (req, res) => {
+//   const newGrade = new Grade(req.body);
+//   try {
+//     const savedGrade = await newGrade.save();
+//     res.status(200).json(savedGrade);
+//   } catch (err) {
+//     console.error("Error:", err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
 export const createGrade = async (req, res) => {
-  const newGrade = new Grade(req.body);
+  const { sessionId, ...gradeData } = req.body; // Extract sessionId from the request body
   try {
+    // Ensure sessionId is valid
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+    // Create a new grade, including the session ID
+    const newGrade = new Grade({
+      ...gradeData, // Include the rest of the grade data
+      session: sessionObjectId, // Add session ID to the grade
+    });
+
+    // Save the new grade to the database
     const savedGrade = await newGrade.save();
+
+    // Respond with the saved grade
     res.status(200).json(savedGrade);
   } catch (err) {
     console.error("Error:", err);
@@ -10,14 +37,39 @@ export const createGrade = async (req, res) => {
   }
 };
 //GET RESULT
+// export const getGrade = async (req, res) => {
+//   try {
+//     const list = await Grade.find();
+//     res.status(200).json(list);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// };
+
 export const getGrade = async (req, res) => {
+  const { sessionId } = req.params;
+
   try {
-    const list = await Grade.find();
-    res.status(200).json(list);
+    // Convert sessionId to ObjectId if necessary
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+    // Fetch grades for the specified session
+    const grades = await Grade.find({ session: sessionObjectId });
+
+    if (!grades || grades.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No grades found for the specified session",
+      });
+    }
+
+    res.status(200).json({ success: true, data: grades });
   } catch (err) {
-    res.status(500).json(err);
+    console.error("Error fetching grades:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
 export const getsingleGrade = async (req, res, next) => {
   try {
     const grade = await Grade.findById(req.params.id);
@@ -77,5 +129,31 @@ export const updateGrade = async (req, res) => {
   } catch (error) {
     console.error("Error updating grade:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const addSessionToGradeWithoutSession = async (req, res) => {
+  try {
+    const { sessionId } = req.body;
+
+    // Validate sessionId
+    const session = await Session.findById(sessionId);
+    if (!session) {
+      return res.status(400).json({ error: "Invalid session ID" });
+    }
+
+    // Bulk update users to include the sessionId if they don't already have one
+    const updateResult = await Grade.updateMany(
+      { session: { $exists: false } }, // Find users without a session field
+      { $set: { session: sessionId } } // Set the session field
+    );
+
+    res.status(200).json({
+      message: "Users updated successfully",
+      matchedCount: updateResult.matchedCount,
+      modifiedCount: updateResult.modifiedCount,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
   }
 };
