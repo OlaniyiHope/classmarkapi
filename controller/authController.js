@@ -32,9 +32,21 @@ import Download from "../models/downloadModel.js";
 export const register = async (req, res) => {
   try {
     const { role, sessionId, ...userData } = req.body; // Capture session ID
+    const { email, username, password } = userData;
 
     if (!["admin", "teacher", "parent", "student"].includes(role)) {
       return res.status(400).json({ error: "Invalid role" });
+    }
+    const existingUser = await User.findOne({
+      $or: [{ email: email }, { username: username }],
+    }).exec();
+
+    if (existingUser) {
+      if (existingUser.username === username) {
+        return res.status(400).json({ error: "Username already exists" });
+      } else if (existingUser.email === email) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
     }
 
     const session = await Session.findById(sessionId);
@@ -205,16 +217,6 @@ export const getAdmin = async (req, res) => {
   } catch (error) {
     console.error("Error fetching admins:", error);
     return res.status(500).json({ error: "Failed to get admins" });
-  }
-};
-
-export const getParent = async (req, res) => {
-  try {
-    // Verify the user role (only "admin" can get teachers)
-    const teachers = await User.find({ role: "parent" });
-    res.status(200).json(teachers);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
   }
 };
 

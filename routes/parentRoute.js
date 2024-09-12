@@ -5,6 +5,6 @@ import authenticateUser from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post("/create-parent", authenticateUser, createParent);
-router.get("/get-parent", getParent);
+router.get("/get-parent/:sessionId", getParent);
 
 export default router;

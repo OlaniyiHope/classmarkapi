@@ -1,5 +1,5 @@
 import express from "express";
-
+import mongoose from "mongoose";
 import User from "../models/userModel.js"; // Replace with your actual model
 
 const router = express.Router();
@@ -35,15 +35,23 @@ export const createParent = async (req, res) => {
 // Get All Teachers (Authenticated Route)
 
 export const getParent = async (req, res) => {
-  try {
-    // Verify the user role (only "admin" can get teachers)
-    // if (req.user.role !== "admin") {
-    //   return res.status(403).json({ message: "Permission denied" });
-    // }
+  const { sessionId } = req.params;
 
-    const parent = await User.find({ role: "parent" });
+  try {
+    if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+      return res.status(400).json({ message: "Invalid session ID" });
+    }
+
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+    const parent = await User.find({
+      role: "parent",
+      session: sessionObjectId,
+    });
+
     res.status(200).json(parent);
-  } catch {
+  } catch (error) {
+    console.error(error); // Log the error to get more details
     res.status(500).json({ message: "Server Error" });
   }
 };
