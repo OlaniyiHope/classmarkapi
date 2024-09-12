@@ -20,6 +20,9 @@ const authenticateUser = (req, res, next) => {
       process.env.JWT_SECRET
     );
 
+    // req.user = decodedToken; // Add the authenticated user details to the request object
+    // next();
+
     console.log("Decoded Token:", decodedToken);
 
     // Set decodedToken on the request object
