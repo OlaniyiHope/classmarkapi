@@ -68,6 +68,58 @@ export const deleteInv = async (req, res) => {
 
 // controllers/receiptController.js
 // controllers/receiptController.js
+// export const createReceipt = async (req, res) => {
+//   try {
+//     const {
+//       typeOfPayment,
+//       status,
+//       reason,
+//       studentName,
+//       classname,
+//       paid,
+//       amount,
+//       date,
+//     } = req.body;
+
+//     console.log("Request Body:", req.body); // Log the entire request body
+
+//     // Check if the student with the provided name exists
+//     const student = await User.findOne({ studentName, classname });
+
+//     if (!student) {
+//       console.log("Student not found:", { studentName, classname });
+//       return res.status(404).json({ error: "Student not found" });
+//     }
+
+//     console.log("Student found:", student);
+
+//     // Create a receipt
+//     const receipt = await Receipt.create({
+//       typeOfPayment,
+//       status,
+//       reason,
+//       studentName,
+//       classname,
+//       paid,
+//       amount,
+//       date,
+//     });
+
+//     console.log("Receipt created:", receipt);
+
+//     // Include the student's ID in the response
+//     const response = {
+//       receipt,
+//       studentId: student._id, // Assuming the student model has an '_id' field
+//     };
+
+//     return res.status(201).json(response);
+//   } catch (error) {
+//     console.error("Error creating receipt:", error);
+//     return res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
+
 export const createReceipt = async (req, res) => {
   try {
     const {
@@ -79,27 +131,37 @@ export const createReceipt = async (req, res) => {
       paid,
       amount,
       date,
+      sessionId, // Add sessionId from the request body
     } = req.body;
 
-    console.log("Request Body:", req.body); // Log the entire request body
+    console.log("Request Body:", req.body);
 
-    // Check if the student with the provided name exists
-    const student = await User.findOne({ studentName, classname });
+    // Check if the student with the provided name and class exists in the given session
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId); // Convert sessionId to ObjectId if necessary
+
+    const student = await User.findOne({
+      studentName,
+      classname,
+      session: sessionObjectId, // Ensure the student belongs to the correct session
+    });
 
     if (!student) {
-      console.log("Student not found:", { studentName, classname });
-      return res.status(404).json({ error: "Student not found" });
+      console.log("Student not found:", { studentName, classname, sessionId });
+      return res
+        .status(404)
+        .json({ error: "Student not found in the specified session" });
     }
 
     console.log("Student found:", student);
 
-    // Create a receipt
+    // Create a new receipt associated with the session and student
     const receipt = await Receipt.create({
       typeOfPayment,
       status,
       reason,
       studentName,
       classname,
+      session: sessionObjectId, // Add session ID to the receipt
       paid,
       amount,
       date,
