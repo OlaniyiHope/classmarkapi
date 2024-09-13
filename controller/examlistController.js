@@ -7,28 +7,42 @@ import Subject from "../models/subModel.js";
 import Session from "../models/sessionModel.js";
 import mongoose from "mongoose";
 // Create a new exam
+
 // export const createExam = async (req, res) => {
 //   try {
-//     const exam = new Exam(req.body);
+//     const { date } = req.body;
+//     const exam = new Exam({
+//       ...req.body,
+//       date: parseISO(date),
+//     });
 //     const createdExam = await exam.save();
 //     res.status(201).json(createdExam);
-//   } catch (error) {
+//   } catch {
 //     res
 //       .status(500)
 //       .json({ error: "An error occurred while creating the exam." });
 //   }
 // };
-
 export const createExam = async (req, res) => {
   try {
-    const { date } = req.body;
+    const { date, sessionId } = req.body; // Get sessionId from request body
+
+    // Validate sessionId
+    if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+      return res.status(400).json({ error: "Invalid session ID" });
+    }
+
     const exam = new Exam({
       ...req.body,
       date: parseISO(date),
+      session: sessionId, // Save the session ID in the exam document
     });
+
     const createdExam = await exam.save();
+
     res.status(201).json(createdExam);
-  } catch {
+  } catch (error) {
+    console.error("Error creating exam:", error);
     res
       .status(500)
       .json({ error: "An error occurred while creating the exam." });
