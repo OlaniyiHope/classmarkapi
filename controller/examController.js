@@ -1,13 +1,16 @@
 import Exam from "../models/examlistModel.js";
 import User from "../models/userModel.js";
 
+import mongoose from "mongoose";
+
+
 export const submitExam = async (req, res) => {
   const { sessionId } = req.params;
 
 
   try {
 
-    const { examId, answers, userId, score, sessionId } = req.body; // Include the "score" in the destructuring
+    const { examId, answers, userId, score } = req.body; // Include the "score" in the destructuring
 
     const sessionObjectId = mongoose.Types.ObjectId(sessionId);
 
@@ -17,10 +20,11 @@ export const submitExam = async (req, res) => {
     }
 
     // Fetch the exam and ensure it exists
-    const exam = await Exam.find({
-      examId,
+    const exam = await Exam.findOne({
+     _id: examId,
       session: sessionObjectId
     }).populate("questions");
+
 
     if (!exam) {
       return res.status(404).json({ message: "Exam not found" });
@@ -32,6 +36,15 @@ export const submitExam = async (req, res) => {
       answers,
       score, // Use the received score
     };
+
+    if (!exam.submittedAnswers) {
+      exam.submittedAnswers = [];
+    }
+
+    console.log("Exam:", exam);  // Check if the exam exists and has the submittedAnswers array
+console.log("SubmittedAnswers:", exam?.submittedAnswers);  // Check if submittedAnswers exists
+console.log("first:", userSubmittedAnswers)
+
 
     exam.submittedAnswers.push(userSubmittedAnswers);
     await exam.save();
@@ -126,35 +139,53 @@ export const getAllScore = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 export const getAllStudentScores = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { userId, sessionId } = req.params;
 
-    if (!userId) {
+    if (!userId || !sessionId) {
       return res.status(400).json({ message: "Invalid parameters" });
     }
 
-    // Find all exams that the student has submitted answers for
+    const userObjectId = mongoose.Types.ObjectId(userId);
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+    // Find all exams where the student has submitted answers and sessionId matches
     const exams = await Exam.find({
-      "submittedAnswers.userId": userId,
+      "submittedAnswers.userId": userObjectId, // Match userId in submittedAnswers
+      session: sessionObjectId, // Match sessionId
     }).populate({
-      path: "submittedAnswers",
-      match: { userId }, // Filter by userId
+      path: "submittedAnswers.userId", // Populate the userId to get student details
     });
 
     // Extract student names, exam titles, and scores
     const studentScores = exams.map((exam) => {
       const { title, subject } = exam;
+
+      console.log(title)
+
+      // Find the specific user's submission in each exam
       const submission = exam.submittedAnswers.find(
-        (answer) => answer.userId.toString() === userId
+        (answer) => answer.userId.equals(userObjectId) // Use equals for ObjectId comparison
       );
+
+
+      console.log(submission)
+
+      // Handle case where no submission is found (if needed)
+      if (!submission) {
+        return null;
+      }
+
       const { score } = submission;
+
       return {
         examTitle: title,
         subject,
         score,
       };
-    });
+    }).filter(Boolean); // Filter out any null values
 
     console.log("Student Scores:", studentScores);
 
@@ -164,3 +195,4 @@ export const getAllStudentScores = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+

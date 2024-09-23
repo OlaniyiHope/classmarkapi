@@ -53,13 +53,14 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
     },
-    session: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Session", // Reference to the Session model
-      required: true,
-    },
+    // session: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Session", // Reference to the Session model
+    //   required: true,
+    // },
+    session: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Session' }],
   },
-  { timestamps: true }
+  { timestamps: true } 
 );
 
 export default mongoose.model("User", userSchema);

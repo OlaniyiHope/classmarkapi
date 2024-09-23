@@ -16,7 +16,7 @@ const router = express.Router();
 router.post("/offlineexam", submitExam);
 
 router.get("/getofflineexam", getExam);
-router.post("/save-psy", savePsy);
+router.post("/save-psy/:sessionId", savePsy);
 // Add the new route for getting scores
 router.get("/get-scores/:examName", getMark);
 
@@ -24,7 +24,7 @@ router.get("/get-psy-by-student/:studentId/:sessionId", authenticateUser, getPsy
 
 router.get("/get-all-psy/:examId", getScores);
 
-router.put("/update-all-psy", updateMarks);
+router.put("/update-all-psy/", updateMarks);
 
 router.put("/update-marks/:studentId", updateMark);
 router.delete("/deleteexam/:examId", deleteExam);

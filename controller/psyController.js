@@ -5,6 +5,8 @@ import Exam from "../models/examModel.js";
 export const savePsy = async (req, res) => {
   try {
     const { examId, updates } = req.body;
+    const sessionId = req.params.sessionId; // Get the class identifier from the request parameters
+
 
     // Check if updates array is present in the request body
     if (!updates || !Array.isArray(updates)) {
@@ -14,14 +16,14 @@ export const savePsy = async (req, res) => {
     }
 
     // Fetch existing marks for the specified exam and subject
-    const existingMarks = await Psy.findOne({ examId });
+    const existingMarks = await Psy.findOne({ examId, session: sessionId });
 
     // If existing marks are not found or the array is empty, proceed to create new marks
     if (!existingMarks || existingMarks.marks.length === 0) {
       // Save marks to the database using the provided examId and subjectId
       const savedMarks = await Psy.create({
         examId,
-
+        session: sessionId,
         marks: await Promise.all(
           updates.map(async (mark) => {
             const {
@@ -31,8 +33,8 @@ export const savePsy = async (req, res) => {
               punctuality,
               talking,
               eyecontact,
-              remarks,
-              premarks,
+              remarks = "No remarks",  
+              premarks = "No principal remarks" ,
             } = mark;
 
             return {
@@ -298,6 +300,7 @@ export const updateMark = async (req, res) => {
 export const updateMarks = async (req, res) => {
   try {
     const { examId, updates } = req.body;
+    
 
     if (!examId || !updates || !Array.isArray(updates)) {
       return res.status(400).json({ error: "Invalid request payload" });
