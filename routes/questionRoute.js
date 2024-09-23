@@ -1,6 +1,6 @@
 // examRoutes.js
 import express from "express";
-
+ 
 import authenticateUser from "../middleware/authMiddleware.js";
 import {
   createQuestion,
@@ -12,7 +12,7 @@ import {
 const router = express.Router();
 
 // Create a new question
-router.post("/questions", authenticateUser, createQuestion);
+router.post("/questions/:sessionId", authenticateUser, createQuestion);
 // Retrieve questions for a specific exam
 router.get("/questions/:examId", authenticateUser, getQuestions);
 router.get("/:questionId", getQuestionById);

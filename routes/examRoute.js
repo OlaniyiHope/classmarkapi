@@ -17,7 +17,7 @@ router.post("/exams/submit/:sessionId", authenticateUser, submitExam);
 // Create a route to get the student's score and name
 router.get("/exams/score/:examId/:userId/:session", authenticateUser, getExamScore);
 router.get(
-  "/students/all-scores/:userId",
+  "/students/all-scores/:userId/:sessionId",
   authenticateUser,
   getAllStudentScores
 );

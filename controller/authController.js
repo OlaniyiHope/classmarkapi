@@ -905,6 +905,97 @@ export const addSessionToUsersWithoutSession = async (req, res) => {
     res.status(500).json({ error: "Server Error" });
   }
 };
+// export const addAnotherSessionToUserWithSession = async (req, res) => {
+//   try {
+//     const { sessionId } = req.body;
+
+//     // Validate sessionId
+//     const session = await Session.findById(sessionId);
+//     if (!session) {
+//       return res.status(400).json({ error: "Invalid session ID" });
+//     }
+
+//     // Bulk update users to include the sessionId if they don't already have one
+//     const updateResult = await User.updateMany(
+//       { session: { $exists: false } }, // Find users without a session field
+//       { $set: { session: sessionId } } // Set the session field
+//     );
+
+//     res.status(200).json({
+//       message: "Users updated successfully",
+//       matchedCount: updateResult.matchedCount,
+//       modifiedCount: updateResult.modifiedCount,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: "Server Error" });
+//   }
+// };
+
+// export const addAnotherSessionToUserWithSession = async (req, res) => {
+//   try {
+//     const { sessionId, userId } = req.body;
+
+//     // Validate sessionId
+//     const session = await Session.findById(sessionId);
+//     if (!session) {
+//       return res.status(400).json({ error: "Invalid session ID" });
+//     }
+
+//     // Find the user and add the sessionId to the session array if it's not already present
+//     const updateResult = await User.updateOne(
+//       { _id: userId }, // Find the user by ID
+//       { $addToSet: { session: sessionId } } // Add sessionId to the session array if not present
+//     );
+
+//     res.status(200).json({
+//       message: "Session added successfully",
+//       matchedCount: updateResult.matchedCount,
+//       modifiedCount: updateResult.modifiedCount,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: "Server Error" });
+//   }
+// };
+
+export const addAnotherSessionToUserWithSession = async (req, res) => {
+  try {
+    const { sessionIds } = req.body; // Expect an array of session IDs
+
+    // Validate that sessionIds is an array
+    if (!Array.isArray(sessionIds)) {
+      return res.status(400).json({ error: "sessionIds must be an array" });
+    }
+
+    // Migration: Convert session field to array if it's not already an array
+    await User.updateMany(
+      { session: { $exists: true, $not: { $type: 'array' } } },
+      { $set: { session: [] } }
+    );
+
+    // Ensure each session exists before adding
+    const validSessions = await Session.find({ _id: { $in: sessionIds } });
+    if (validSessions.length !== sessionIds.length) {
+      return res.status(400).json({ error: "One or more session IDs are invalid" });
+    }
+
+    // Add each sessionId to the session array of all users without duplicates
+    const updateResult = await User.updateMany(
+      {}, // No filter: This will apply to all users
+      { $addToSet: { session: { $each: sessionIds } } } // Add each sessionId to the session array
+    );
+
+    res.status(200).json({
+      message: "Sessions added successfully",
+      matchedCount: updateResult.matchedCount,
+      modifiedCount: updateResult.modifiedCount,
+    });
+  } catch (error) {
+    console.error(error); // Log error for debugging
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+
 
 export const addSessionToDownloadWithoutSession = async (req, res) => {
   try {
