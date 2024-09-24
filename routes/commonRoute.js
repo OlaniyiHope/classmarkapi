@@ -19,6 +19,8 @@ import {
   addSessionToUsersWithoutSession,
   addSessionToDownloadWithoutSession,
   addAnotherSessionToUserWithSession,
+  getStudentsBySession,
+  getStudentsByClass,
 } from "../controller/authController.js";
 // commonRoute.js
 
@@ -107,6 +109,7 @@ const commonRoute = (s3, authRoutes = []) => {
   );
 
   router.get("/students/:id/:sessionId", authenticateUser, getStudentById);
+  router.get("/get-all-students/:className/:sessionId", authenticateUser, getStudentsByClass);
   router.get("/teachers/:id", authenticateUser, getTeacherById);
   router.get("/get-admin/:id", authenticateUser, getAdminById);
   // router.get("/get-parent/:id", authenticateUser, getParentById);
