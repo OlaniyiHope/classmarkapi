@@ -18,7 +18,7 @@ const router = express.Router();
 //CREATE route
 router.post("/offlineexam", submitExam);
 router.post("/addSessionToExamWithoutSession", addSessionToExamWithoutSession);
-router.post("/save-marks/:session", saveMark);
+router.post("/save-marks/:sessionId", saveMark);
 // Add the new route for getting scores
 router.get("/get-scores/:examName/:sessionId", getMark);
 
