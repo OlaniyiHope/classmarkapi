@@ -880,6 +880,39 @@ export const getStudentById = async (req, res) => {
   }
 };
 
+export const getStudentsBySession = async (req, res) => {
+  const { sessionId } = req.params;
+  console.log("Requested session ID:", sessionId);
+
+  if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+    console.log("Invalid session ID");
+    return res.status(400).json({ error: "Invalid session ID" });
+  }
+
+  try {
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+    // Fetch all students with the matching session ID
+    const students = await User.find({
+      session: sessionObjectId,
+      role: "student" // Assuming that you want only users with role "student"
+    }).exec();
+
+    console.log("Found students in database:", students);
+
+    if (students.length === 0) {
+      console.log("No students found for that session");
+      return res.status(404).json({ error: "No students found for that session" });
+    }
+
+    return res.status(200).json(students);
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    return res.status(500).json({ error: "Failed to get students" });
+  }
+};
+
+
 export const addSessionToUsersWithoutSession = async (req, res) => {
   try {
     const { sessionId } = req.body;

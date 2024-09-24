@@ -23,6 +23,7 @@ import receiptRoute from "./routes/receiptRoute.js";
 import onScreenRoute from "./routes/onScreenRoute.js";
 import noticeRoute from "./routes/noticeRoute.js";
 import sessionRoute from "./routes/sessionRoute.js";
+import pastQuestRoute from "./routes/pastQuestRoute.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import dotenv from "dotenv";
@@ -117,6 +118,7 @@ app.use("/api/", questionRoute);
 app.use("/api/", examRoute);
 app.use("/api/", offlineRoute);
 app.use("/api/", psyRoute);
+app.use("/api/", pastQuestRoute);
 
 // app.use("/api/", commonRoute(s3));
 const PORT = process.env.PORT || 5000;

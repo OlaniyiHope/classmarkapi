@@ -7,13 +7,10 @@ import mongoose from "mongoose";
 export const submitExam = async (req, res) => {
   const { sessionId } = req.params;
 
-
   try {
-
     const { examId, answers, userId, score } = req.body; // Include the "score" in the destructuring
 
     const sessionObjectId = mongoose.Types.ObjectId(sessionId);
-
 
     if (!examId || !answers || !userId) {
       return res.status(400).json({ message: "Invalid submission data" });
@@ -21,32 +18,35 @@ export const submitExam = async (req, res) => {
 
     // Fetch the exam and ensure it exists
     const exam = await Exam.findOne({
-     _id: examId,
-      session: sessionObjectId
+      _id: examId,
+      session: sessionObjectId,
     }).populate("questions");
-
 
     if (!exam) {
       return res.status(404).json({ message: "Exam not found" });
     }
 
-    // Update the user's score in the exam
     const userSubmittedAnswers = {
       userId,
       answers,
       score, // Use the received score
     };
 
-    if (!exam.submittedAnswers) {
-      exam.submittedAnswers = [];
+    // Check if the user has already submitted answers
+    const existingSubmissionIndex = exam.submittedAnswers.findIndex(
+      (submission) => submission.userId.toString() === userId
+    );
+
+    if (existingSubmissionIndex !== -1) {
+      // If the user has already submitted, update the existing submission
+      exam.submittedAnswers[existingSubmissionIndex] = userSubmittedAnswers;
+      console.log("Updating existing submission:", userSubmittedAnswers);
+    } else {
+      // If the user hasn't submitted yet, add a new submission
+      exam.submittedAnswers.push(userSubmittedAnswers);
+      console.log("New submission:", userSubmittedAnswers);
     }
 
-    console.log("Exam:", exam);  // Check if the exam exists and has the submittedAnswers array
-console.log("SubmittedAnswers:", exam?.submittedAnswers);  // Check if submittedAnswers exists
-console.log("first:", userSubmittedAnswers)
-
-
-    exam.submittedAnswers.push(userSubmittedAnswers);
     await exam.save();
 
     res.json({
@@ -58,6 +58,42 @@ console.log("first:", userSubmittedAnswers)
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+
+export const getSubmissions = async (req, res) => {
+  const { examId, userId } = req.params;
+
+  try {
+    // Fetch the exam and ensure it exists
+    const exam = await Exam.findOne({
+      _id: examId,
+    }).populate("questions");
+
+    if (!exam) {
+      return res.status(404).json({ message: "Exam not found" });
+    }
+
+    // Find the user's submission
+    const userSubmission = exam.submittedAnswers.find(
+      (submission) => submission.userId.toString() === userId
+    );
+
+    if (!userSubmission) {
+      return res.status(404).json({ message: "No submission found for this user" });
+    }
+
+    // Send the user's answers and score back in the response
+    res.json({
+      answers: userSubmission.answers,
+      score: userSubmission.score,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
 
 export const getExamScore = async (req, res) => {
   try {
