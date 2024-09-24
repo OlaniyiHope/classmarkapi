@@ -4,10 +4,12 @@ import Exam from "../models/examModel.js";
 import Session from "../models/sessionModel.js";
 
 export const saveMark = async (req, res) => {
-  try {
-    const { examId, subjectId, updates, session } = req.body;
+  const { sessionId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(session)) {
+  try {
+    const { examId, subjectId, updates } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(sessionId)) {
       return res.status(400).json({ error: "Invalid session ID" });
     }
 
@@ -19,7 +21,7 @@ export const saveMark = async (req, res) => {
     }
 
     // Fetch existing marks for the specified exam and subject
-    const existingMarks = await Mark.findOne({ examId, subjectId, session });
+    const existingMarks = await Mark.findOne({ examId, subjectId, sessionId });
 
     // If existing marks are not found or the array is empty, proceed to create new marks
     if (!existingMarks || existingMarks.marks.length === 0) {
@@ -27,7 +29,7 @@ export const saveMark = async (req, res) => {
       const savedMarks = await Mark.create({
         examId,
         subjectId,
-        session: session,
+        session: sessionId,
         marks: await Promise.all(
           updates.map(async (mark) => {
             const { studentId, testscore, examscore, marksObtained, comment } =
