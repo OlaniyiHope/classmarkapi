@@ -20,11 +20,7 @@ const ClassSchema = new mongoose.Schema(
         ref: "User", // Assuming your student model is named 'Student'
       },
     ],
-    session: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Session", // Reference to the Session model
-      required: true,
-    },
+    session: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Session' }],
   },
   { timestamps: true }
 );

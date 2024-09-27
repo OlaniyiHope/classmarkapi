@@ -59,6 +59,24 @@ export const submitExam = async (req, res) => {
   }
 };
 
+export const findExam = async (req, res) => {
+  const { name, session } = req.body;
+
+  try {
+    const exam = await Exam.findOne({ title: name, session: session }).exec();
+
+    if (exam) {
+      return res.status(200).json({ success: true, examId: exam._id });
+    } else {
+      return res.status(404).json({ success: false, message: 'Exam not found' });
+    }
+  } catch (error) {
+    console.error('Error finding exam:', error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
 
 export const getSubmissions = async (req, res) => {
   const { examId, userId } = req.params;

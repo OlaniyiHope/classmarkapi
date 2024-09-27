@@ -6,13 +6,16 @@ import {
   getExamScore,
   submitExam,
   getAllStudentScores,
-  getSubmissions
+  getSubmissions,
+  findExam
 } from "../controller/examController.js";
 import authenticateUser from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // Create a route for submitting an exam
+router.post("/exams/find-exam", authenticateUser, findExam);
+
 router.post("/exams/submit/:sessionId", authenticateUser, submitExam);
 router.get("/exams/get-submission/:examId/:userId", authenticateUser, getSubmissions);
 
