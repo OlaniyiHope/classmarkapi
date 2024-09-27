@@ -21,6 +21,9 @@ import {
   addAnotherSessionToUserWithSession,
   getStudentsBySession,
   getStudentsByClass,
+  moveData,
+  moveClassesSessions,
+  moveSubData,
 } from "../controller/authController.js";
 // commonRoute.js
 
@@ -114,6 +117,11 @@ const commonRoute = (s3, authRoutes = []) => {
   router.get("/get-admin/:id", authenticateUser, getAdminById);
   // router.get("/get-parent/:id", authenticateUser, getParentById);
   // router.get("/get-admin", authenticateUser, getAdmin);
+
+//move
+  router.post("/move-data", authenticateUser, moveData);
+  router.post("/move-sub-data", authenticateUser, moveSubData);
+  router.post("/move-classes-to-all-sessions", authenticateUser, moveClassesSessions);
 
   router.get("/get-session-admin/:sessionId", getAdmin);
 
