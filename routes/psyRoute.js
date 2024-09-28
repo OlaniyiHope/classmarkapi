@@ -16,6 +16,7 @@ const router = express.Router();
 router.post("/offlineexam", submitExam);
 
 router.get("/getofflineexam", getExam);
+<<<<<<< HEAD
 router.post("/save-psy", savePsy);
 // Add the new route for getting scores
 router.get("/get-scores/:examName", getMark);
@@ -25,6 +26,17 @@ router.get("/get-psy-by-student/:studentId", authenticateUser, getPsybyStudent);
 router.get("/get-all-psy/:examId", getScores);
 
 router.put("/update-all-psy", updateMarks);
+=======
+router.post("/save-psy/:sessionId", savePsy);
+// Add the new route for getting scores
+router.get("/get-scores/:examName", getMark);
+
+router.get("/get-psy-by-student/:studentId/:sessionId", authenticateUser, getPsybyStudent);
+
+router.get("/get-all-psy/:examId", getScores);
+
+router.put("/update-all-psy/", updateMarks);
+>>>>>>> newNifemi
 
 router.put("/update-marks/:studentId", updateMark);
 router.delete("/deleteexam/:examId", deleteExam);

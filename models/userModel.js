@@ -53,6 +53,7 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
     },
+<<<<<<< HEAD
     session: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Session", // Reference to the Session model
@@ -60,6 +61,16 @@ const userSchema = new mongoose.Schema(
     },
   },
   { timestamps: true }
+=======
+    // session: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Session", // Reference to the Session model
+    //   required: true,
+    // },
+    session: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Session' }],
+  },
+  { timestamps: true } 
+>>>>>>> newNifemi
 );
 
 export default mongoose.model("User", userSchema);

@@ -35,7 +35,11 @@ router.post(
 );
 router.get("/get-exam/:sessionId", getAllExams);
 // router.post("/save-total-scores", saveTotalScores);
+<<<<<<< HEAD
 router.get("/get-exam/:id", getExamById);
+=======
+router.get("/get-exam-by-id/:id/:sessionId", getExamById);
+>>>>>>> newNifemi
 router.get(
   "/student-theory-scores/:studentId",
   getStudentTheoryScoresByStudent
@@ -45,7 +49,11 @@ router.get(
   getStudentTheoryScoresByStudentAndClassNameAndSubject
 );
 
+<<<<<<< HEAD
 router.get("/get-exams-by-class/:classId", authenticateUser, getExamsByClass);
+=======
+router.get("/get-exams-by-class/:classId/:sessionId", authenticateUser, getExamsByClass);
+>>>>>>> newNifemi
 
 // Get a list of all exams
 
