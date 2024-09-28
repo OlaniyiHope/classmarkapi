@@ -1,11 +1,26 @@
 import mongoose from "mongoose";
 import Mark from "../models/markModel.js";
 import Exam from "../models/examModel.js";
+<<<<<<< HEAD
 
 export const saveMark = async (req, res) => {
   try {
     const { examId, subjectId, updates } = req.body;
 
+=======
+import Session from "../models/sessionModel.js";
+
+export const saveMark = async (req, res) => {
+  const { sessionId } = req.params;
+
+  try {
+    const { examId, subjectId, updates } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+      return res.status(400).json({ error: "Invalid session ID" });
+    }
+
+>>>>>>> newNifemi
     // Check if updates array is present in the request body
     if (!updates || !Array.isArray(updates)) {
       return res
@@ -14,7 +29,11 @@ export const saveMark = async (req, res) => {
     }
 
     // Fetch existing marks for the specified exam and subject
+<<<<<<< HEAD
     const existingMarks = await Mark.findOne({ examId, subjectId });
+=======
+    const existingMarks = await Mark.findOne({ examId, subjectId, sessionId });
+>>>>>>> newNifemi
 
     // If existing marks are not found or the array is empty, proceed to create new marks
     if (!existingMarks || existingMarks.marks.length === 0) {
@@ -22,6 +41,10 @@ export const saveMark = async (req, res) => {
       const savedMarks = await Mark.create({
         examId,
         subjectId,
+<<<<<<< HEAD
+=======
+        session: sessionId,
+>>>>>>> newNifemi
         marks: await Promise.all(
           updates.map(async (mark) => {
             const { studentId, testscore, examscore, marksObtained, comment } =
@@ -36,7 +59,11 @@ export const saveMark = async (req, res) => {
               comment,
             };
           })
+<<<<<<< HEAD
         ),
+=======
+        )
+>>>>>>> newNifemi
       });
 
       return res.status(201).json({
@@ -73,17 +100,31 @@ export const saveMark = async (req, res) => {
 
 export const getMark = async (req, res) => {
   try {
+<<<<<<< HEAD
     const { examName } = req.params;
+=======
+    const { examName, sessionId } = req.params;
+>>>>>>> newNifemi
 
     // Fetch the exam based on the provided examName
     const fetchedExam = await Exam.findOne({ name: examName });
 
+<<<<<<< HEAD
+=======
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+
+>>>>>>> newNifemi
     if (!fetchedExam) {
       return res.status(404).json({ message: "Exam not found" });
     }
 
     // Fetch the marks based on the ObjectId of the fetched exam
+<<<<<<< HEAD
     const marks = await Mark.find({ examId: fetchedExam._id });
+=======
+    const marks = await Mark.find({ examId: fetchedExam._id, session: sessionObjectId,  });
+>>>>>>> newNifemi
 
     if (marks.length === 0) {
       return res.status(404).json({ message: "Marks not found" });
@@ -201,9 +242,18 @@ export const getMark = async (req, res) => {
 
 export const getMarkbyStudent = async (req, res) => {
   try {
+<<<<<<< HEAD
     const userId = req.params.studentId;
 
     const marks = await Mark.find({ "marks.studentId": userId })
+=======
+    const {  studentId, sessionId } = req.params;
+
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+
+    const marks = await Mark.find({ "marks.studentId": studentId, session: sessionObjectId })
+>>>>>>> newNifemi
       .populate("examId", "name")
       .populate("marks.subjectId", "name");
 
@@ -214,7 +264,11 @@ export const getMarkbyStudent = async (req, res) => {
         mark.marks
           .filter(
             (m) =>
+<<<<<<< HEAD
               m.studentId.toString() === userId &&
+=======
+              m.studentId.toString() === studentId &&
+>>>>>>> newNifemi
               (m.testscore !== 0 || m.examscore !== 0) &&
               m.comment.trim() !== "" &&
               mark.examId &&
@@ -240,7 +294,11 @@ export const getMarkbyStudent = async (req, res) => {
           .filter((m) => m !== null) // Filter out null values
     );
 
+<<<<<<< HEAD
     res.status(200).json({ studentId: userId, scores });
+=======
+    res.status(200).json({ studentId: studentId, scores });
+>>>>>>> newNifemi
   } catch (error) {
     console.error("Error fetching marks for student:", error);
     res.status(500).json({ message: "Internal Server Error" });

@@ -3,11 +3,14 @@
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import User from "../models/userModel.js";
+import Class from "../models/classModel.js"
 import Session from "../models/sessionModel.js";
 import Setting from "../models/settingModel.js";
 import Account from "../models/accountModel.js";
 import bcrypt from "bcryptjs";
 import Download from "../models/downloadModel.js";
+import Subject from "../models/subModel.js";
+
 
 // export const register = async (req, res) => {
 //   try {
@@ -54,7 +57,9 @@ export const register = async (req, res) => {
       return res.status(400).json({ error: "Invalid session ID" });
     }
 
+
     const hashedPassword = await bcrypt.hash(userData.password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
       role,
@@ -191,7 +196,6 @@ export const login = async (req, res) => {
 //     console.error("Error fetching admins:", error);
 //     return res.status(500).json({ error: "Failed to get admins" });
 //   }
-// };
 
 export const getAdmin = async (req, res) => {
   const { sessionId } = req.params;
@@ -276,6 +280,73 @@ export const updateParent = async (req, res) => {
     res.status(200).json(updatedParent);
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const moveData = async (req, res) => {
+  try {
+    const { oldClassName, newClassName, sessionObjectId } = req.body; // Expecting oldClassName, newClassName, and sessionObjectId in the request body
+
+    // Fetch all students in the old class
+    const students = await User.find({
+      role: "student",
+      classname: oldClassName,
+      session: sessionObjectId, // Ensure to filter by session as well
+    })
+    .select("AdmNo studentName address phone email parentsName classname _id")
+    .exec();
+
+    if (students.length === 0) {
+      return res.status(404).json({ message: `No students found in class ${oldClassName}` });
+    }
+
+    // Update each student's class to the new class
+    const updatedStudents = await Promise.all(
+      students.map(async (student) => {
+        student.classname = newClassName; // Change the class to the new class
+        return await student.save(); // Save the updated student
+      })
+    );
+
+    res.json({
+      message: `Successfully moved ${updatedStudents.length} students from ${oldClassName} to ${newClassName}`,
+      updatedStudents,
+    });
+  } catch (error) {
+    console.error("Error moving students to new class:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const moveSubData = async (req, res) => {
+  try {
+    const { oldClassName, newClassName, sessionObjectId } = req.body; // Expecting oldClassName, newClassName, and sessionObjectId in the request body
+
+    // Fetch all subjects in the old class for the specified session
+    const subjects = await Subject.find({
+      classname: oldClassName, // Assuming classname is a string or ObjectId
+      session: sessionObjectId,
+    }).exec();
+
+    if (subjects.length === 0) {
+      return res.status(404).json({ message: `No subjects found in class ${oldClassName} for the given session` });
+    }
+
+    // Update each subject's classname to the new class name
+    const updatedSubjects = await Promise.all(
+      subjects.map(async (subject) => {
+        subject.classname = newClassName; // Change the class to the new class
+        return await subject.save(); // Save the updated subject
+      })
+    );
+
+    res.json({
+      message: `Successfully changed ${updatedSubjects.length} subjects from ${oldClassName} to ${newClassName}`,
+      updatedSubjects,
+    });
+  } catch (error) {
+    console.error("Error changing class name:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -847,16 +918,29 @@ export const getStudentsByClass = async (req, res) => {
 // };
 
 export const getStudentById = async (req, res) => {
+
   const studentId = req.params.id;
   console.log("Requested studentId:", studentId);
 
   if (!mongoose.Types.ObjectId.isValid(studentId)) {
+
+  const { id, sessionId } = req.params;
+  console.log("Requested id:", id);
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+
     console.log("Invalid student ID");
     return res.status(400).json({ error: "Invalid student ID" });
   }
 
   try {
-    const student = await User.findById(studentId).exec();
+
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+    const student = await User.find({
+      _id: id,
+      session: sessionObjectId
+    }).exec();
     console.log("Found student in database:", student);
 
     if (!student) {
@@ -864,16 +948,58 @@ export const getStudentById = async (req, res) => {
       return res.status(404).json({ error: "No student found with that ID" });
     }
 
+
     if (student.role !== "student") {
       console.log("Access denied. Not a student.");
       return res.status(403).json({ error: "Access denied. Not a student." });
     }
+
+    // if (student.role !== "student") {
+    //   console.log("Access denied. Not a student.");
+    //   return res.status(403).json({ error: "Access denied. Not a student." });
+    // }
+
 
     return res.status(200).json(student);
   } catch {
     return res.status(500).json({ error: "Failed to get student" });
   }
 };
+}
+
+export const getStudentsBySession = async (req, res) => {
+  const { sessionId } = req.params;
+  console.log("Requested session ID:", sessionId);
+
+  if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+    console.log("Invalid session ID");
+    return res.status(400).json({ error: "Invalid session ID" });
+  }
+
+  try {
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+    // Fetch all students with the matching session ID
+    const students = await User.find({
+      session: sessionObjectId,
+      role: "student" // Assuming that you want only users with role "student"
+    }).exec();
+
+    console.log("Found students in database:", students);
+
+    if (students.length === 0) {
+      console.log("No students found for that session");
+      return res.status(404).json({ error: "No students found for that session" });
+    }
+
+    return res.status(200).json(students);
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    return res.status(500).json({ error: "Failed to get students" });
+  }
+};
+
+
 
 export const addSessionToUsersWithoutSession = async (req, res) => {
   try {
@@ -900,6 +1026,85 @@ export const addSessionToUsersWithoutSession = async (req, res) => {
     res.status(500).json({ error: "Server Error" });
   }
 };
+
+
+export const addAnotherSessionToUserWithSession = async (req, res) => {
+  try {
+    const { sessionIds } = req.body; // Expect an array of session IDs
+
+    // Validate that sessionIds is an array
+    if (!Array.isArray(sessionIds)) {
+      return res.status(400).json({ error: "sessionIds must be an array" });
+    }
+
+    // Migration: Convert session field to array if it's not already an array
+    await User.updateMany(
+      { session: { $exists: true, $not: { $type: 'array' } } },
+      { $set: { session: [] } }
+    );
+
+    // Ensure each session exists before adding
+    const validSessions = await Session.find({ _id: { $in: sessionIds } });
+    if (validSessions.length !== sessionIds.length) {
+      return res.status(400).json({ error: "One or more session IDs are invalid" });
+    }
+
+    // Add each sessionId to the session array of all users without duplicates
+    const updateResult = await User.updateMany(
+      {}, // No filter: This will apply to all users
+      { $addToSet: { session: { $each: sessionIds } } } // Add each sessionId to the session array
+    );
+
+    res.status(200).json({
+      message: "Sessions added successfully",
+      matchedCount: updateResult.matchedCount,
+      modifiedCount: updateResult.modifiedCount,
+    });
+  } catch (error) {
+    console.error(error); // Log error for debugging
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const moveClassesSessions = async (req, res) => {
+  try {
+    const { sessionIds } = req.body; // Expect an array of session IDs
+
+    // Validate that sessionIds is an array
+    if (!Array.isArray(sessionIds)) {
+      return res.status(400).json({ error: "sessionIds must be an array" });
+    }
+
+    // Migration: Convert session field to array if it's not already an array
+    await Class.updateMany(
+      { session: { $exists: true, $not: { $type: 'array' } } },
+      { $set: { session: [] } }
+    );
+
+    // Ensure each session exists before adding
+    const validSessions = await Session.find({ _id: { $in: sessionIds } });
+    if (validSessions.length !== sessionIds.length) {
+      return res.status(400).json({ error: "One or more session IDs are invalid" });
+    }
+
+    // Add each sessionId to the session array of all users without duplicates
+    const updateResult = await Class.updateMany(
+      {}, // No filter: This will apply to all users
+      { $addToSet: { session: { $each: sessionIds } } } // Add each sessionId to the session array
+    );
+
+    res.status(200).json({
+      message: "Sessions for class added successfully",
+      matchedCount: updateResult.matchedCount,
+      modifiedCount: updateResult.modifiedCount,
+    });
+  } catch (error) {
+    console.error(error); // Log error for debugging
+    res.status(500).json({ error: "Server Error" });
+  }
+};
+
+
 
 export const addSessionToDownloadWithoutSession = async (req, res) => {
   try {

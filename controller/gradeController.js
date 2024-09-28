@@ -15,6 +15,7 @@ import Session from "../models/sessionModel.js";
 // };
 
 export const createGrade = async (req, res) => {
+<<<<<<< HEAD
   const { sessionId, ...gradeData } = req.body; // Extract sessionId from the request body
   try {
     // Ensure sessionId is valid
@@ -24,10 +25,26 @@ export const createGrade = async (req, res) => {
     const newGrade = new Grade({
       ...gradeData, // Include the rest of the grade data
       session: sessionObjectId, // Add session ID to the grade
+=======
+  const { session, ...gradeData } = req.body; // Extract sessionId from the request body
+  try {
+    // Ensure sessionId is valid
+    if (!mongoose.Types.ObjectId.isValid(session)) {
+      return res.status(400).json({ error: "Invalid session ID" });
+    }
+    // Create a new grade, including the session ID
+    const newGrade = new Grade({
+      ...gradeData, // Include the rest of the grade data
+      session: session, // Add session ID to the grade
+>>>>>>> newNifemi
     });
 
     // Save the new grade to the database
     const savedGrade = await newGrade.save();
+<<<<<<< HEAD
+=======
+    console.log("Saved Grade:", savedGrade);
+>>>>>>> newNifemi
 
     // Respond with the saved grade
     res.status(200).json(savedGrade);

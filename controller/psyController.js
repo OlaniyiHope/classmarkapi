@@ -5,6 +5,11 @@ import Exam from "../models/examModel.js";
 export const savePsy = async (req, res) => {
   try {
     const { examId, updates } = req.body;
+<<<<<<< HEAD
+=======
+    const sessionId = req.params.sessionId; // Get the class identifier from the request parameters
+
+>>>>>>> newNifemi
 
     // Check if updates array is present in the request body
     if (!updates || !Array.isArray(updates)) {
@@ -14,14 +19,22 @@ export const savePsy = async (req, res) => {
     }
 
     // Fetch existing marks for the specified exam and subject
+<<<<<<< HEAD
     const existingMarks = await Psy.findOne({ examId });
+=======
+    const existingMarks = await Psy.findOne({ examId, session: sessionId });
+>>>>>>> newNifemi
 
     // If existing marks are not found or the array is empty, proceed to create new marks
     if (!existingMarks || existingMarks.marks.length === 0) {
       // Save marks to the database using the provided examId and subjectId
       const savedMarks = await Psy.create({
         examId,
+<<<<<<< HEAD
 
+=======
+        session: sessionId,
+>>>>>>> newNifemi
         marks: await Promise.all(
           updates.map(async (mark) => {
             const {
@@ -31,8 +44,13 @@ export const savePsy = async (req, res) => {
               punctuality,
               talking,
               eyecontact,
+<<<<<<< HEAD
               remarks,
               premarks,
+=======
+              remarks = "No remarks",  
+              premarks = "No principal remarks" ,
+>>>>>>> newNifemi
             } = mark;
 
             return {
@@ -146,9 +164,17 @@ export const getMark = async (req, res) => {
 // };
 export const getPsybyStudent = async (req, res) => {
   try {
+<<<<<<< HEAD
     const userId = req.params.studentId;
 
     const marks = await Psy.find({ "marks.studentId": userId }).populate(
+=======
+    const {  studentId, sessionId } = req.params;
+    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+
+    const marks = await Psy.find({ "marks.studentId": studentId, session: sessionObjectId }).populate(
+>>>>>>> newNifemi
       "examId",
       "name"
     );
@@ -157,7 +183,11 @@ export const getPsybyStudent = async (req, res) => {
       mark.marks
         .filter(
           (m) =>
+<<<<<<< HEAD
             m.studentId.toString() === userId &&
+=======
+            m.studentId.toString() === studentId &&
+>>>>>>> newNifemi
             (m.testscore !== 0 ||
               m.examscore !== 0 ||
               m.punctuality != 0 ||
@@ -183,7 +213,11 @@ export const getPsybyStudent = async (req, res) => {
         }))
     );
 
+<<<<<<< HEAD
     res.status(200).json({ studentId: userId, scores });
+=======
+    res.status(200).json({ studentId: studentId, scores });
+>>>>>>> newNifemi
   } catch (error) {
     console.error("Error fetching marks for student:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -296,6 +330,10 @@ export const updateMark = async (req, res) => {
 export const updateMarks = async (req, res) => {
   try {
     const { examId, updates } = req.body;
+<<<<<<< HEAD
+=======
+    
+>>>>>>> newNifemi
 
     if (!examId || !updates || !Array.isArray(updates)) {
       return res.status(400).json({ error: "Invalid request payload" });
