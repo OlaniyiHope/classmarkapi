@@ -65,7 +65,7 @@ console.log(
 );
 // Configure CORS
 const corsOptions = {
-  origin: ["https://hlhs.edupro.com.ng", "http://localhost:3000"], // specify your client's URL
+  origin: ["https://hlhs.edupro.com.ng", "http://localhost:3001"], // specify your client's URL
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
