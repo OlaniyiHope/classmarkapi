@@ -2,11 +2,8 @@ import Question from "../models/questionModel.js";
 
 // Create a new question
 export const createQuestion = async (req, res) => {
-<<<<<<< HEAD
-=======
-  const {  sessionId } = req.params;
+  const { sessionId } = req.params;
 
->>>>>>> newNifemi
   try {
     const {
       questionType,
@@ -24,10 +21,7 @@ export const createQuestion = async (req, res) => {
       questionTitle,
       mark,
       exam: examId,
-<<<<<<< HEAD
-=======
-      session: sessionId
->>>>>>> newNifemi
+      session: sessionId,
     };
 
     if (questionType === "multiple_choice") {

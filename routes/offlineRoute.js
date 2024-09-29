@@ -18,21 +18,12 @@ const router = express.Router();
 //CREATE route
 router.post("/offlineexam", submitExam);
 router.post("/addSessionToExamWithoutSession", addSessionToExamWithoutSession);
-<<<<<<< HEAD
-router.post("/save-marks", saveMark);
-// Add the new route for getting scores
-router.get("/get-scores/:examName", getMark);
-
-router.get(
-  "/get-scores-by-student/:studentId",
-=======
 router.post("/save-marks/:sessionId", saveMark);
 // Add the new route for getting scores
 router.get("/get-scores/:examName/:sessionId", getMark);
 
 router.get(
   "/get-scores-by-student/:studentId/:sessionId",
->>>>>>> newNifemi
   // authenticateUser,
   getMarkbyStudent
 );

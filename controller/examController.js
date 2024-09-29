@@ -1,14 +1,7 @@
 import Exam from "../models/examlistModel.js";
 import User from "../models/userModel.js";
 
-<<<<<<< HEAD
-export const submitExam = async (req, res) => {
-  try {
-    const { examId, answers, userId, score } = req.body; // Include the "score" in the destructuring
-
-=======
 import mongoose from "mongoose";
-
 
 export const submitExam = async (req, res) => {
   const { sessionId } = req.params;
@@ -18,38 +11,26 @@ export const submitExam = async (req, res) => {
 
     const sessionObjectId = mongoose.Types.ObjectId(sessionId);
 
->>>>>>> newNifemi
     if (!examId || !answers || !userId) {
       return res.status(400).json({ message: "Invalid submission data" });
     }
 
     // Fetch the exam and ensure it exists
-<<<<<<< HEAD
-    const exam = await Exam.findById(examId).populate("questions");
-=======
     const exam = await Exam.findOne({
       _id: examId,
       session: sessionObjectId,
     }).populate("questions");
->>>>>>> newNifemi
 
     if (!exam) {
       return res.status(404).json({ message: "Exam not found" });
     }
 
-<<<<<<< HEAD
-    // Update the user's score in the exam
-=======
->>>>>>> newNifemi
     const userSubmittedAnswers = {
       userId,
       answers,
       score, // Use the received score
     };
 
-<<<<<<< HEAD
-    exam.submittedAnswers.push(userSubmittedAnswers);
-=======
     // Check if the user has already submitted answers
     const existingSubmissionIndex = exam.submittedAnswers.findIndex(
       (submission) => submission.userId.toString() === userId
@@ -65,7 +46,6 @@ export const submitExam = async (req, res) => {
       console.log("New submission:", userSubmittedAnswers);
     }
 
->>>>>>> newNifemi
     await exam.save();
 
     res.json({
@@ -78,8 +58,6 @@ export const submitExam = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-=======
 export const findExam = async (req, res) => {
   const { name, session } = req.body;
 
@@ -89,15 +67,15 @@ export const findExam = async (req, res) => {
     if (exam) {
       return res.status(200).json({ success: true, examId: exam._id });
     } else {
-      return res.status(404).json({ success: false, message: 'Exam not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: "Exam not found" });
     }
   } catch (error) {
-    console.error('Error finding exam:', error);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    console.error("Error finding exam:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-
 
 export const getSubmissions = async (req, res) => {
   const { examId, userId } = req.params;
@@ -118,7 +96,9 @@ export const getSubmissions = async (req, res) => {
     );
 
     if (!userSubmission) {
-      return res.status(404).json({ message: "No submission found for this user" });
+      return res
+        .status(404)
+        .json({ message: "No submission found for this user" });
     }
 
     // Send the user's answers and score back in the response
@@ -132,9 +112,6 @@ export const getSubmissions = async (req, res) => {
   }
 };
 
-
-
->>>>>>> newNifemi
 export const getExamScore = async (req, res) => {
   try {
     const { examId, userId } = req.params;
@@ -215,22 +192,6 @@ export const getAllScore = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-<<<<<<< HEAD
-export const getAllStudentScores = async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    if (!userId) {
-      return res.status(400).json({ message: "Invalid parameters" });
-    }
-
-    // Find all exams that the student has submitted answers for
-    const exams = await Exam.find({
-      "submittedAnswers.userId": userId,
-    }).populate({
-      path: "submittedAnswers",
-      match: { userId }, // Filter by userId
-=======
 
 export const getAllStudentScores = async (req, res) => {
   try {
@@ -249,47 +210,36 @@ export const getAllStudentScores = async (req, res) => {
       session: sessionObjectId, // Match sessionId
     }).populate({
       path: "submittedAnswers.userId", // Populate the userId to get student details
->>>>>>> newNifemi
     });
 
     // Extract student names, exam titles, and scores
-    const studentScores = exams.map((exam) => {
-      const { title, subject } = exam;
-<<<<<<< HEAD
-      const submission = exam.submittedAnswers.find(
-        (answer) => answer.userId.toString() === userId
-      );
-      const { score } = submission;
-=======
+    const studentScores = exams
+      .map((exam) => {
+        const { title, subject } = exam;
 
-      console.log(title)
+        console.log(title);
 
-      // Find the specific user's submission in each exam
-      const submission = exam.submittedAnswers.find(
-        (answer) => answer.userId.equals(userObjectId) // Use equals for ObjectId comparison
-      );
+        // Find the specific user's submission in each exam
+        const submission = exam.submittedAnswers.find(
+          (answer) => answer.userId.equals(userObjectId) // Use equals for ObjectId comparison
+        );
 
+        console.log(submission);
 
-      console.log(submission)
+        // Handle case where no submission is found (if needed)
+        if (!submission) {
+          return null;
+        }
 
-      // Handle case where no submission is found (if needed)
-      if (!submission) {
-        return null;
-      }
+        const { score } = submission;
 
-      const { score } = submission;
-
->>>>>>> newNifemi
-      return {
-        examTitle: title,
-        subject,
-        score,
-      };
-<<<<<<< HEAD
-    });
-=======
-    }).filter(Boolean); // Filter out any null values
->>>>>>> newNifemi
+        return {
+          examTitle: title,
+          subject,
+          score,
+        };
+      })
+      .filter(Boolean); // Filter out any null values
 
     console.log("Student Scores:", studentScores);
 
@@ -299,7 +249,3 @@ export const getAllStudentScores = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-<<<<<<< HEAD
-=======
-
->>>>>>> newNifemi
