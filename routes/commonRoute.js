@@ -18,15 +18,6 @@ import {
   updateParent,
   addSessionToUsersWithoutSession,
   addSessionToDownloadWithoutSession,
-<<<<<<< HEAD
-=======
-  addAnotherSessionToUserWithSession,
-  getStudentsBySession,
-  getStudentsByClass,
-  moveData,
-  moveClassesSessions,
-  moveSubData,
->>>>>>> newNifemi
 } from "../controller/authController.js";
 // commonRoute.js
 
@@ -106,36 +97,16 @@ const commonRoute = (s3, authRoutes = []) => {
     addSessionToUsersWithoutSession
   );
   router.post(
-<<<<<<< HEAD
-=======
-    "/addAnotherSessionToUserWithSession",
-    addAnotherSessionToUserWithSession
-  );
-  router.post(
->>>>>>> newNifemi
     "/addSessionToDownloadWithoutSession",
     addSessionToDownloadWithoutSession
   );
 
-<<<<<<< HEAD
   router.get("/students/:id", authenticateUser, getStudentById);
-=======
-  router.get("/students/:id/:sessionId", authenticateUser, getStudentById);
-  router.get("/get-all-students/:className/:sessionId", authenticateUser, getStudentsByClass);
->>>>>>> newNifemi
   router.get("/teachers/:id", authenticateUser, getTeacherById);
   router.get("/get-admin/:id", authenticateUser, getAdminById);
   // router.get("/get-parent/:id", authenticateUser, getParentById);
   // router.get("/get-admin", authenticateUser, getAdmin);
 
-<<<<<<< HEAD
-=======
-//move
-  router.post("/move-data", authenticateUser, moveData);
-  router.post("/move-sub-data", authenticateUser, moveSubData);
-  router.post("/move-classes-to-all-sessions", authenticateUser, moveClassesSessions);
-
->>>>>>> newNifemi
   router.get("/get-session-admin/:sessionId", getAdmin);
 
   router.put("/admin/:id", authenticateUser, updateAdmin);

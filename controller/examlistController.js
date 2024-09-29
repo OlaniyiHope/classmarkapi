@@ -125,28 +125,13 @@ export const getAllExams = async (req, res) => {
 
 // Get a specific exam by ID
 export const getExamById = async (req, res) => {
-<<<<<<< HEAD
-  try {
-    const exam = await Exam.findById(req.params.id);
-    if (!exam) {
-      return res.status(404).json({ error: "Exam not found" });
-    }
-    res.status(200).json(exam);
-  } catch {
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching the exam." });
-  }
-};
-
-=======
   const { id, sessionId } = req.params;
 
   try {
     // Ensure id and sessionId are ObjectId types
     const exam = await Exam.findOne({
-      _id: mongoose.Types.ObjectId(id), 
-      session: mongoose.Types.ObjectId(sessionId)
+      _id: mongoose.Types.ObjectId(id),
+      session: mongoose.Types.ObjectId(sessionId),
     });
 
     if (!exam) {
@@ -156,13 +141,12 @@ export const getExamById = async (req, res) => {
     res.status(200).json(exam);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "An error occurred while fetching the exam." });
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching the exam." });
   }
 };
 
- 
-
->>>>>>> newNifemi
 // Update an existing exam by ID
 // export const updateExam = async (req, res) => {
 //   try {
@@ -202,16 +186,10 @@ export const deleteExam = async (req, res) => {
 export const getExamsByClass = async (req, res) => {
   try {
     const classId = req.params.classId; // Get the class identifier from the request parameters
-<<<<<<< HEAD
-
-    // Use a database query to fetch exams by class
-    const exams = await Exam.find({ className: classId }); // Assuming your schema field for class is 'className'
-=======
     const sessionId = req.params.sessionId; // Get the class identifier from the request parameters
 
     // Use a database query to fetch exams by class
     const exams = await Exam.find({ className: classId, session: sessionId }); // Assuming your schema field for class is 'className'
->>>>>>> newNifemi
 
     // Return the filtered exams as a response
     res.status(200).json(exams);
