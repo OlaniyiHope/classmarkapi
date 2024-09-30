@@ -60,11 +60,7 @@ const s3 = new S3({
   },
   region: process.env.AWS_REGION,
 });
-console.log(
-  "AWS Credentials:",
-  process.env.AWS_ACCESS_KEY_ID,
-  process.env.AWS_SECRET_ACCESS_KEY
-);
+
 // Configure CORS
 const corsOptions = {
   origin: ["https://hlhs.edupro.com.ng", "http://localhost:3001"], // specify your client's URL
@@ -117,5 +113,5 @@ app.use("/api/", pastQuestRoute);
 app.use("/api/", practicePqRoutes);
 
 // app.use("/api/", commonRoute(s3));
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, console.log(`Server running on port ${PORT}`));
