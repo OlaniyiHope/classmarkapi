@@ -3,7 +3,7 @@ import XLSX from "xlsx"; // Import the XLSX library for reading Excel files
 import pastQuests from "../models/pastQuests.js"; // Import the pastQuests model
 import PracticePq from "../models/practiceQuestionsModel.js";
 
-const upload = multer({ dest: 'uploads/' }); // Configure Multer to save uploaded files in the 'uploads/' directory
+const upload = multer({ dest: "uploads/" }); // Configure Multer to save uploaded files in the 'uploads/' directory
 
 // Controller function for uploading and processing the Excel file
 export const addPastQuestions = async (req, res) => {
@@ -17,27 +17,38 @@ export const addPastQuestions = async (req, res) => {
     // Use XLSX to read the file
     const workbook = XLSX.readFile(file.path);
     const sheet_name_list = workbook.SheetNames;
-    const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+    const jsonData = XLSX.utils.sheet_to_json(
+      workbook.Sheets[sheet_name_list[0]]
+    );
 
     // Transform the data into the format expected by your MongoDB model
     const subjects = {}; // Store subjects and their sub-subjects
 
     // Collect existing records for comparison
-    const existingQuestions = await pastQuests.find().lean(); 
+    const existingQuestions = await pastQuests.find().lean();
 
     // Create a lookup table for existing data
     const existingLookup = {};
-    existingQuestions.forEach(subject => {
-      subject.subSubjects.forEach(sub => {
-        sub.questions.forEach(question => {
-          existingLookup[`${subject.subjectName}_${sub.title}_${question.title}`] = true;
+    existingQuestions.forEach((subject) => {
+      subject.subSubjects.forEach((sub) => {
+        sub.questions.forEach((question) => {
+          existingLookup[
+            `${subject.subjectName}_${sub.title}_${question.title}`
+          ] = true;
         });
       });
     });
 
     // Iterate over each row in the Excel file
-    jsonData.forEach(row => {
-      const { subjectName, class: className, subSubjectTitle, questionTitle, options, correctAnswer } = row;
+    jsonData.forEach((row) => {
+      const {
+        subjectName,
+        class: className,
+        subSubjectTitle,
+        questionTitle,
+        options,
+        correctAnswer,
+      } = row;
 
       // Skip duplicates based on subject, sub-subject, and question title
       const questionKey = `${subjectName}_${subSubjectTitle}_${questionTitle}`;
@@ -48,11 +59,17 @@ export const addPastQuestions = async (req, res) => {
 
       // Initialize the subject if it doesn't exist
       if (!subjects[subjectName]) {
-        subjects[subjectName] = { subjectName, class: className, subSubjects: [] };
+        subjects[subjectName] = {
+          subjectName,
+          class: className,
+          subSubjects: [],
+        };
       }
 
       // Find the sub-subject if it exists, otherwise create it
-      let subSubject = subjects[subjectName].subSubjects.find(sub => sub.title === subSubjectTitle);
+      let subSubject = subjects[subjectName].subSubjects.find(
+        (sub) => sub.title === subSubjectTitle
+      );
       if (!subSubject) {
         subSubject = { title: subSubjectTitle, questions: [] };
         subjects[subjectName].subSubjects.push(subSubject); // Add the sub-subject
@@ -61,28 +78,33 @@ export const addPastQuestions = async (req, res) => {
       // Add the question to the sub-subject (make sure to avoid duplicates within the current file)
       subSubject.questions.push({
         title: questionTitle,
-        options: options.split(',').map(opt => opt.trim()), // Split and trim options
-        correctAnswer: String(correctAnswer).trim() // Ensure correctAnswer is treated as a string
-      });      
+        options: options.split(",").map((opt) => opt.trim()), // Split and trim options
+        correctAnswer: String(correctAnswer).trim(), // Ensure correctAnswer is treated as a string
+      });
     });
 
     // Convert subjects object into an array for bulk insertion
-    const subjectsArray = Object.values(subjects); 
+    const subjectsArray = Object.values(subjects);
 
     // Insert new data into MongoDB
     for (const subject of subjectsArray) {
-      const existingSubject = await pastQuests.findOne({ subjectName: subject.subjectName, class: subject.class });
+      const existingSubject = await pastQuests.findOne({
+        subjectName: subject.subjectName,
+        class: subject.class,
+      });
 
       if (existingSubject) {
         // Merge new sub-subjects and questions into the existing subject
-        subject.subSubjects.forEach(newSubSubject => {
-          const existingSubSubject = existingSubject.subSubjects.find(sub => sub.title === newSubSubject.title);
+        subject.subSubjects.forEach((newSubSubject) => {
+          const existingSubSubject = existingSubject.subSubjects.find(
+            (sub) => sub.title === newSubSubject.title
+          );
 
           if (existingSubSubject) {
             // Merge questions into the existing sub-subject
-            newSubSubject.questions.forEach(newQuestion => {
+            newSubSubject.questions.forEach((newQuestion) => {
               const questionExists = existingSubSubject.questions.some(
-                question => question.title === newQuestion.title
+                (question) => question.title === newQuestion.title
               );
 
               if (!questionExists) {
@@ -95,7 +117,10 @@ export const addPastQuestions = async (req, res) => {
         });
 
         // Update the existing subject in the database
-        await pastQuests.updateOne({ _id: existingSubject._id }, existingSubject);
+        await pastQuests.updateOne(
+          { _id: existingSubject._id },
+          existingSubject
+        );
       } else {
         // Insert new subject if it doesn't exist
         await pastQuests.create(subject);
@@ -112,39 +137,38 @@ export const addPastQuestions = async (req, res) => {
 // Fetch all subjects from the PathQuestion model
 export const getSubjects = async (req, res) => {
   try {
-    const subjects = await pastQuests.find({}, 'subjectName');
+    const subjects = await pastQuests.find({}, "subjectName");
     res.json(subjects);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 };
-
 
 // Create a practice exam based on past questions
 export const createPracticeExam = async (req, res) => {
   try {
-      const { subjectName, pastQuestionId } = req.body;
+    const { subjectName, pastQuestionId } = req.body;
 
-      // Fetch the past questions based on the subject and pastQuestionId
-      const pastQuestion = await pastQuests.findById(pastQuestionId);
+    // Fetch the past questions based on the subject and pastQuestionId
+    const pastQuestion = await pastQuests.findById(pastQuestionId);
 
-      if (!pastQuestion) {
-          return res.status(404).send('Past Question not found');
-      }
+    if (!pastQuestion) {
+      return res.status(404).send("Past Question was not found");
+    }
 
-      // Create a new practice exam from past questions
-      const practiceExam = new PracticePq({
-          subjectName,
-          pastQuestionId,
-          questions: pastQuestion.subSubjects.flatMap(sub => sub.questions) // Use the questions from past questions
-      });
+    // Create a new practice exam from past questions
+    const practiceExam = new PracticePq({
+      subjectName,
+      pastQuestionId,
+      questions: pastQuestion.subSubjects.flatMap((sub) => sub.questions), // Use the questions from past questions
+    });
 
-      await practiceExam.save();
-      res.status(201).json(practiceExam);
+    await practiceExam.save();
+    res.status(201).json(practiceExam);
   } catch (error) {
-      console.error(error);
-      res.status(500).send('Server Error');
+    console.error(error);
+    res.status(500).send("Server Error");
   }
 };
 
