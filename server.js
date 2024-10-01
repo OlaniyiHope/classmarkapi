@@ -115,19 +115,14 @@
 // // app.use("/api/", commonRoute(s3));
 // const PORT = process.env.PORT || 5001;
 // app.listen(PORT, console.log(`Server running on port ${PORT}`));
+
 import express from "express";
 import dotenv from "dotenv";
 import { S3 } from "@aws-sdk/client-s3";
 import cors from "cors";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-
-// Route imports
-
 import classRoute from "./routes/classRoute.js";
 
 import adRoutes from "./routes/adRoutes.js";
-
 import examlistRoute from "./routes/examlistRoute.js";
 import gradeRoute from "./routes/gradeRoute.js";
 import catRoute from "./routes/catRoute.js";
@@ -156,8 +151,6 @@ dotenv.config();
 const app = express();
 connectDB();
 
-app.use(express.json());
-
 // AWS S3 setup
 const s3 = new S3({
   credentials: {
@@ -175,6 +168,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use(express.json());
+
 app.use("/api/", offlineRoute);
 app.use("/api/ad", adRoutes);
 app.use("/api/ad", adRoutes);
