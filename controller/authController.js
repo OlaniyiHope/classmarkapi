@@ -3,14 +3,13 @@
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import User from "../models/userModel.js";
-import Class from "../models/classModel.js"
+import Class from "../models/classModel.js";
 import Session from "../models/sessionModel.js";
 import Setting from "../models/settingModel.js";
 import Account from "../models/accountModel.js";
 import bcrypt from "bcryptjs";
 import Download from "../models/downloadModel.js";
 import Subject from "../models/subModel.js";
-
 
 // export const register = async (req, res) => {
 //   try {
@@ -56,7 +55,6 @@ export const register = async (req, res) => {
     if (!session) {
       return res.status(400).json({ error: "Invalid session ID" });
     }
-
 
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     // const hashedPassword = await bcrypt.hash(password, 10);
@@ -197,30 +195,57 @@ export const login = async (req, res) => {
 //     return res.status(500).json({ error: "Failed to get admins" });
 //   }
 
+// export const getAdmin = async (req, res) => {
+//   const { sessionId } = req.params;
+
+//   try {
+//     const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+//     // Fetch admins for the specified session
+//     const admins = await User.find({
+//       role: "admin",
+//       session: sessionObjectId, // Remove ObjectId conversion if session is stored as a string
+//     })
+//       .select("username email address phone _id") // Adjust fields as needed
+//       .exec();
+
+//     if (admins.length === 0) {
+//       return res
+//         .status(404)
+//         .json({ error: "No admins found for that session" });
+//     }
+
+//     return res.status(200).json(admins);
+//   } catch (error) {
+//     console.error("Error fetching admins:", error);
+//     return res.status(500).json({ error: "Failed to get admins" });
+//   }
+// };
 export const getAdmin = async (req, res) => {
-  const { sessionId } = req.params;
+  const { sessionId } = req.params; // Extract sessionId from the URL parameters
 
   try {
+    // Convert the sessionId to an ObjectId if necessary (depending on how it's stored in the database)
     const sessionObjectId = mongoose.Types.ObjectId(sessionId);
 
     // Fetch admins for the specified session
     const admins = await User.find({
       role: "admin",
-      session: sessionObjectId, // Remove ObjectId conversion if session is stored as a string
+      session: sessionObjectId, // Match session as an ObjectId
     })
-      .select("username email address phone _id") // Adjust fields as needed
+      .select("username email address phone _id") // Select the fields you want
       .exec();
 
     if (admins.length === 0) {
       return res
         .status(404)
-        .json({ error: "No admins found for that session" });
+        .json({ message: "No admins found for that session" });
     }
 
     return res.status(200).json(admins);
   } catch (error) {
     console.error("Error fetching admins:", error);
-    return res.status(500).json({ error: "Failed to get admins" });
+    return res.status(500).json({ message: "Failed to get admins" });
   }
 };
 
@@ -293,11 +318,13 @@ export const moveData = async (req, res) => {
       classname: oldClassName,
       session: sessionObjectId, // Ensure to filter by session as well
     })
-    .select("AdmNo studentName address phone email parentsName classname _id")
-    .exec();
+      .select("AdmNo studentName address phone email parentsName classname _id")
+      .exec();
 
     if (students.length === 0) {
-      return res.status(404).json({ message: `No students found in class ${oldClassName}` });
+      return res
+        .status(404)
+        .json({ message: `No students found in class ${oldClassName}` });
     }
 
     // Update each student's class to the new class
@@ -329,7 +356,9 @@ export const moveSubData = async (req, res) => {
     }).exec();
 
     if (subjects.length === 0) {
-      return res.status(404).json({ message: `No subjects found in class ${oldClassName} for the given session` });
+      return res.status(404).json({
+        message: `No subjects found in class ${oldClassName} for the given session`,
+      });
     }
 
     // Update each subject's classname to the new class name
@@ -401,6 +430,31 @@ export const deleteUser = async (req, res) => {
     return res.status(200).json({ message: "User deleted successfully" });
   } catch {
     return res.status(500).json({ error: "Failed to delete user" });
+  }
+};
+// Delete user from a specific session
+export const deleteUserFromSpecificSession = async (req, res) => {
+  const { userId, sessionId } = req.params; // Get the userId and sessionId from the request params
+
+  try {
+    // Update the user document by pulling the specific sessionId from the session array
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { session: sessionId } }, // Remove the sessionId from the session array
+      { new: true } // Return the updated user document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Session removed", user: updatedUser });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Error removing session", details: error.message });
   }
 };
 
@@ -732,31 +786,64 @@ export const createAccount = async (req, res, s3) => {
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // };
+// export const updateStudentById = async (req, res) => {
+//   try {
+//     const studentId = req.params.id;
+//     const { sessionId, ...updatedData } = req.body; // Extract sessionId and rest of the data
+
+//     // Validate and update the fields you want to allow modification for
+//     const allowedUpdates = [
+//       "studentName",
+//       "AdmNo",
+//       "classname",
+//       "parentsName",
+//       "gender",
+//       "username",
+//       "address",
+//       "email",
+//       "password",
+//       "phone",
+//     ];
+//     const isValidUpdate = Object.keys(updatedData).every((update) =>
+//       allowedUpdates.includes(update)
+//     );
+
+//     if (!isValidUpdate) {
+//       return res.status(400).json({ error: "Invalid updates" });
+//     }
+
+//     // If sessionId is provided, validate it
+//     if (sessionId) {
+//       const session = await Session.findById(sessionId);
+//       if (!session) {
+//         return res.status(400).json({ error: "Invalid session ID" });
+//       }
+//       updatedData.session = sessionId; // Include sessionId in updateData
+//     }
+
+//     const updatedStudent = await User.findByIdAndUpdate(
+//       studentId,
+//       updatedData,
+//       {
+//         new: true, // Return the updated document
+//         runValidators: true, // Run model validators on the update
+//       }
+//     );
+
+//     if (!updatedStudent) {
+//       return res.status(404).json({ error: "Student not found" });
+//     }
+
+//     res.status(200).json(updatedStudent);
+//   } catch (error) {
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
 export const updateStudentById = async (req, res) => {
   try {
-    const studentId = req.params.id;
-    const { sessionId, ...updatedData } = req.body; // Extract sessionId and rest of the data
-
-    // Validate and update the fields you want to allow modification for
-    const allowedUpdates = [
-      "studentName",
-      "AdmNo",
-      "classname",
-      "parentsName",
-      "gender",
-      "username",
-      "address",
-      "email",
-      "password",
-      "phone",
-    ];
-    const isValidUpdate = Object.keys(updatedData).every((update) =>
-      allowedUpdates.includes(update)
-    );
-
-    if (!isValidUpdate) {
-      return res.status(400).json({ error: "Invalid updates" });
-    }
+    const { id } = req.params;
+    const { sessionId, ...updateData } = req.body; // Extract sessionId
 
     // If sessionId is provided, validate it
     if (sessionId) {
@@ -764,25 +851,21 @@ export const updateStudentById = async (req, res) => {
       if (!session) {
         return res.status(400).json({ error: "Invalid session ID" });
       }
-      updatedData.session = sessionId; // Include sessionId in updateData
+      updateData.session = sessionId; // Include sessionId in updateData
     }
 
-    const updatedStudent = await User.findByIdAndUpdate(
-      studentId,
-      updatedData,
-      {
-        new: true, // Return the updated document
-        runValidators: true, // Run model validators on the update
-      }
-    );
+    // Find and update the admin
+    const updatedStudent = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
 
     if (!updatedStudent) {
-      return res.status(404).json({ error: "Student not found" });
+      return res.status(404).json({ message: "Admin not found" });
     }
 
     res.status(200).json(updatedStudent);
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
@@ -917,29 +1000,81 @@ export const getStudentsByClass = async (req, res) => {
 //   }
 // };
 
+// export const getStudentById = async (req, res) => {
+//   const studentId = req.params.id;
+//   console.log("Requested studentId:", studentId);
+
+//   if (!mongoose.Types.ObjectId.isValid(studentId)) {
+//     const { id, sessionId } = req.params;
+//     console.log("Requested id:", id);
+
+//     if (!mongoose.Types.ObjectId.isValid(id)) {
+//       console.log("Invalid student ID");
+//       return res.status(400).json({ error: "Invalid student ID" });
+//     }
+
+//     try {
+//       const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+//       const student = await User.find({
+//         _id: id,
+//         session: sessionObjectId,
+//       }).exec();
+//       console.log("Found student in database:", student);
+
+//       if (!student) {
+//         console.log("No student found with that ID");
+//         return res.status(404).json({ error: "No student found with that ID" });
+//       }
+
+//       if (student.role !== "student") {
+//         console.log("Access denied. Not a student.");
+//         return res.status(403).json({ error: "Access denied. Not a student." });
+//       }
+
+//       // if (student.role !== "student") {
+//       //   console.log("Access denied. Not a student.");
+//       //   return res.status(403).json({ error: "Access denied. Not a student." });
+//       // }
+
+//       return res.status(200).json(student);
+//     } catch {
+//       return res.status(500).json({ error: "Failed to get student" });
+//     }
+//   }
+// };
+
 export const getStudentById = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const student = await User.findById(studentId); // Assuming you have an Admin model
 
-  const studentId = req.params.id;
-  console.log("Requested studentId:", studentId);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
 
-  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    res.json({ student });
+  } catch (error) {
+    console.error("Error fetching student by ID:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
+export const getStudentByIdBySession = async (req, res) => {
   const { id, sessionId } = req.params;
   console.log("Requested id:", id);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-
     console.log("Invalid student ID");
     return res.status(400).json({ error: "Invalid student ID" });
   }
 
   try {
-
     const sessionObjectId = mongoose.Types.ObjectId(sessionId);
 
     const student = await User.find({
       _id: id,
-      session: sessionObjectId
+      session: sessionObjectId,
     }).exec();
     console.log("Found student in database:", student);
 
@@ -948,24 +1083,45 @@ export const getStudentById = async (req, res) => {
       return res.status(404).json({ error: "No student found with that ID" });
     }
 
-
-    if (student.role !== "student") {
-      console.log("Access denied. Not a student.");
-      return res.status(403).json({ error: "Access denied. Not a student." });
-    }
-
     // if (student.role !== "student") {
     //   console.log("Access denied. Not a student.");
     //   return res.status(403).json({ error: "Access denied. Not a student." });
     // }
-
 
     return res.status(200).json(student);
   } catch {
     return res.status(500).json({ error: "Failed to get student" });
   }
 };
-}
+// In your controller file
+export const getStudentBySession = async (req, res) => {
+  try {
+    const studentId = req.params.id;
+    const sessionId = req.params.sessionId;
+
+    // Find the student by ID
+    const student = await User.findById(studentId);
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Assuming the student is associated with sessions, you can check or filter based on the sessionId.
+    // This logic may depend on how sessions are related to students in your schema.
+    const isSessionValid = student.sessions.includes(sessionId); // Example logic
+    if (!isSessionValid) {
+      return res
+        .status(404)
+        .json({ message: "Student not found in this session" });
+    }
+
+    // Return only the student information
+    res.json({ student });
+  } catch (error) {
+    console.error("Error fetching student by session:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 export const getStudentsBySession = async (req, res) => {
   const { sessionId } = req.params;
@@ -982,14 +1138,16 @@ export const getStudentsBySession = async (req, res) => {
     // Fetch all students with the matching session ID
     const students = await User.find({
       session: sessionObjectId,
-      role: "student" // Assuming that you want only users with role "student"
+      role: "student", // Assuming that you want only users with role "student"
     }).exec();
 
     console.log("Found students in database:", students);
 
     if (students.length === 0) {
       console.log("No students found for that session");
-      return res.status(404).json({ error: "No students found for that session" });
+      return res
+        .status(404)
+        .json({ error: "No students found for that session" });
     }
 
     return res.status(200).json(students);
@@ -998,8 +1156,6 @@ export const getStudentsBySession = async (req, res) => {
     return res.status(500).json({ error: "Failed to get students" });
   }
 };
-
-
 
 export const addSessionToUsersWithoutSession = async (req, res) => {
   try {
@@ -1027,7 +1183,6 @@ export const addSessionToUsersWithoutSession = async (req, res) => {
   }
 };
 
-
 export const addAnotherSessionToUserWithSession = async (req, res) => {
   try {
     const { sessionIds } = req.body; // Expect an array of session IDs
@@ -1039,14 +1194,16 @@ export const addAnotherSessionToUserWithSession = async (req, res) => {
 
     // Migration: Convert session field to array if it's not already an array
     await User.updateMany(
-      { session: { $exists: true, $not: { $type: 'array' } } },
+      { session: { $exists: true, $not: { $type: "array" } } },
       { $set: { session: [] } }
     );
 
     // Ensure each session exists before adding
     const validSessions = await Session.find({ _id: { $in: sessionIds } });
     if (validSessions.length !== sessionIds.length) {
-      return res.status(400).json({ error: "One or more session IDs are invalid" });
+      return res
+        .status(400)
+        .json({ error: "One or more session IDs are invalid" });
     }
 
     // Add each sessionId to the session array of all users without duplicates
@@ -1077,14 +1234,16 @@ export const moveClassesSessions = async (req, res) => {
 
     // Migration: Convert session field to array if it's not already an array
     await Class.updateMany(
-      { session: { $exists: true, $not: { $type: 'array' } } },
+      { session: { $exists: true, $not: { $type: "array" } } },
       { $set: { session: [] } }
     );
 
     // Ensure each session exists before adding
     const validSessions = await Session.find({ _id: { $in: sessionIds } });
     if (validSessions.length !== sessionIds.length) {
-      return res.status(400).json({ error: "One or more session IDs are invalid" });
+      return res
+        .status(400)
+        .json({ error: "One or more session IDs are invalid" });
     }
 
     // Add each sessionId to the session array of all users without duplicates
@@ -1103,8 +1262,6 @@ export const moveClassesSessions = async (req, res) => {
     res.status(500).json({ error: "Server Error" });
   }
 };
-
-
 
 export const addSessionToDownloadWithoutSession = async (req, res) => {
   try {

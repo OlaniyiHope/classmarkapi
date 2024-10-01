@@ -212,18 +212,71 @@ export const getMark = async (req, res) => {
 //   }
 // };
 
+// export const getMarkbyStudent = async (req, res) => {
+//   try {
+//     const { studentId, sessionId } = req.params;
+
+//     const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+//     const marks = await Mark.find({
+//       "marks.studentId": studentId,
+//       session: sessionObjectId,
+//     })
+//       .populate("examId", "name")
+//       .populate("marks.subjectId", "name");
+
+//     const uniqueSubjects = new Map(); // Use a Map to store unique subjects
+
+//     const scores = marks.flatMap(
+//       (mark) =>
+//         mark.marks
+//           .filter(
+//             (m) =>
+//               m.studentId.toString() === studentId &&
+//               (m.testscore !== 0 || m.examscore !== 0) &&
+//               m.comment.trim() !== "" &&
+//               mark.examId &&
+//               m.subjectId
+//           )
+//           .map((m) => {
+//             const subjectKey = m.subjectId._id.toString(); // Use subject ID as key
+//             // Check if subject ID exists in the Map
+//             if (!uniqueSubjects.has(subjectKey)) {
+//               // If subject doesn't exist, add it to the Map and return the mapped object
+//               uniqueSubjects.set(subjectKey, true);
+//               return {
+//                 examId: mark.examId,
+//                 subjectId: m.subjectId,
+//                 examName: mark.examId.name,
+//                 subjectName: m.subjectId.name,
+//                 testscore: m.testscore,
+//                 ...m.toObject(),
+//               };
+//             }
+//             return null; // If subject exists, return null (to filter it out)
+//           })
+//           .filter((m) => m !== null) // Filter out null values
+//     );
+
+//     res.status(200).json({ studentId: studentId, scores });
+//   } catch (error) {
+//     console.error("Error fetching marks for student:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
 export const getMarkbyStudent = async (req, res) => {
   try {
     const { studentId, sessionId } = req.params;
 
-    const sessionObjectId = mongoose.Types.ObjectId(sessionId);
-
+    // Querying with "session" field instead of "sessionId"
     const marks = await Mark.find({
       "marks.studentId": studentId,
-      session: sessionObjectId,
+      session: sessionId, // Corrected to match the field in your database
     })
       .populate("examId", "name")
       .populate("marks.subjectId", "name");
+
+    console.log("Marks found:", marks); // Log what is being returned
 
     const uniqueSubjects = new Map(); // Use a Map to store unique subjects
 
@@ -258,13 +311,60 @@ export const getMarkbyStudent = async (req, res) => {
           .filter((m) => m !== null) // Filter out null values
     );
 
-    res.status(200).json({ studentId: studentId, scores });
+    res.status(200).json({ studentId, sessionId, scores });
   } catch (error) {
     console.error("Error fetching marks for student:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
+export const getMarkbyStudentwithoutsession = async (req, res) => {
+  try {
+    const userId = req.params.studentId;
+
+    const marks = await Mark.find({ "marks.studentId": userId })
+      .populate("examId", "name")
+      .populate("marks.subjectId", "name");
+
+    const uniqueSubjects = new Map(); // Use a Map to store unique subjects
+
+    const scores = marks.flatMap(
+      (mark) =>
+        mark.marks
+          .filter(
+            (m) =>
+              m.studentId.toString() === userId &&
+              (m.testscore !== 0 || m.examscore !== 0) &&
+              m.comment.trim() !== "" &&
+              mark.examId &&
+              m.subjectId
+          )
+          .map((m) => {
+            const subjectKey = m.subjectId._id.toString(); // Use subject ID as key
+            // Check if subject ID exists in the Map
+            if (!uniqueSubjects.has(subjectKey)) {
+              // If subject doesn't exist, add it to the Map and return the mapped object
+              uniqueSubjects.set(subjectKey, true);
+              return {
+                examId: mark.examId,
+                subjectId: m.subjectId,
+                examName: mark.examId.name,
+                subjectName: m.subjectId.name,
+                testscore: m.testscore,
+                ...m.toObject(),
+              };
+            }
+            return null; // If subject exists, return null (to filter it out)
+          })
+          .filter((m) => m !== null) // Filter out null values
+    );
+
+    res.status(200).json({ studentId: userId, scores });
+  } catch (error) {
+    console.error("Error fetching marks for student:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 export const getScores = async (req, res) => {
   try {
     const { examId, subjectId } = req.params;
@@ -360,6 +460,41 @@ export const updateMark = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const addSessionToMarks = async (req, res) => {
+  try {
+    const { sessionId } = req.body; // Get sessionId from request body
+
+    if (!sessionId) {
+      return res.status(400).json({ message: "sessionId is required" });
+    }
+
+    // Find all Mark documents that do not have a session field
+    const marksToUpdate = await Mark.find({
+      session: { $exists: false },
+    });
+
+    if (marksToUpdate.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No marks found without session" });
+    }
+
+    // Loop through each Mark document and update it with the sessionId
+    for (const mark of marksToUpdate) {
+      mark.session = sessionId; // Set the sessionId at the root level
+      await mark.save(); // Save the updated mark document
+    }
+
+    res.status(200).json({
+      message: "SessionId added to all marks",
+      updated: marksToUpdate.length,
+    });
+  } catch (error) {
+    console.error("Error adding sessionId to marks:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export const updateMarks = async (req, res) => {
   try {
     const { examId, subjectId, updates } = req.body;
