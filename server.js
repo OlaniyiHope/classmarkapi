@@ -141,7 +141,7 @@ import receiptRoute from "./routes/receiptRoute.js";
 import onScreenRoute from "./routes/onScreenRoute.js";
 import noticeRoute from "./routes/noticeRoute.js";
 import sessionRoute from "./routes/sessionRoute.js";
-import pastQuestRoute from "./routes/pastQuestRoute.js";
+
 import practicePqRoutes from "./routes/practicePqRoutes.js";
 import { getStudentsByClass } from "./controller/authController.js";
 import authenticateUser from "./middleware/authMiddleware.js";
@@ -212,7 +212,7 @@ app.use("/api/", questionRoute);
 app.use("/api/", examRoute);
 
 app.use("/api/", psyRoute);
-app.use("/api/", pastQuestRoute);
+
 app.use("/api/", practicePqRoutes);
 
 // Start server
