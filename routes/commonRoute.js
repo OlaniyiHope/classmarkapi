@@ -264,16 +264,28 @@ const commonRoute = (s3, authRoutes = []) => {
 
   router.post("/setting", upload.single("signature"), createSetting);
 
-  router.post("/account-setting", multer().single("schoolLogo"), (req, res) => {
+  // router.post("/account-setting", multer().single("schoolLogo"), (req, res) => {
+  //   createAccount(req, res, s3);
+  // });
+
+  router.post("/account-setting", upload.single("schoolLogo"), (req, res) => {
     createAccount(req, res, s3);
   });
+
   router.post("/download", multer().single("Downloads"), (req, res) => {
     createDownload(req, res, s3);
   });
 
+  // router.post(
+  //   "/book",
+  //   multer().fields([{ name: "Download" }, { name: "imageUrl" }]),
+  //   (req, res) => {
+  //     createBook(req, res, s3);
+  //   }
+  // );
   router.post(
     "/book",
-    multer().fields([{ name: "Download" }, { name: "imageUrl" }]),
+    upload.fields([{ name: "Download" }, { name: "imageUrl" }]),
     (req, res) => {
       createBook(req, res, s3);
     }
