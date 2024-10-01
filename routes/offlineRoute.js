@@ -5,8 +5,10 @@ import {
   addSessionToExamWithoutSession,
 } from "../controller/OfflineExam.js";
 import {
+  addSessionToMarks,
   getMark,
   getMarkbyStudent,
+  getMarkbyStudentwithoutsession,
   getScores,
   saveMark,
   updateMark,
@@ -27,6 +29,12 @@ router.get(
   // authenticateUser,
   getMarkbyStudent
 );
+router.get(
+  "/get-scored-by-student/:studentId",
+  // authenticateUser,
+  getMarkbyStudentwithoutsession
+);
+router.post("/add-session-to-marks", addSessionToMarks);
 
 router.get("/get-all-scores/:examId/:subjectId", getScores);
 

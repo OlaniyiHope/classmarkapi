@@ -1,6 +1,9 @@
 import express from "express";
-import {  submitPractice, getQuestions } from "../controller/practicePqController.js";
-import authenticateUser from "../middleware/authMiddleware.js"; 
+import {
+  submitPractice,
+  getQuestions,
+} from "../controller/practicePqController.js";
+import authenticateUser from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 

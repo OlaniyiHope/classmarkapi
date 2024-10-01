@@ -123,11 +123,31 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 
 // Route imports
-import adRoutes from "./routes/adRoutes.js";
+
 import classRoute from "./routes/classRoute.js";
+
+import adRoutes from "./routes/adRoutes.js";
+
+import examlistRoute from "./routes/examlistRoute.js";
+import gradeRoute from "./routes/gradeRoute.js";
+import catRoute from "./routes/catRoute.js";
+import stuRoute from "./routes/stuRoute.js";
+import teRoute from "./routes/teRoute.js";
+import parentRoute from "./routes/parentRoute.js";
 import commonRoute from "./routes/commonRoute.js";
-import sessionRoute from "./routes/sessionRoute.js";
+import questionRoute from "./routes/questionRoute.js";
+import examRoute from "./routes/examRoute.js";
+import subRoute from "./routes/subRoute.js";
+import markRoute from "./routes/markRoute.js";
+import offlineRoute from "./routes/offlineRoute.js";
+import OffRoutes from "./routes/OffRoutes.js";
+import psyRoute from "./routes/psyRoute.js";
+import receiptRoute from "./routes/receiptRoute.js";
 import onScreenRoute from "./routes/onScreenRoute.js";
+import noticeRoute from "./routes/noticeRoute.js";
+import sessionRoute from "./routes/sessionRoute.js";
+import pastQuestRoute from "./routes/pastQuestRoute.js";
+import practicePqRoutes from "./routes/practicePqRoutes.js";
 import { getStudentsByClass } from "./controller/authController.js";
 import authenticateUser from "./middleware/authMiddleware.js";
 import connectDB from "./config/db2.js";
@@ -155,12 +175,20 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
+app.use("/api/", offlineRoute);
+app.use("/api/ad", adRoutes);
+app.use("/api/ad", adRoutes);
+app.use("/api/", examlistRoute);
+app.use("/api/", noticeRoute);
 // Define routes
 const authRoutes = [
   { method: "get", path: "/students/:id", middleware: authenticateUser },
   { method: "get", path: "/teachers/:id", middleware: authenticateUser },
-  { method: "get", path: "/get-admin", middleware: authenticateUser },
+  {
+    method: "get",
+    path: "/get-session-admin/:sessionId",
+    middleware: authenticateUser,
+  },
   { method: "put", path: "/students/:id", middleware: authenticateUser },
   { method: "put", path: "/teachers/:id", middleware: authenticateUser },
 ];
@@ -169,12 +197,28 @@ const commonRouterWithAuth = commonRoute(s3, authRoutes);
 const onScreen = onScreenRoute(s3);
 
 // Routes
-app.use("/api/ad", adRoutes);
-app.use("/api/class", classRoute);
+
+app.use("/api/", OffRoutes);
+
+app.use("/api/", receiptRoute);
+app.use("/api/", classRoute);
 app.use("/api/sessions", sessionRoute);
 app.use("/api/onScreen", onScreen);
 app.use("/api", commonRouterWithAuth);
 app.use("/api/student/:className/:sessionId", getStudentsByClass);
+app.use("/api/", gradeRoute);
+app.use("/api/", catRoute);
+app.use("/api/mark", markRoute);
+app.use("/api/", stuRoute);
+app.use("/api/", teRoute);
+app.use("/api/", parentRoute);
+app.use("/api/", subRoute);
+app.use("/api/", questionRoute);
+app.use("/api/", examRoute);
+
+app.use("/api/", psyRoute);
+app.use("/api/", pastQuestRoute);
+app.use("/api/", practicePqRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5001;

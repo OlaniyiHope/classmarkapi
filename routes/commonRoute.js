@@ -179,6 +179,8 @@ import {
   addSessionToUsersWithoutSession,
   addSessionToDownloadWithoutSession,
   addAnotherSessionToUserWithSession,
+  deleteUserFromSpecificSession,
+  getStudentByIdBySession,
 } from "../controller/authController.js";
 import {
   createDownload,
@@ -240,14 +242,25 @@ const commonRoute = (s3, authRoutes = []) => {
   );
 
   router.get("/students/:id", authenticateUser, getStudentById);
+  router.get(
+    "/get-students/:id/:sessionId",
+    authenticateUser,
+    getStudentByIdBySession
+  );
   router.get("/teachers/:id", authenticateUser, getTeacherById);
   router.get("/get-admin/:id", authenticateUser, getAdminById);
+  router.get("/get-session-admin/:sessionId", authenticateUser, getAdmin);
 
   router.put("/admin/:id", authenticateUser, updateAdmin);
   router.put("/parent/:id", authenticateUser, updateParent);
-  router.put("/students/:id", authenticateUser, updateStudentById);
+  router.put("/put-students/:id", authenticateUser, updateStudentById);
   router.put("/teachers/:id", authenticateUser, updateTeacherById);
   router.delete("/users/:userId", deleteUser);
+
+  router.delete(
+    "/session/:sessionId/users/:userId",
+    deleteUserFromSpecificSession
+  );
 
   router.post("/setting", upload.single("signature"), createSetting);
 
