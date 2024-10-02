@@ -160,17 +160,16 @@ const s3 = new S3({
   region: process.env.AWS_REGION,
 });
 
-// CORS configuration
 const corsOptions = {
-  origin: ["https://hlhs.edupro.com.ng", "http://localhost:3000"],
+  origin: ["http://localhost:3000", "https://hlhs.edupro.com.ng"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
 
+// Apply CORS middleware
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Handle preflight requests
-
+app.options("*", cors(corsOptions)); // Preflight for all routes
 app.use(express.json());
 
 app.use("/api/", offlineRoute);
