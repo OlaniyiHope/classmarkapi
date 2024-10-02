@@ -162,7 +162,7 @@ const s3 = new S3({
 
 // CORS configuration
 const corsOptions = {
-  origin: ["https://hlhs.edupro.com.ng", "http://localhost:3001"],
+  origin: ["https://hlhs.edupro.com.ng", "http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
