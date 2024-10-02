@@ -160,23 +160,16 @@ const s3 = new S3({
   region: process.env.AWS_REGION,
 });
 
-// const corsOptions = {
-//   origin: ["http://localhost:3000", "https://hlhs.edupro.com.ng"],
-//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true,
-// };
+const corsOptions = {
+  origin: ["http://localhost:3000", "https://hlhs.edupro.com.ng"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
 
-// // Apply CORS middleware
-// app.use(cors(corsOptions));
-// app.options("*", cors(corsOptions)); // Preflight for all routes
-app.use((req, res, next) => {
-  console.log("Request headers:", req.headers.origin);
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // Manually set
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
+// Apply CORS middleware
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Preflight for all routes
 
 app.use(express.json());
 
