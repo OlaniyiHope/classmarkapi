@@ -165,6 +165,7 @@ const corsOptions = {
   origin: ["https://hlhs.edupro.com.ng", "http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
