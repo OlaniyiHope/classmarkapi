@@ -7,6 +7,9 @@ export const savePsy = async (req, res) => {
     const { examId, updates } = req.body;
     const sessionId = req.params.sessionId; // Get the class identifier from the request parameters
 
+    console.log("Exam ID:", examId);
+    console.log("Updates received:", updates); // Log the received updates
+
     // Check if updates array is present in the request body
     if (!updates || !Array.isArray(updates)) {
       return res
@@ -25,6 +28,11 @@ export const savePsy = async (req, res) => {
         session: sessionId,
         marks: await Promise.all(
           updates.map(async (mark) => {
+            if (!mark) {
+              console.error("Received null mark:", mark); // Log null marks
+              return null; // Skip null marks
+            }
+
             const {
               studentId,
               instruction,
@@ -32,13 +40,12 @@ export const savePsy = async (req, res) => {
               punctuality,
               talking,
               eyecontact,
-              remarks = "No remarks",
-              premarks = "No principal remarks",
+              remarks = "",
+              premarks = "",
             } = mark;
 
             return {
               studentId,
-
               instruction,
               independently,
               punctuality,
