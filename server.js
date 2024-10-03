@@ -172,6 +172,7 @@ app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // Preflight for all routes
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/", offlineRoute);
 app.use("/api/ad", adRoutes);
