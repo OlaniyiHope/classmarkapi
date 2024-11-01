@@ -292,10 +292,39 @@ export const getAdmin = async (req, res) => {
 //     res.status(500).json({ message: "Server Error" });
 //   }
 // };
+// export const updateAdmin = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { sessionId, ...updateData } = req.body; // Extract sessionId
+
+//     // If sessionId is provided, validate it
+//     if (sessionId) {
+//       const session = await Session.findById(sessionId);
+//       if (!session) {
+//         return res.status(400).json({ error: "Invalid session ID" });
+//       }
+//       updateData.session = sessionId; // Include sessionId in updateData
+//     }
+
+//     // Find and update the admin
+//     const updatedAdmin = await User.findByIdAndUpdate(id, updateData, {
+//       new: true,
+//     });
+
+//     if (!updatedAdmin) {
+//       return res.status(404).json({ message: "Admin not found" });
+//     }
+
+//     res.status(200).json(updatedAdmin);
+//   } catch (error) {
+//     res.status(500).json({ message: "Server Error" });
+//   }
+// };
+
 export const updateAdmin = async (req, res) => {
   try {
     const { id } = req.params;
-    const { sessionId, ...updateData } = req.body; // Extract sessionId
+    const { sessionId, password, ...updateData } = req.body; // Extract password
 
     // If sessionId is provided, validate it
     if (sessionId) {
@@ -304,6 +333,12 @@ export const updateAdmin = async (req, res) => {
         return res.status(400).json({ error: "Invalid session ID" });
       }
       updateData.session = sessionId; // Include sessionId in updateData
+    }
+
+    // Hash the password if it is provided
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
     }
 
     // Find and update the admin
@@ -317,6 +352,7 @@ export const updateAdmin = async (req, res) => {
 
     res.status(200).json(updatedAdmin);
   } catch (error) {
+    console.error("Update error:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };
