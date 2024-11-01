@@ -25,6 +25,7 @@ import {
   addAnotherSessionToUserWithSession,
   deleteUserFromSpecificSession,
   getStudentByIdBySession,
+  updatePasswords,
 } from "../controller/authController.js";
 import {
   createDownload,
@@ -98,6 +99,7 @@ const commonRoute = (s3, authRoutes = []) => {
   router.get("/teachers/:id", authenticateUser, getTeacherById);
   router.get("/get-admin/:id", authenticateUser, getAdminById);
   router.get("/get-session-admin/:sessionId", authenticateUser, getAdmin);
+  router.post("/update-passwords", updatePasswords);
 
   router.put("/admin/:id", authenticateUser, updateAdmin);
   router.put("/parent/:id", authenticateUser, updateParent);

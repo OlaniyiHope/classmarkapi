@@ -151,6 +151,43 @@ export const getUserByRole = async (req, res) => {
 //   }
 // };
 
+// export const login = async (req, res) => {
+//   const { identifier, password } = req.body;
+
+//   try {
+//     // Find the user by email or username
+//     const user = await User.findOne({
+//       $or: [{ email: identifier }, { username: identifier }],
+//     }).exec();
+
+//     console.log("User found:", user);
+
+//     if (!user) {
+//       console.log("User not found");
+//       return res.status(401).json({ error: "Invalid credentials" });
+//     }
+
+//     // Compare provided password with hashed password
+//     const isPasswordValid = await bcrypt.compare(password, user.password);
+//     if (!isPasswordValid) {
+//       console.log("Invalid password");
+//       return res.status(401).json({ error: "Invalid credentials" });
+//     }
+
+//     const role = user.role;
+
+//     // Generate a token if the password is correct
+//     const token = jwt.sign({ user, role }, process.env.JWT_SECRET, {
+//       expiresIn: "1h",
+//     });
+
+//     return res.status(200).json({ token, user });
+//   } catch (error) {
+//     console.error("Login error:", error);
+//     return res.status(500).json({ error: "Login failed" });
+//   }
+// };
+
 export const login = async (req, res) => {
   const { identifier, password } = req.body;
 
@@ -167,10 +204,16 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
+    // Log the provided password and the stored hashed password
+    console.log("Password provided by user:", password);
+    console.log("Stored hashed password for user:", user.password);
+
     // Compare provided password with hashed password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = bcrypt.compareSync(password, user.password); // Using compareSync for logging consistency
+    console.log("Password validation result:", isPasswordValid);
+
     if (!isPasswordValid) {
-      console.log("Invalid password");
+      console.log("Invalid password for user:", identifier);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
@@ -185,6 +228,39 @@ export const login = async (req, res) => {
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).json({ error: "Login failed" });
+  }
+};
+
+export const updatePasswords = async (req, res) => {
+  try {
+    // Find all users with empty passwords
+    const usersToUpdate = await User.find({ password: "" });
+
+    if (usersToUpdate.length === 0) {
+      return res
+        .status(200)
+        .json({ message: "No users found with empty passwords." });
+    }
+
+    // Update each user with a new hashed password
+    for (const user of usersToUpdate) {
+      const newPassword = "hlhs12345"; // Set this to a desired default password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+      console.log(`Updated password for user: ${user.email}`);
+    }
+
+    console.log("Password updates completed.");
+    res.status(200).json({
+      message: "Password updates completed.",
+      updatedUsersCount: usersToUpdate.length,
+    });
+  } catch (error) {
+    console.error("Error updating passwords:", error);
+    res.status(500).json({ error: "Error updating passwords." });
+  } finally {
+    mongoose.connection.close(); // Close the database connection
   }
 };
 // export const getAdmin = async (req, res) => {
@@ -982,10 +1058,14 @@ export const createAccount = async (req, res, s3) => {
 //     res.status(500).json({ message: "Server Error" });
 //   }
 // };
+
 export const updateStudentById = async (req, res) => {
   try {
     const { id } = req.params;
     const { sessionId, password, ...updateData } = req.body; // Extract password
+
+    // Log incoming data for verification
+    console.log("Incoming data:", req.body);
 
     // If sessionId is provided, validate it
     if (sessionId) {
@@ -1000,7 +1080,9 @@ export const updateStudentById = async (req, res) => {
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       updateData.password = hashedPassword;
-      console.log("Hashed password:", hashedPassword); // Log hashed password
+      console.log("New hashed password for student:", hashedPassword); // Log hashed password
+    } else {
+      console.log("No password provided for update.");
     }
 
     // Find and update the student
@@ -1012,13 +1094,14 @@ export const updateStudentById = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    console.log("Updated student:", updatedStudent); // Log updated student data
+    console.log("Updated student data:", updatedStudent); // Log updated student data
     res.status(200).json(updatedStudent);
   } catch (error) {
     console.error("Update error:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };
+
 export const updateTeacherById = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
