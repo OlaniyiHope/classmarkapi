@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 const settingSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
   },
   signature: {
     type: String, // You can store the file path or base64 representation
@@ -14,6 +13,10 @@ const settingSchema = new mongoose.Schema({
   },
   resumptionDate: {
     type: Date,
+  },
+  examName: {
+    type: String, // Add examName to the schema
+    required: true,
   },
   session: {
     type: mongoose.Schema.Types.ObjectId,

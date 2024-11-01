@@ -458,31 +458,81 @@ export const deleteUserFromSpecificSession = async (req, res) => {
   }
 };
 
+// export const createSetting = async (req, res) => {
+//   try {
+//     const { name, principalName, resumptionDate } = req.body;
+
+//     // Check if school profile exists, create if not
+//     let school = await Setting.findOne();
+//     if (!school) {
+//       school = new Setting();
+//     }
+
+//     school.name = name;
+//     school.principalName = principalName;
+//     school.resumptionDate = resumptionDate;
+
+//     // Handle file upload if a signature file is provided
+//     if (req.file) {
+//       school.signature = req.file.filename;
+//     }
+
+//     await school.save();
+
+//     res
+//       .status(200)
+//       .json({ success: true, message: "School profile updated successfully" });
+//   } catch {
+//     res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// };
+
+// Assuming req.body.session contains the session ID
 export const createSetting = async (req, res) => {
   try {
-    const { name, principalName, resumptionDate } = req.body;
+    const { name, principalName, resumptionDate, examName, session } = req.body;
 
-    // Check if school profile exists, create if not
-    let school = await Setting.findOne();
+    // Look for an existing setting with the specified session
+    let school = await Setting.findOne({ session, examName });
+
     if (!school) {
+      // If no setting exists for the session, create a new one
       school = new Setting();
     }
 
+    // Update fields
     school.name = name;
     school.principalName = principalName;
     school.resumptionDate = resumptionDate;
+    school.session = session; // Assign session ID
+    school.examName = examName; // Add exam name to the school profile
 
     // Handle file upload if a signature file is provided
     if (req.file) {
-      school.signature = req.file.filename;
+      school.signature = req.file.location; // Use S3 location URL for signature
+      school.markModified("signature"); // Explicitly mark the signature as modified
     }
 
-    await school.save();
+    // Log the full req.file object and S3 URL
+    console.log("File object:", req.file); // Displays the full req.file object
+    console.log(
+      "S3 File URL:",
+      req.file ? req.file.location : "No file uploaded"
+    );
 
-    res
-      .status(200)
-      .json({ success: true, message: "School profile updated successfully" });
-  } catch {
+    // Save the document and log the result before and after saving
+    console.log("Before save:", school); // Log document before saving
+    await school.save();
+    console.log("After save:", school); // Log document after saving
+
+    res.status(200).json({
+      success: true,
+      message: school.isNew
+        ? "School profile created successfully"
+        : "School profile updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating school profile:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
