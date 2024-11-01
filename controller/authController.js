@@ -122,6 +122,35 @@ export const getUserByRole = async (req, res) => {
   }
 };
 // ...
+// export const login = async (req, res) => {
+//   const { identifier, password } = req.body;
+
+//   try {
+//     // Find the user by email or username
+//     const user = await User.findOne({
+//       $or: [{ email: identifier }, { username: identifier }],
+//     }).exec();
+
+//     console.log("User found:", user);
+
+//     if (!user) {
+//       console.log("User not found");
+//       return res.status(401).json({ error: "Invalid credentials" });
+//     }
+
+//     const role = user.role;
+
+//     // const token = jwt.sign({ user, role }, process.env.JWT_SECRET);
+//     const token = jwt.sign({ user, role }, process.env.JWT_SECRET, {
+//       expiresIn: "1h",
+//     });
+
+//     return res.status(200).json({ token, user });
+//   } catch {
+//     return res.status(500).json({ error: "Login failed" });
+//   }
+// };
+
 export const login = async (req, res) => {
   const { identifier, password } = req.body;
 
@@ -138,19 +167,26 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
+    // Compare provided password with hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      console.log("Invalid password");
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
     const role = user.role;
 
-    // const token = jwt.sign({ user, role }, process.env.JWT_SECRET);
+    // Generate a token if the password is correct
     const token = jwt.sign({ user, role }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
 
     return res.status(200).json({ token, user });
-  } catch {
+  } catch (error) {
+    console.error("Login error:", error);
     return res.status(500).json({ error: "Login failed" });
   }
 };
-
 // export const getAdmin = async (req, res) => {
 //   try {
 //     // Verify the user role (only "admin" can get teachers)
