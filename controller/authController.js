@@ -35,6 +35,7 @@ export const register = async (req, res) => {
   try {
     const { role, sessionId, ...userData } = req.body; // Capture session ID
     const { email, username, password } = userData;
+    console.log("Received registration data:", { role, sessionId, userData });
 
     if (!["admin", "teacher", "parent", "student"].includes(role)) {
       return res.status(400).json({ error: "Invalid role" });

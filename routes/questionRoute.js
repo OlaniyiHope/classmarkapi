@@ -3,6 +3,7 @@ import express from "express";
 
 import authenticateUser from "../middleware/authMiddleware.js";
 import {
+  createMultipleQuestions,
   createQuestion,
   deleteQuestion,
   getQuestionById,
@@ -13,6 +14,12 @@ const router = express.Router();
 
 // Create a new question
 router.post("/questions/:sessionId", authenticateUser, createQuestion);
+router.post(
+  "/questions/multiple/:sessionId",
+  authenticateUser,
+  createMultipleQuestions
+);
+
 // Retrieve questions for a specific exam
 router.get("/questions/:examId", authenticateUser, getQuestions);
 router.get("/:questionId", getQuestionById);

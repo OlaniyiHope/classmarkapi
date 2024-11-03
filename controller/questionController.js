@@ -61,6 +61,64 @@ export const getQuestions = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+// Controller to create multiple questions
+export const createMultipleQuestions = async (req, res) => {
+  const { sessionId } = req.params;
+  const { questions } = req.body; // Expect an array of question objects in the request body
+
+  if (!Array.isArray(questions) || questions.length === 0) {
+    return res.status(400).json({ message: "No questions provided" });
+  }
+
+  try {
+    const savedQuestions = await Promise.all(
+      questions.map(async (questionData) => {
+        const {
+          questionType,
+          questionTitle,
+          options,
+          correctAnswer,
+          possibleAnswers,
+          mark,
+          examId,
+          onscreenMarking,
+        } = questionData;
+
+        let data = {
+          questionType,
+          questionTitle,
+          mark,
+          exam: examId,
+          session: sessionId,
+        };
+
+        if (questionType === "multiple_choice") {
+          data.options = options.map((option) => ({
+            option: option.option,
+            isCorrect: option.isCorrect,
+          }));
+        } else if (questionType === "true_false") {
+          data.correctAnswer = correctAnswer;
+        } else if (questionType === "fill_in_the_blanks") {
+          data.possibleAnswers = possibleAnswers;
+        } else if (questionType === "theory") {
+          data.onscreenMarking = onscreenMarking;
+        }
+
+        const question = new Question(data);
+        return question.save();
+      })
+    );
+
+    res.status(201).json({
+      message: `${savedQuestions.length} questions saved successfully`,
+      questions: savedQuestions,
+    });
+  } catch (error) {
+    console.error("Error saving questions:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 // Delete a question by ID
 export const deleteQuestion = async (req, res) => {

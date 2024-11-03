@@ -123,6 +123,7 @@ import cors from "cors";
 import classRoute from "./routes/classRoute.js";
 
 import adRoutes from "./routes/adRoutes.js";
+import aiRoute from "./routes/aiRoute.js";
 import examlistRoute from "./routes/examlistRoute.js";
 import gradeRoute from "./routes/gradeRoute.js";
 import catRoute from "./routes/catRoute.js";
@@ -200,6 +201,7 @@ const onScreen = onScreenRoute(s3);
 app.use("/api/", OffRoutes);
 
 app.use("/api/", receiptRoute);
+app.use("/api/", aiRoute);
 app.use("/api/", classRoute);
 app.use("/api/sessions", sessionRoute);
 app.use("/api/onScreen", onScreen);

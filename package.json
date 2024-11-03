@@ -36,6 +36,7 @@
     "nodemailer": "^6.9.13",
     "nodemon": "^2.0.22",
     "npm": "^10.2.5",
+    "openai": "^4.70.2",
     "stream": "^0.0.2",
     "tesseract.js": "^5.0.4",
     "xlsx": "^0.18.5"
