@@ -140,6 +140,7 @@ import OffRoutes from "./routes/OffRoutes.js";
 import psyRoute from "./routes/psyRoute.js";
 import receiptRoute from "./routes/receiptRoute.js";
 import onScreenRoute from "./routes/onScreenRoute.js";
+import innovateRoute from "./routes/innovateRoute.js";
 import noticeRoute from "./routes/noticeRoute.js";
 import sessionRoute from "./routes/sessionRoute.js";
 
@@ -162,7 +163,7 @@ const s3 = new S3({
 });
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://hlhs.edupro.com.ng"],
+  origin: ["http://localhost:3001", "https://hlhs.edupro.com.ng"],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -197,8 +198,10 @@ const commonRouterWithAuth = commonRoute(s3, authRoutes);
 const onScreen = onScreenRoute(s3);
 
 // Routes
-
+app.use("/api/", innovateRoute);
 app.use("/api/", OffRoutes);
+
+app.use("/api/", receiptRoute);
 
 app.use("/api/", receiptRoute);
 app.use("/api/", aiRoute);
