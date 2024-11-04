@@ -166,7 +166,8 @@ const corsOptions = {
   origin: [
     "http://localhost:3001",
     "https://hlhs.edupro.com.ng",
-    "https://wwww.edupro.com.ng",
+    "https://edupro.com.ng",
+    "https://www.edupro.com.ng",
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
