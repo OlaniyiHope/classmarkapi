@@ -69,6 +69,8 @@
 import ExamQuestion from "../models/examQuestionModel.js";
 import { generateQuestions } from "../services/questionService.js";
 
+import { generateLessonNoteContent } from "../services/lessonNoteService.js";
+import LessonNote from "../models/lessonNoteModel.js";
 export const generateQuestion = async (req, res) => {
   const {
     title,
@@ -141,5 +143,88 @@ export const generateQuestion = async (req, res) => {
     res
       .status(500)
       .json({ error: "An error occurred while generating questions" });
+  }
+};
+
+// import { generateLessonNote } from "../services/lessonNoteService.js";
+
+// export const generateLessonNoteHandler = async (req, res) => {
+//   const { topic, className, subject } = req.body;
+
+//   try {
+//     // Generate lesson note using a service
+//     const lessonNote = await generateLessonNot(topic, className, subject);
+
+//     if (lessonNote) {
+//       res.status(200).json({
+//         message: "Lesson note generated successfully",
+//         lessonNote,
+//       });
+//     } else {
+//       res.status(400).json({ error: "No lesson note generated" });
+//     }
+//   } catch (error) {
+//     console.error("Error in generateLessonNoteHandler:", error);
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while generating the lesson note" });
+//   }
+// };
+
+export const generateLessonNote = async (req, res) => {
+  const {
+    topic,
+    className,
+    subject,
+    date,
+    session,
+    preview, // Add preview flag
+  } = req.body;
+
+  try {
+    // Generate the lesson note content using the service
+    const lessonNoteContent = await generateLessonNoteContent(
+      topic,
+      className,
+      subject
+    );
+
+    if (!lessonNoteContent) {
+      return res
+        .status(400)
+        .json({ error: "No lesson note content generated" });
+    }
+
+    if (preview) {
+      // Return the generated content for preview without saving
+      return res.status(200).json({
+        message: "Preview generated successfully",
+        lessonNoteContent,
+      });
+    }
+
+    // Create a new LessonNote document if preview is not requested
+    const lessonNote = new LessonNote({
+      topic,
+      className,
+      subject,
+      date,
+      session,
+      content: lessonNoteContent,
+      createdBy: req.user._id,
+    });
+
+    // Save the lesson note to the database
+    await lessonNote.save();
+
+    res.status(201).json({
+      message: "Lesson note generated and saved successfully",
+      lessonNote,
+    });
+  } catch (error) {
+    console.error("Error in generateLessonNote:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while generating the lesson note" });
   }
 };
