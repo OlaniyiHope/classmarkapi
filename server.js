@@ -169,6 +169,7 @@ const corsOptions = {
     "https://hlhs.edupro.com.ng",
     "https://edupro.com.ng",
     "https://www.edupro.com.ng",
+    "https://www.divine4everhealth.com",
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
