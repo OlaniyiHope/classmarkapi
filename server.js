@@ -128,6 +128,7 @@ import examlistRoute from "./routes/examlistRoute.js";
 import gradeRoute from "./routes/gradeRoute.js";
 import catRoute from "./routes/catRoute.js";
 import stuRoute from "./routes/stuRoute.js";
+import FibroidRoute from "./routes/FibroidRoute.js";
 import teRoute from "./routes/teRoute.js";
 import parentRoute from "./routes/parentRoute.js";
 import commonRoute from "./routes/commonRoute.js";
@@ -210,6 +211,7 @@ app.use("/api/", receiptRoute);
 
 app.use("/api/", receiptRoute);
 app.use("/api/", aiRoute);
+app.use("/api/divine", FibroidRoute);
 app.use("/api/", classRoute);
 app.use("/api/sessions", sessionRoute);
 app.use("/api/onScreen", onScreen);
