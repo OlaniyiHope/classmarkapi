@@ -1,74 +1,6 @@
-// import ExamQuestion from "../models/examQuestionModel.js";
-// import { generateQuestions } from "../services/questionService.js";
-// export const generateQuestion = async (req, res) => {
-//   const {
-//     title, // Title for the exam
-//     className, // Class name for the exam
-//     topic,
-//     difficulty,
-//     numberOfQuestions,
-//     date,
-//     subject,
-//     fromTime,
-//     toTime,
-//     percent,
-//     instruction,
-//     session,
-//   } = req.body; // Destructure all necessary fields from the request body
-
-//   try {
-//     // Generate questions using the generateQuestions function
-//     const generatedQuestions = await generateQuestions(
-//       topic,
-//       difficulty,
-//       numberOfQuestions
-//     );
-
-//     if (generatedQuestions && generatedQuestions.length > 0) {
-//       // Create a new ExamQuestion document with data from the request body
-//       const examQuestion = new ExamQuestion({
-//         title, // Title from request body
-//         className, // Class name from request body
-//         topic, // Topic from request body
-//         difficulty, // Difficulty from request body
-//         date, // Date from request body
-//         subject, // From time from request body
-//         fromTime, // From time from request body
-//         toTime, // To time from request body
-//         percent, // Percentage from request body
-//         instruction, // Instruction from request body
-//         session, // Session from request body
-//         questions: generatedQuestions.map((q) => ({
-//           questionText: q.questionText || q, // Assuming q is an object with a questionText property
-//           questionType: q.questionType || "short-answer", // Default to short-answer if not provided
-//           options: q.options || [], // Include options if applicable
-//           correctAnswer: q.correctAnswer || "", // Optional for tracking correct answers
-//         })),
-//         createdBy: req.user._id, // Assuming user info is from auth middleware
-//       });
-
-//       // Save the exam questions to the database
-//       await examQuestion.save();
-
-//       // Respond with the created exam question document
-//       res.status(201).json({
-//         message: "Exam questions generated and saved successfully",
-//         examQuestion,
-//       });
-//     } else {
-//       res.status(400).json({ error: "No questions generated" });
-//     }
-//   } catch (error) {
-//     console.error("Error in generateQuestion:", error);
-//     res
-//       .status(500)
-//       .json({ error: "An error occurred while generating questions" });
-//   }
-// };
-
 import ExamQuestion from "../models/examQuestionModel.js";
 import { generateQuestions } from "../services/questionService.js";
-
+import { callOpenAI } from "../services/openaiService.js";
 import { generateLessonNoteContent } from "../services/lessonNoteService.js";
 import LessonNote from "../models/lessonNoteModel.js";
 export const generateQuestion = async (req, res) => {
@@ -226,5 +158,66 @@ export const generateLessonNote = async (req, res) => {
     res
       .status(500)
       .json({ error: "An error occurred while generating the lesson note" });
+  }
+};
+
+// Add this to your backend routes
+
+// export const generateTopic = async (req, res) => {
+//   const { subject } = req.body;
+
+//   if (!subject) {
+//     return res.status(400).json({ error: "Subject is required" });
+//   }
+
+//   try {
+//     const response = await openai.chat.completions.create({
+//       model: "gpt-3.5-turbo",
+//       messages: [
+//         {
+//           role: "user",
+//           content: `Generate a list of 10 detailed topics for the subject: ${subject}.
+//           Ensure the topics are diverse and relevant to a standard curriculum.`,
+//         },
+//       ],
+//       max_tokens: 300,
+//       temperature: 0.7,
+//     });
+
+//     const topics = response.choices[0].message.content
+//       .split("\n")
+//       .filter((topic) => topic.trim() !== ""); // Clean up the topics
+
+//     res.status(200).json({ topics });
+//   } catch (error) {
+//     console.error("Error generating topics:", error);
+//     res.status(500).json({ error: "Failed to generate topics" });
+//   }
+// };
+
+export const generateTopic = async (req, res) => {
+  const { subject } = req.body;
+
+  if (!subject) {
+    return res.status(400).json({ error: "Subject is required" });
+  }
+
+  const messages = [
+    {
+      role: "user",
+
+      content: `Generate a list of 30 concise topics for the subject "${subject}" that are brief (1–2 words) and suitable for standard curriculum discussions. Do not include explanations or long descriptions—just the topic names.`,
+    },
+  ];
+
+  try {
+    const response = await callOpenAI(messages, 300, 0.7);
+
+    const topics = response.split("\n").filter((topic) => topic.trim() !== ""); // Clean up the topics
+
+    res.status(200).json({ topics });
+  } catch (error) {
+    console.error("Error generating topics:", error);
+    res.status(500).json({ error: "Failed to generate topics" });
   }
 };
