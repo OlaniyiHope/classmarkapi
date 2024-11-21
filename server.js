@@ -165,7 +165,7 @@ const s3 = new S3({
 
 const corsOptions = {
   origin: [
-    "http://localhost:3001",
+    "http://localhost:3003",
     "https://hlhs.edupro.com.ng",
     "https://edupro.com.ng",
     "https://www.edupro.com.ng",
@@ -178,6 +178,10 @@ const corsOptions = {
 };
 
 // Apply CORS middleware
+// Example in Express
+app.use(express.json({ limit: "50mb" })); // Adjust size as needed
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // Preflight for all routes
 
