@@ -167,6 +167,7 @@ const corsOptions = {
   origin: [
     "http://localhost:3000",
     "https://hlhs.edupro.com.ng",
+    "https://cbt.edupro.com.ng",
     "https://edupro.com.ng",
     "https://www.edupro.com.ng",
     "https://www.divine4everhealth.com",
