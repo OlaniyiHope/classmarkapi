@@ -39,6 +39,7 @@ import express from "express";
 import {
   getStudentsByClass,
   getStudentById,
+  getStudentsByClassAndSession,
 } from "../controller/stuController.js";
 import authenticateUser from "../middleware/authMiddleware.js";
 
@@ -46,6 +47,8 @@ const router = express.Router();
 
 // New route to get students by class
 router.get("/students/:classname", getStudentsByClass);
+router.get("/students/:sessionId/:classname", getStudentsByClassAndSession);
+
 // Change the route pattern for getStudentById
 router.get("/student/:id", authenticateUser, getStudentById);
 
