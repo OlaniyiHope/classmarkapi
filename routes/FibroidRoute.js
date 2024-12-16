@@ -39,7 +39,6 @@ router.get("/get-hbp", getHbp);
 router.get("/get-hiv", getHiv);
 router.get("/contact-form", getForm);
 
-// Route to create a new fibroid description
 router.post("/post-contact-form", createForm);
 router.post("/create-fibroid", createFibroid);
 router.post("/create-ulcer", createUlcer);
