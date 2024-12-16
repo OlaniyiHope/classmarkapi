@@ -165,7 +165,7 @@ const s3 = new S3({
 
 const corsOptions = {
   origin: [
-    "http://localhost:3001",
+    "http://localhost:3000",
     "https://hlhs.edupro.com.ng",
     "https://cbt.edupro.com.ng",
     "https://edupro.com.ng",

@@ -264,6 +264,46 @@ export const getMark = async (req, res) => {
 //     res.status(500).json({ message: "Internal Server Error" });
 //   }
 // };
+// export const getMarkbyStudent = async (req, res) => {
+//   try {
+//     const { studentId, sessionId } = req.params;
+
+//     // Fetch marks where the session matches
+//     const marks = await Mark.find({
+//       "marks.studentId": studentId,
+//       session: sessionId,
+//     })
+//       .populate("examId", "name") // Populate exam details
+//       .populate("marks.subjectId", "name"); // Populate subject details
+
+//     if (!marks || marks.length === 0) {
+//       return res
+//         .status(404)
+//         .json({ message: "No marks found for the student." });
+//     }
+
+//     // Filter and map marks to include only data for the specified student
+//     const scores = marks.map((mark) => ({
+//       examId: mark.examId?._id,
+//       examName: mark.examId?.name,
+//       subjects: mark.marks
+//         .filter((m) => m.studentId.toString() === studentId) // Filter for this student only
+//         .map((m) => ({
+//           testScore: m.testscore,
+//           examScore: m.examscore,
+//           comment: m.comment,
+//           subjectId: m.subjectId?._id,
+//           subjectName: m.subjectId?.name,
+//         })),
+//     }));
+
+//     res.status(200).json({ studentId, sessionId, scores });
+//   } catch (error) {
+//     console.error("Error fetching marks for student:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
+
 export const getMarkbyStudent = async (req, res) => {
   try {
     const { studentId, sessionId } = req.params;

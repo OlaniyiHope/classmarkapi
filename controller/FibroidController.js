@@ -8,6 +8,7 @@ import Erectile from "../models/ErectileModel.js";
 import Diabetes from "../models/DiabetesModel.js";
 import Stroke from "../models/StrokeModel.js";
 import Hiv from "../models/HivModel.js";
+import DivineForm from "../models/divineFormModel.js";
 
 export const createFibroid = async (req, res) => {
   try {
@@ -414,5 +415,118 @@ export const updateUlcer = async (req, res) => {
       .json({ message: "Description updated successfully", fibroid });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// export const createForm = async (req, res) => {
+//   try {
+//     const { fullname, email, supplement, bottle, phone, address, request } =
+//       req.body;
+
+//     if (
+//       !fullname ||
+//       !email ||
+//       !supplement ||
+//       !bottle ||
+//       !phone ||
+//       !address ||
+//       !request
+//     ) {
+//       return res.status(400).json({ message: "All fields are required" });
+//     }
+
+//     let formEntry = await DivineForm.findOne({ email });
+
+//     if (!formEntry) {
+//       formEntry = new DivineForm({
+//         fullname,
+//         email,
+//         supplement,
+//         bottle,
+//         phone,
+//         address,
+//         request,
+//       });
+//     } else {
+//       formEntry.fullname = fullname;
+//       formEntry.email = email;
+//       formEntry.supplement = supplement;
+//       formEntry.bottle = bottle;
+//       formEntry.phone = phone;
+//       formEntry.address = address;
+//       formEntry.request = request;
+//       formEntry.updatedAt = Date.now();
+//     }
+
+//     await formEntry.save();
+
+//     res.status(200).json({ message: "Form submitted successfully", formEntry });
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error", error });
+//   }
+// };
+
+export const createForm = async (req, res) => {
+  try {
+    console.log("Received request body:", req.body); // Log request data
+
+    const { fullname, email, supplement, bottle, phone, address, request } =
+      req.body;
+
+    if (
+      !fullname ||
+      !email ||
+      !supplement ||
+      !bottle ||
+      !phone ||
+      !address ||
+      !request
+    ) {
+      console.log("Missing fields in form data"); // Log if any field is missing
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    let formEntry = await DivineForm.findOne({ email });
+    console.log("Form entry found:", formEntry); // Log existing form entry (if any)
+
+    if (!formEntry) {
+      formEntry = new DivineForm({
+        fullname,
+        email,
+        supplement,
+        bottle,
+        phone,
+        address,
+        request,
+      });
+      console.log("New form entry created:", formEntry); // Log new form creation
+    } else {
+      formEntry.fullname = fullname;
+      formEntry.email = email;
+      formEntry.supplement = supplement;
+      formEntry.bottle = bottle;
+      formEntry.phone = phone;
+      formEntry.address = address;
+      formEntry.request = request;
+      formEntry.updatedAt = Date.now();
+      console.log("Form entry updated:", formEntry); // Log form update
+    }
+
+    await formEntry.save();
+    console.log("Form entry saved successfully"); // Log successful save
+
+    res.status(200).json({ message: "Form submitted successfully", formEntry });
+  } catch (error) {
+    console.error("Error while submitting form:", error); // Log any server error
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+export const getForm = async (req, res) => {
+  try {
+    const forms = await DivineForm.find(); // Retrieve all documents from the 'forms' collection
+    res.status(200).json(forms); // Send response with the forms data
+  } catch (error) {
+    res.status(500).json({ message: error.message }); // Handle errors
   }
 };
