@@ -178,8 +178,6 @@ const corsOptions = {
   credentials: true,
 };
 
-// Apply CORS middleware
-// Example in Express
 app.use(express.json({ limit: "100mb" })); // Adjust size as needed
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
 
