@@ -65,6 +65,9 @@ const commonRoute = (s3, authRoutes = []) => {
         cb(null, fileKey);
       },
     }),
+    limits: {
+      fileSize: 500 * 1024 * 1024, // Set file size limit to 500MB
+    },
   });
 
   // Apply middleware to specific routes
