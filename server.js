@@ -125,6 +125,7 @@ import classRoute from "./routes/classRoute.js";
 import adRoutes from "./routes/adRoutes.js";
 import aiRoute from "./routes/aiRoute.js";
 import examlistRoute from "./routes/examlistRoute.js";
+import jambRoute from "./routes/jambRoute.js";
 import gradeRoute from "./routes/gradeRoute.js";
 import catRoute from "./routes/catRoute.js";
 import stuRoute from "./routes/stuRoute.js";
@@ -133,7 +134,9 @@ import teRoute from "./routes/teRoute.js";
 import parentRoute from "./routes/parentRoute.js";
 import commonRoute from "./routes/commonRoute.js";
 import questionRoute from "./routes/questionRoute.js";
+import jambquestionRoute from "./routes/jambquestionRoute.js";
 import examRoute from "./routes/examRoute.js";
+import jambsubmitRoute from "./routes/jambsubmitRoute.js";
 import subRoute from "./routes/subRoute.js";
 import markRoute from "./routes/markRoute.js";
 import offlineRoute from "./routes/offlineRoute.js";
@@ -165,7 +168,7 @@ const s3 = new S3({
 
 const corsOptions = {
   origin: [
-    "http://localhost:3000",
+    "http://localhost:3004",
     "https://hlhs.edupro.com.ng",
     "https://cbt.edupro.com.ng",
     "https://edupro.com.ng",
@@ -199,6 +202,7 @@ app.use("/api/", offlineRoute);
 app.use("/api/ad", adRoutes);
 app.use("/api/ad", adRoutes);
 app.use("/api/", examlistRoute);
+app.use("/api/", jambRoute);
 app.use("/api/", noticeRoute);
 // Define routes
 const authRoutes = [
@@ -224,6 +228,7 @@ app.use("/api/", receiptRoute);
 
 app.use("/api/", receiptRoute);
 app.use("/api/", aiRoute);
+app.use("/api/", jambsubmitRoute);
 app.use("/api/divine", FibroidRoute);
 app.use("/api/", classRoute);
 app.use("/api/sessions", sessionRoute);
@@ -238,6 +243,7 @@ app.use("/api/", teRoute);
 app.use("/api/", parentRoute);
 app.use("/api/", subRoute);
 app.use("/api/", questionRoute);
+app.use("/api/", jambquestionRoute);
 app.use("/api/", examRoute);
 
 app.use("/api/", psyRoute);
