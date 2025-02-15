@@ -111,6 +111,46 @@ export const getAllJambExams = async (req, res) => {
 //   }
 // };
 
+// export const getJambExamById = async (req, res) => {
+//   try {
+//     const { examId, sessionId } = req.params;
+
+//     // Validate examId
+//     if (!mongoose.Types.ObjectId.isValid(examId)) {
+//       return res.status(400).json({ error: "Invalid exam ID" });
+//     }
+
+//     // Validate sessionId
+//     if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+//       return res.status(400).json({ error: "Invalid session ID" });
+//     }
+
+//     // Convert sessionId to ObjectId for the query
+//     const exam = await Jamb.findOne({
+//       _id: examId,
+//       session: new mongoose.Types.ObjectId(sessionId), // Use ObjectId for session
+//     }).populate("questions");
+
+//     if (!exam) {
+//       return res.status(404).json({ error: "Exam not found for this session" });
+//     }
+
+//     // Allow access if className is "JAMB" or starts with "S.S.3"
+//     if (exam.className === "JAMB" || exam.className.startsWith("S.S.3.S")
+
+//     ) {
+//       return res.status(200).json(exam);
+//     } else {
+//       return res.status(403).json({ error: "Access denied for this class" });
+//     }
+//   } catch (error) {
+//     console.error("Error fetching JAMB exam:", error);
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while fetching the exam." });
+//   }
+// };
+
 export const getJambExamById = async (req, res) => {
   try {
     const { examId, sessionId } = req.params;
@@ -128,15 +168,20 @@ export const getJambExamById = async (req, res) => {
     // Convert sessionId to ObjectId for the query
     const exam = await Jamb.findOne({
       _id: examId,
-      session: new mongoose.Types.ObjectId(sessionId), // Use ObjectId for session
+      session: new mongoose.Types.ObjectId(sessionId),
     }).populate("questions");
 
     if (!exam) {
       return res.status(404).json({ error: "Exam not found for this session" });
     }
 
-    // Allow access if className is "JAMB" or starts with "S.S.3"
-    if (exam.className === "JAMB" || exam.className.startsWith("S.S.3.S")) {
+    // Allow access if className is "JAMB", starts with "S.S.3.S", or is exactly "S.S.3.A" or "S.S.3.C"
+    if (
+      exam.className === "JAMB" ||
+      exam.className.startsWith("S.S.3.S") ||
+      exam.className.startsWith("S.S.3.A") ||
+      exam.className.startsWith("S.S.3.C")
+    ) {
       return res.status(200).json(exam);
     } else {
       return res.status(403).json({ error: "Access denied for this class" });
