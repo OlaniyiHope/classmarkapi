@@ -10,11 +10,7 @@ const questionSchema = new mongoose.Schema({
       isCorrect: Boolean,
     },
   ],
-  session: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Session", // Reference to the Session model
-    required: true,
-  },
+  subject: String,
   correctAnswer: String, // For True/False questions
   mark: Number,
   exam: {

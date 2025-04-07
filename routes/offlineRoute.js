@@ -36,9 +36,10 @@ router.get(
 );
 router.post("/add-session-to-marks", addSessionToMarks);
 
-router.get("/get-all-scores/:examId/:subjectId", getScores);
+// router.get("/get-all-scores/:examId/:subjectId", getScores);
+router.get("/get-all-scores/:examId/:subjectId/:sessionId", getScores);
 
-router.put("/update-all-marks", updateMarks);
+router.put("/update-all-marks/:sessionId", updateMarks);
 
 router.put("/update-marks/:studentId", updateMark);
 router.delete("/deleteexam/:examId", deleteExam);

@@ -1,10 +1,12 @@
 import JambQuestion from "../models/jambquestionModel.js";
 
-// Create a new question
 // export const createQuestion = async (req, res) => {
-//   const { sessionId } = req.params;
-
 //   try {
+//     // Ensure req.body is an object, not an array
+//     const requestBody = Array.isArray(req.body) ? req.body[0] : req.body;
+
+//     console.log("Request Body:", requestBody); // Debugging Log
+
 //     const {
 //       questionType,
 //       questionTitle,
@@ -14,48 +16,67 @@ import JambQuestion from "../models/jambquestionModel.js";
 //       mark,
 //       examId,
 //       onscreenMarking,
-//     } = req.body;
+//     } = requestBody;
+
+//     if (!questionType || !questionTitle || !mark || !examId) {
+//       return res.status(400).json({ error: "Missing required fields" });
+//     }
 
 //     let questionData = {
 //       questionType,
 //       questionTitle,
 //       mark,
 //       exam: examId,
-//       session: sessionId,
 //     };
 
 //     if (questionType === "multiple_choice") {
-//       // For multiple-choice questions
+//       if (!Array.isArray(options) || options.length === 0) {
+//         return res.status(400).json({
+//           error: "Options are required for multiple-choice questions",
+//         });
+//       }
+
 //       questionData.options = options.map((option) => ({
 //         option: option.option,
 //         isCorrect: option.isCorrect,
 //       }));
 //     } else if (questionType === "true_false") {
-//       // For True/False questions
+//       if (!correctAnswer) {
+//         return res.status(400).json({
+//           error: "Correct answer is required for true/false questions",
+//         });
+//       }
 //       questionData.correctAnswer = correctAnswer;
 //     } else if (questionType === "fill_in_the_blanks") {
-//       // For Fill In The Blanks questions
+//       if (!Array.isArray(possibleAnswers)) {
+//         return res
+//           .status(400)
+//           .json({ error: "Possible answers must be an array" });
+//       }
 //       questionData.possibleAnswers = possibleAnswers;
 //     } else if (questionType === "theory") {
-//       // For Theory questions
-//       questionData.onscreenMarking = onscreenMarking;
+//       questionData.onscreenMarking = onscreenMarking || "";
 //     }
-//     const question = new JambQuestion(questionData);
 
+//     console.log("Final Question Data:", JSON.stringify(questionData, null, 2)); // Debugging Log
+
+//     const question = new JambQuestion(questionData);
 //     await question.save();
+
 //     res.json({ message: "Question saved successfully" });
-//   } catch {
+//   } catch (error) {
+//     console.error("Error saving question:", error); // Log error
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // };
-export const createQuestion = async (req, res) => {
-  const { sessionId } = req.params;
 
+// Retrieve questions for a specific exam
+
+export const createQuestion = async (req, res) => {
   try {
-    // Ensure req.body is an object, not an array
     const requestBody = Array.isArray(req.body) ? req.body[0] : req.body;
 
-    console.log("Request Body:", requestBody); // Debugging Log
+    console.log("Request Body:", requestBody);
 
     const {
       questionType,
@@ -65,10 +86,11 @@ export const createQuestion = async (req, res) => {
       possibleAnswers,
       mark,
       examId,
+      subject, // Added subject
       onscreenMarking,
     } = requestBody;
 
-    if (!questionType || !questionTitle || !mark || !examId || !sessionId) {
+    if (!questionType || !questionTitle || !mark || !examId || !subject) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -77,7 +99,7 @@ export const createQuestion = async (req, res) => {
       questionTitle,
       mark,
       exam: examId,
-      session: sessionId,
+      subject, // Added subject
     };
 
     if (questionType === "multiple_choice") {
@@ -86,7 +108,6 @@ export const createQuestion = async (req, res) => {
           error: "Options are required for multiple-choice questions",
         });
       }
-
       questionData.options = options.map((option) => ({
         option: option.option,
         isCorrect: option.isCorrect,
@@ -109,19 +130,18 @@ export const createQuestion = async (req, res) => {
       questionData.onscreenMarking = onscreenMarking || "";
     }
 
-    console.log("Final Question Data:", JSON.stringify(questionData, null, 2)); // Debugging Log
+    console.log("Final Question Data:", JSON.stringify(questionData, null, 2));
 
     const question = new JambQuestion(questionData);
     await question.save();
 
     res.json({ message: "Question saved successfully" });
   } catch (error) {
-    console.error("Error saving question:", error); // Log error
+    console.error("Error saving question:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-// Retrieve questions for a specific exam
 export const getQuestions = async (req, res) => {
   try {
     const examId = req.params.examId; // You can obtain the examId from the route params

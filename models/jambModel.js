@@ -1,59 +1,78 @@
+// import mongoose from "mongoose";
+
+// const JambSchema = new mongoose.Schema({
+//   studentName: { type: String, required: true },
+//   selectedSubjects: [
+//     {
+//       subject: { type: String, required: true },
+//       examYear: { type: Number, required: true },
+//       numQuestions: { type: Number, required: true },
+//       topic: { type: String, required: true },
+//     },
+//   ],
+//   examMode: {
+//     type: String,
+//     enum: ["Exam", "Practice"],
+//     required: true,
+//   },
+//   examTime: { type: Number, required: true }, // Total time in minutes
+//   shuffleQuestions: { type: Boolean, default: false },
+//   shuffleOptions: { type: Boolean, default: false },
+//   instruction: {
+//     type: String,
+//   },
+//   createdAt: { type: Date, default: Date.now },
+// });
+
+// export default mongoose.model("Jamb", JambSchema);
 import mongoose from "mongoose";
 
 const JambSchema = new mongoose.Schema(
   {
-    className: {
+    // selectedSubjects: [
+    //   {
+    //     subject: { type: String, required: true },
+    //     examYear: { type: Number, required: true },
+    //     numQuestions: { type: Number, required: true },
+    //     topic: { type: String, required: true },
+    //   },
+    // ],
+    selectedSubjects: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "JambSubject", // Reference to JambSubject model
+        required: true,
+      },
+    ],
+    examMode: {
       type: String,
-      default: "JAMB", // Default class name
-    },
-    subject: {
-      type: String,
+      enum: ["Exam", "Practice"],
       required: true,
     },
-    year: {
-      type: Number,
-      required: true,
-    },
-    date: {
-      type: Date,
-      required: true,
-    },
-    session: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Session", // Reference to the Session model
-      required: true,
-    },
-    fromTime: {
-      type: String,
-      required: true,
-    },
-    toTime: {
-      type: String,
-      required: true,
-    },
-    instruction: {
-      type: String,
-    },
+    examTime: { type: Number, required: true }, // Total time in minutes
+    shuffleQuestions: { type: Boolean, default: false },
+    shuffleOptions: { type: Boolean, default: false },
+    instruction: { type: String },
+
     questions: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Question", // Reference to the "Question" model
+        ref: "JambQuestion", // References the "Question" model
       },
     ],
+
     submittedAnswers: [
       {
         userId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "User", // Reference to the User model
-          select: "studentName",
+          ref: "Auth", // References the User model
+          select: "fullname",
         },
         answers: {
-          type: Object, // Store answers with question IDs as keys
+          type: Map, // Maps question IDs to answers
           of: String, // Assuming answers are strings
         },
-        score: {
-          type: Number, // Store exam score
-        },
+        score: { type: Number }, // Exam score
       },
     ],
   },

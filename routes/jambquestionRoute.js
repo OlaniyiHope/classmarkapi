@@ -13,9 +13,9 @@ import {
 const router = express.Router();
 
 // Create a new question
-router.post("/jamb-questions/:sessionId", authenticateUser, createQuestion);
+router.post("/jamb-questions", createQuestion);
 router.post(
-  "/jamb-questions/multiple/:sessionId",
+  "/jamb-questions/multiple",
   authenticateUser,
   createMultipleQuestions
 );

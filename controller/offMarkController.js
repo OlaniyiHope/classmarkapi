@@ -8,6 +8,7 @@ export const saveMark = async (req, res) => {
 
   try {
     const { examId, subjectId, updates } = req.body;
+    console.log("Received in saveMark controller:", req.body);
 
     if (!mongoose.Types.ObjectId.isValid(sessionId)) {
       return res.status(400).json({ error: "Invalid session ID" });
@@ -46,6 +47,7 @@ export const saveMark = async (req, res) => {
           })
         ),
       });
+      console.log("Saved marks:", savedMarks);
 
       return res.status(201).json({
         message: "Marks saved successfully",
@@ -405,47 +407,97 @@ export const getMarkbyStudentwithoutsession = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+// export const getScores = async (req, res) => {
+//   try {
+//     const { examId, subjectId } = req.params;
+
+//     const isExamIdValid = mongoose.isValidObjectId(examId);
+//     const isSubjectIdValid = mongoose.isValidObjectId(subjectId);
+
+//     if (!isExamIdValid && !isSubjectIdValid) {
+//       return res.status(400).json({
+//         message: "Invalid ObjectId format for both examId and subjectId",
+//       });
+//     }
+
+//     const marks = await Mark.findOne({
+//       examId: isExamIdValid ? mongoose.Types.ObjectId(examId) : null,
+//       "marks.subjectId": isSubjectIdValid
+//         ? mongoose.Types.ObjectId(subjectId)
+//         : null,
+//     });
+
+//     if (!marks) {
+//       return res.status(200).json({ examId, subjectId, scores: [] });
+//     }
+
+//     // Populate the studentId field to get the student details
+//     await Mark.populate(marks, {
+//       path: "marks.studentId",
+//       select: "studentName",
+//     });
+
+//     // Extract relevant information for response
+//     const scores = marks.marks.map((m) => ({
+//       studentId: m.studentId,
+//       studentName: m.studentId ? m.studentId.studentName : null,
+//       testscore: m.testscore,
+//       examscore: m.examscore,
+//       marksObtained: m.testscore + m.examscore,
+//       comment: m.comment,
+//     }));
+
+//     res.status(200).json({ examId, subjectId, scores });
+//   } catch (error) {
+//     console.error("Error fetching scores:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
+
 export const getScores = async (req, res) => {
   try {
-    const { examId, subjectId } = req.params;
+    const { examId, subjectId, sessionId } = req.params;
 
     const isExamIdValid = mongoose.isValidObjectId(examId);
     const isSubjectIdValid = mongoose.isValidObjectId(subjectId);
+    const isSessionIdValid = mongoose.isValidObjectId(sessionId);
 
-    if (!isExamIdValid && !isSubjectIdValid) {
+    if (!isExamIdValid || !isSubjectIdValid || !isSessionIdValid) {
       return res.status(400).json({
-        message: "Invalid ObjectId format for both examId and subjectId",
+        message: "Invalid ObjectId format for examId, subjectId, or sessionId",
       });
     }
 
     const marks = await Mark.findOne({
-      examId: isExamIdValid ? mongoose.Types.ObjectId(examId) : null,
-      "marks.subjectId": isSubjectIdValid
-        ? mongoose.Types.ObjectId(subjectId)
-        : null,
+      examId: mongoose.Types.ObjectId(examId),
+      session: mongoose.Types.ObjectId(sessionId),
+      // "marks.subjectId": mongoose.Types.ObjectId(subjectId),
+      marks: {
+        $elemMatch: { subjectId: mongoose.Types.ObjectId(subjectId) },
+      },
     });
 
     if (!marks) {
-      return res.status(200).json({ examId, subjectId, scores: [] });
+      return res.status(200).json({ examId, subjectId, sessionId, scores: [] });
     }
 
-    // Populate the studentId field to get the student details
     await Mark.populate(marks, {
       path: "marks.studentId",
       select: "studentName",
     });
 
-    // Extract relevant information for response
-    const scores = marks.marks.map((m) => ({
-      studentId: m.studentId,
-      studentName: m.studentId ? m.studentId.studentName : null,
-      testscore: m.testscore,
-      examscore: m.examscore,
-      marksObtained: m.testscore + m.examscore,
-      comment: m.comment,
-    }));
+    const scores = marks.marks
+      .filter((m) => m.subjectId.toString() === subjectId)
+      .map((m) => ({
+        studentId: m.studentId,
+        studentName: m.studentId ? m.studentId.studentName : null,
+        testscore: m.testscore,
+        examscore: m.examscore,
+        marksObtained: m.testscore + m.examscore,
+        comment: m.comment,
+      }));
 
-    res.status(200).json({ examId, subjectId, scores });
+    res.status(200).json({ examId, subjectId, sessionId, scores });
   } catch (error) {
     console.error("Error fetching scores:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -537,7 +589,8 @@ export const addSessionToMarks = async (req, res) => {
 
 export const updateMarks = async (req, res) => {
   try {
-    const { examId, subjectId, updates } = req.body;
+    const { examId, subjectId, updates, sessionId } = req.body;
+    console.log("Received in saveMark controller update:", req.body);
 
     if (!examId || !subjectId || !updates || !Array.isArray(updates)) {
       return res.status(400).json({ error: "Invalid request payload" });
@@ -552,6 +605,7 @@ export const updateMarks = async (req, res) => {
 
       const filter = {
         examId,
+        sessionId,
         "marks.studentId": studentId,
         "marks.subjectId": subjectId,
       };
