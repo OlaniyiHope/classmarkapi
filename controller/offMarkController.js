@@ -1530,51 +1530,88 @@ export const getMark = async (req, res) => {
 //   }
 // };
 
+// export const getMarkbyStudent = async (req, res) => {
+//   try {
+//     const { studentId, sessionId } = req.params;
+
+//     // Querying with "session" field instead of "sessionId"
+//     const marks = await Mark.find({
+//       "marks.studentId": studentId,
+//       session: sessionId, // Corrected to match the field in your database
+//     })
+//       .populate("examId", "name")
+//       .populate("marks.subjectId", "name");
+
+//     console.log("Marks found:", marks); // Log what is being returned
+
+//     const uniqueSubjects = new Map(); // Use a Map to store unique subjects
+
+//     const scores = marks.flatMap(
+//       (mark) =>
+//         mark.marks
+//           .filter(
+//             (m) =>
+//               m.studentId.toString() === studentId &&
+//               (m.testscore !== 0 || m.examscore !== 0) &&
+//               m.comment.trim() !== "" &&
+//               mark.examId &&
+//               m.subjectId
+//           )
+//           .map((m) => {
+//             const subjectKey = m.subjectId._id.toString(); // Use subject ID as key
+//             // Check if subject ID exists in the Map
+//             if (!uniqueSubjects.has(subjectKey)) {
+//               // If subject doesn't exist, add it to the Map and return the mapped object
+//               uniqueSubjects.set(subjectKey, true);
+//               return {
+//                 examId: mark.examId,
+//                 subjectId: m.subjectId,
+//                 examName: mark.examId.name,
+//                 subjectName: m.subjectId.name,
+//                 testscore: m.testscore,
+//                 ...m.toObject(),
+//               };
+//             }
+//             return null; // If subject exists, return null (to filter it out)
+//           })
+//           .filter((m) => m !== null) // Filter out null values
+//     );
+
+//     res.status(200).json({ studentId, sessionId, scores });
+//   } catch (error) {
+//     console.error("Error fetching marks for student:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
 export const getMarkbyStudent = async (req, res) => {
   try {
     const { studentId, sessionId } = req.params;
 
-    // Querying with "session" field instead of "sessionId"
     const marks = await Mark.find({
       "marks.studentId": studentId,
-      session: sessionId, // Corrected to match the field in your database
+      session: sessionId,
     })
       .populate("examId", "name")
       .populate("marks.subjectId", "name");
 
-    console.log("Marks found:", marks); // Log what is being returned
-
-    const uniqueSubjects = new Map(); // Use a Map to store unique subjects
-
-    const scores = marks.flatMap(
-      (mark) =>
-        mark.marks
-          .filter(
-            (m) =>
-              m.studentId.toString() === studentId &&
-              (m.testscore !== 0 || m.examscore !== 0) &&
-              m.comment.trim() !== "" &&
-              mark.examId &&
-              m.subjectId
-          )
-          .map((m) => {
-            const subjectKey = m.subjectId._id.toString(); // Use subject ID as key
-            // Check if subject ID exists in the Map
-            if (!uniqueSubjects.has(subjectKey)) {
-              // If subject doesn't exist, add it to the Map and return the mapped object
-              uniqueSubjects.set(subjectKey, true);
-              return {
-                examId: mark.examId,
-                subjectId: m.subjectId,
-                examName: mark.examId.name,
-                subjectName: m.subjectId.name,
-                testscore: m.testscore,
-                ...m.toObject(),
-              };
-            }
-            return null; // If subject exists, return null (to filter it out)
-          })
-          .filter((m) => m !== null) // Filter out null values
+    const scores = marks.flatMap((mark) =>
+      mark.marks
+        .filter(
+          (m) =>
+            m.studentId.toString() === studentId &&
+            (m.testscore !== 0 || m.examscore !== 0) &&
+            m.comment.trim() !== "" &&
+            mark.examId &&
+            m.subjectId
+        )
+        .map((m) => ({
+          examId: mark.examId,
+          subjectId: m.subjectId,
+          examName: mark.examId.name,
+          subjectName: m.subjectId.name,
+          testscore: m.testscore,
+          ...m.toObject(),
+        }))
     );
 
     res.status(200).json({ studentId, sessionId, scores });
