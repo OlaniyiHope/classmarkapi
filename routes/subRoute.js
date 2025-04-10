@@ -13,7 +13,6 @@ import authenticateUser from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// router.post("/create-subject", authenticateUser, createSubject);
 router.post("/create-subject/:sessionId", authenticateUser, createSubject);
 router.post(
   "/addSessionToSubjectWithoutSession",
