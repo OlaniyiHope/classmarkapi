@@ -4,11 +4,45 @@ import Class from "../models/classModel.js";
 import Session from "../models/sessionModel.js";
 import mongoose from "mongoose";
 
+// export const createSubject = async (req, res) => {
+//   const { name, teacher, classname, session } = req.body; // Add session to the request body
+
+//   try {
+//     // Find the teacher and class documents by name
+//     const teacherDocument = await User.findOne({
+//       username: teacher,
+//       role: "teacher",
+//     });
+//     const classDocument = await Class.findOne({ name: classname });
+
+//     if (!teacherDocument || !classDocument) {
+//       // Handle errors if the teacher or class isn't found
+//       res.status(404).json({ error: "Teacher or class not found" });
+//       return;
+//     }
+
+//     // If session is provided, add it to the subject
+//     const newSub = new Subject({
+//       name,
+//       teacher: teacherDocument.username, // Store teacher's username
+//       classname: classDocument.name, // Store class name
+//       session, // Store session
+//     });
+
+//     const savedSub = await newSub.save();
+//     res.status(200).json(savedSub);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// };
 export const createSubject = async (req, res) => {
-  const { name, teacher, classname, session } = req.body; // Add session to the request body
+  const { name, teacher, classname } = req.body;
+  const { sessionId } = req.params; // Get session ID from the route parameter
+
+  console.log("Received form data:", req.body);
+  console.log("Received session from params:", sessionId);
 
   try {
-    // Find the teacher and class documents by name
     const teacherDocument = await User.findOne({
       username: teacher,
       role: "teacher",
@@ -16,26 +50,23 @@ export const createSubject = async (req, res) => {
     const classDocument = await Class.findOne({ name: classname });
 
     if (!teacherDocument || !classDocument) {
-      // Handle errors if the teacher or class isn't found
-      res.status(404).json({ error: "Teacher or class not found" });
-      return;
+      return res.status(404).json({ error: "Teacher or class not found" });
     }
 
-    // If session is provided, add it to the subject
     const newSub = new Subject({
       name,
-      teacher: teacherDocument.username, // Store teacher's username
-      classname: classDocument.name, // Store class name
-      session, // Store session
+      teacher: teacherDocument.username,
+      classname: classDocument.name,
+      session: sessionId,
     });
 
     const savedSub = await newSub.save();
     res.status(200).json(savedSub);
   } catch (err) {
-    res.status(500).json(err);
+    console.error("Error creating subject:", err);
+    res.status(500).json({ error: "Failed to create subject" });
   }
 };
-
 export const addSessionToSubjectWithoutSession = async (req, res) => {
   try {
     const { sessionId } = req.body;
