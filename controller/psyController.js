@@ -152,47 +152,110 @@ export const getMark = async (req, res) => {
 //     res.status(500).json({ message: "Internal Server Error" });
 //   }
 // };
+// export const getPsybyStudent = async (req, res) => {
+//   try {
+//     const { studentId, sessionId } = req.params;
+
+//     const sessionObjectId = mongoose.Types.ObjectId(sessionId);
+
+//     const marks = await Psy.find({
+//       "marks.studentId": studentId,
+//       session: sessionObjectId,
+//     }).populate("examId", "name");
+
+//     const scores = marks.flatMap((mark) =>
+//       mark.marks
+//         .filter(
+//           (m) =>
+//             m.studentId.toString() === studentId &&
+//             (m.testscore !== 0 ||
+//               m.examscore !== 0 ||
+//               m.punctuality != 0 ||
+//               m.talking != 0 ||
+//               m.eyecontact != 0 ||
+//               m.remarks != 0) &&
+//             m.premarks.trim() !== ""
+//         )
+//         .map((m) => ({
+//           examId: mark.examId,
+
+//           examName: mark.examId.name,
+
+//           instruction: m.instruction,
+//           independently: m.independently,
+//           punctuality: m.punctuality,
+//           talking: m.talking,
+//           eyecontact: m.eyecontact,
+//           remarks: m.remarks,
+//           premarks: m.premarks,
+
+//           ...m.toObject(),
+//         }))
+//     );
+
+//     res.status(200).json({ studentId: studentId, scores });
+//   } catch (error) {
+//     console.error("Error fetching marks for student:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
+
 export const getPsybyStudent = async (req, res) => {
   try {
     const { studentId, sessionId } = req.params;
+    const { term } = req.query; // this will be "SECOND TERM" or similar
     const sessionObjectId = mongoose.Types.ObjectId(sessionId);
 
-    const marks = await Psy.find({
+    // Fetch all psy records for the student in the session, and populate examId to access its name
+    const psyRecords = await Psy.find({
       "marks.studentId": studentId,
       session: sessionObjectId,
-    }).populate("examId", "name");
+    }).populate("examId", "name"); // Only get the exam name
 
-    const scores = marks.flatMap((mark) =>
-      mark.marks
+    // Flatten and filter the marks
+    const scores = psyRecords.flatMap((record) =>
+      record.marks
         .filter(
-          (m) =>
-            m.studentId.toString() === studentId &&
-            (m.testscore !== 0 ||
-              m.examscore !== 0 ||
-              m.punctuality != 0 ||
-              m.talking != 0 ||
-              m.eyecontact != 0 ||
-              m.remarks != 0) &&
-            m.premarks.trim() !== ""
+          (mark) =>
+            mark.studentId.toString() === studentId &&
+            (mark.testscore !== 0 ||
+              mark.examscore !== 0 ||
+              mark.punctuality !== 0 ||
+              mark.talking !== 0 ||
+              mark.eyecontact !== 0 ||
+              mark.remarks !== 0) &&
+            mark.premarks.trim() !== ""
         )
-        .map((m) => ({
-          examId: mark.examId,
-
-          examName: mark.examId.name,
-
-          instruction: m.instruction,
-          independently: m.independently,
-          punctuality: m.punctuality,
-          talking: m.talking,
-          eyecontact: m.eyecontact,
-          remarks: m.remarks,
-          premarks: m.premarks,
-
-          ...m.toObject(),
+        .map((mark) => ({
+          examId: record.examId._id,
+          examName: record.examId.name,
+          instruction: mark.instruction,
+          independently: mark.independently,
+          punctuality: mark.punctuality,
+          talking: mark.talking,
+          eyecontact: mark.eyecontact,
+          remarks: mark.remarks,
+          premarks: mark.premarks,
+          ...mark.toObject(),
         }))
     );
 
-    res.status(200).json({ studentId: studentId, scores });
+    // Apply the term filter after processing, if provided
+    const filteredScores = term
+      ? scores.filter(
+          (score) =>
+            score.examName &&
+            score.examName.toUpperCase() === term.toUpperCase()
+        )
+      : scores;
+
+    if (filteredScores.length === 0) {
+      return res
+        .status(404)
+        .json({ message: `No scores found for term: ${term}` });
+    }
+
+    res.status(200).json({ studentId, scores: filteredScores });
   } catch (error) {
     console.error("Error fetching marks for student:", error);
     res.status(500).json({ message: "Internal Server Error" });
