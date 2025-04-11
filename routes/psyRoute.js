@@ -20,6 +20,17 @@ router.post("/save-psy/:sessionId", savePsy);
 // Add the new route for getting scores
 router.get("/get-scores/:examName", getMark);
 
+// router.get(
+//   "/get-psy-by-student/:studentId/:sessionId",
+//   authenticateUser,
+//   getPsybyStudent
+// );
+
+// router.get(
+//   "/get-psy-by-student/:studentId/:examId/:sessionId",
+//   authenticateUser,
+//   getPsybyStudent
+// );
 router.get(
   "/get-psy-by-student/:studentId/:sessionId",
   authenticateUser,
