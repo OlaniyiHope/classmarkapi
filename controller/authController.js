@@ -1643,7 +1643,6 @@ export const getStudentsBySession = async (req, res) => {
 export const addSessionToUsersWithoutSession = async (req, res) => {
   try {
     const { sessionId } = req.body;
-
     // Validate sessionId
     const session = await Session.findById(sessionId);
     if (!session) {
