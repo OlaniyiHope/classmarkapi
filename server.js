@@ -57,6 +57,7 @@ const corsOptions = {
     "https://www.edupro.com.ng",
     "https://www.divine4everhealth.com",
     "https://divinehealthcare.vercel.app",
+    "http://divinehealthcare.vercel.app",
     "https://divine4everhealth.com",
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
