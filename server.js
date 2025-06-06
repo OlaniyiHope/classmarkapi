@@ -50,7 +50,7 @@ const s3 = new S3({
 
 const corsOptions = {
   origin: [
-    "http://localhost:3000",
+    "http://localhost:3002",
     "https://hlhs.edupro.com.ng",
     "https://cbt.edupro.com.ng",
     "https://edupro.com.ng",
@@ -59,6 +59,7 @@ const corsOptions = {
     "https://divinehealthcare.vercel.app",
     "http://divinehealthcare.vercel.app",
     "https://divine4everhealth.com",
+    "https://books.edupro.com.ng",
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
