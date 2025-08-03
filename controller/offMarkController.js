@@ -1620,6 +1620,59 @@ export const getMark = async (req, res) => {
 //     res.status(500).json({ message: "Internal Server Error" });
 //   }
 // };
+// export const getMarkbyStudent = async (req, res) => {
+//   try {
+//     const { studentId, sessionId } = req.params;
+
+//     const marks = await Mark.find({
+//       "marks.studentId": studentId,
+//       session: sessionId,
+//     })
+//       .populate("examId", "name")
+//       .populate("marks.subjectId", "name");
+
+//     // Flatten the marks and filter valid scores
+//     const scores = marks.flatMap((mark) =>
+//       mark.marks
+//         .filter(
+//           (m) =>
+//             m.studentId.toString() === studentId &&
+//             (m.testscore !== 0 || m.examscore !== 0) &&
+//             m.comment.trim() !== "" &&
+//             mark.examId &&
+//             m.subjectId
+//         )
+//         .map((m) => ({
+//           examId: mark.examId,
+//           subjectId: m.subjectId,
+//           examName: mark.examId.name,
+//           subjectName: m.subjectId.name,
+//           testscore: m.testscore,
+//           ...m.toObject(),
+//         }))
+//     );
+
+//     // Deduplicate based on examId and subjectId using reduce
+//     const uniqueScores = scores.reduce((acc, current) => {
+//       // Check if an entry with the same examId and subjectId already exists
+//       const isDuplicate = acc.some(
+//         (item) =>
+//           item.examId._id.toString() === current.examId._id.toString() &&
+//           item.subjectId._id.toString() === current.subjectId._id.toString()
+//       );
+
+//       if (!isDuplicate) {
+//         acc.push(current); // Add unique entry
+//       }
+//       return acc;
+//     }, []);
+
+//     res.status(200).json({ studentId, sessionId, scores: uniqueScores });
+//   } catch (error) {
+//     console.error("Error fetching marks for student:", error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
 export const getMarkbyStudent = async (req, res) => {
   try {
     const { studentId, sessionId } = req.params;
@@ -1631,16 +1684,13 @@ export const getMarkbyStudent = async (req, res) => {
       .populate("examId", "name")
       .populate("marks.subjectId", "name");
 
-    // Flatten the marks and filter valid scores
     const scores = marks.flatMap((mark) =>
       mark.marks
-        .filter(
-          (m) =>
-            m.studentId.toString() === studentId &&
-            (m.testscore !== 0 || m.examscore !== 0) &&
-            m.comment.trim() !== "" &&
-            mark.examId &&
-            m.subjectId
+        .filter((m) =>
+          m.studentId.toString() === studentId &&
+          (m.testscore || m.examscore || m.testscore === 0 || m.examscore === 0) && // Include 0 scores
+          mark.examId &&
+          m.subjectId
         )
         .map((m) => ({
           examId: mark.examId,
@@ -1648,22 +1698,23 @@ export const getMarkbyStudent = async (req, res) => {
           examName: mark.examId.name,
           subjectName: m.subjectId.name,
           testscore: m.testscore,
+          examscore: m.examscore,
+          comment: typeof m.comment === "string" ? m.comment : "", // Safe comment
+          marksObtained:
+            (typeof m.testscore === "number" ? m.testscore : 0) +
+            (typeof m.examscore === "number" ? m.examscore : 0),
           ...m.toObject(),
         }))
     );
 
-    // Deduplicate based on examId and subjectId using reduce
+    // Remove duplicates (same examId + subjectId)
     const uniqueScores = scores.reduce((acc, current) => {
-      // Check if an entry with the same examId and subjectId already exists
       const isDuplicate = acc.some(
         (item) =>
           item.examId._id.toString() === current.examId._id.toString() &&
           item.subjectId._id.toString() === current.subjectId._id.toString()
       );
-
-      if (!isDuplicate) {
-        acc.push(current); // Add unique entry
-      }
+      if (!isDuplicate) acc.push(current);
       return acc;
     }, []);
 
